@@ -15,6 +15,7 @@ import os
 import re
 import struct
 import sys
+import json
 
 
 ########################################################################
@@ -7074,7 +7075,7 @@ class BdatTable(object):
 </html>
 """
 
-    def print(self):
+    def printHtml(self):
         """Return a string containing this table in HTML format."""
         s = self._HTML_HEADER.replace('{title}', self.name)
         s += '    <tr id="header">\n'
@@ -7116,6 +7117,26 @@ class BdatTable(object):
             s += '    </tr>\n'
         s += self._HTML_FOOTER
         return s
+	
+    def printJson(self):
+        outData = []
+        for i in range(len(self._rows)):
+            row = self._rows[i]
+            id = row[0]
+            rowData = {}
+            for j in range(1, len(self._fields)):
+                if self._fields[j].array_size is None:
+                    values = (row[j],)
+                else:
+                    values = row[j]
+                for value in values:
+                    valueToUse = value
+                    if isinstance(value, tuple):
+                        valueToUse = value[0]
+                    rowData[self._fields[j].name] = valueToUse
+            # end for
+            outData.append(rowData)
+        return json.dumps(outData)
 
     def _print_value(self, value, field):
         """Return the given value formatted for HTML."""
@@ -8210,7 +8231,9 @@ def main(argv):
     parser = argparse.ArgumentParser(
         description='Extract tables from Xenoblade BDAT files.')
     parser.add_argument('-o', '--outdir', metavar='OUTDIR', required=True,
-                        help='Path of output directory for table HTML files.')
+                        help='Path of output directory for resulting files.')
+    parser.add_argument('-f', '--format', metavar='FORMAT', required=False,
+                        help='Output format. Possible values: json, html. Default: html')					
     parser.add_argument('files', metavar='FILE', nargs='+',
                         help='Paths of BDAT files to read.')
     args = parser.parse_args()
@@ -8227,8 +8250,14 @@ def main(argv):
     if not os.path.exists(args.outdir):
         os.mkdir(args.outdir)
     for name, table in tables.items():
-        fname = re.sub('[^ -.0-~]', '_', name) + '.html'
-        s = table.print()
+        fname = re.sub('[^ -.0-~]', '_', name)
+        s = ""
+        if args.format != None and args.format.lower() == 'json':
+            fname += '.json'
+            s = table.printJson()
+        else:
+            fname += '.html'
+            s = table.printHtml()
         with open(os.path.join(args.outdir, fname), 'wb') as f:
             f.write(s.encode('utf-8'))
 # end def
