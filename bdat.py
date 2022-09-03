@@ -78,7 +78,6 @@ hashes = {
     0x00000000: "",
 
     # List of tables from program initialization (in init array order):
-    # (note that all of these "gimmick*" tables are empty, reason unknown)
     0x1D9A5B2B: None,
     0x22556A12: "gimmickEnemyAff",
     0x33975AC6: "gimmickMob",
@@ -98,7 +97,7 @@ hashes = {
     0xBC40F69E: "gimmickEvent",
     0x86B081D1: "gimmickPrecious",
     0x16ED5C1E: "gimmickObject",
-    0xBA1BE15F: None,  # Has fields: Condition, KevesRate, KevesReward, AgnusRate, AgnusReward, FirstReward, AccessRange, IconOffset, NoSmoke
+    0xBA1BE15F: "gimmickSuppliesDropping",
     0x0EF1103E: "gimmickEnemyWave",
     0xA4253BCA: "gimmickGrave",
     0xCEAA3005: "gimmickFootPrint",
@@ -106,14 +105,14 @@ hashes = {
     0xF941E5C0: "gimmickEtherPoint",
     0x2B7999C5: None,  # Has fields: Condition, EventID, Priority
     0x063C76AB: "gimmickCorpse",
-    0x6B40A33C: None,  # Has fields: EventTable, Motion, LookAt, Count, Pop
+    0x6B40A33C: "gimmickInterest",
     0x04842934: "gimmickSE",
     0x9446EE90: "gimmickBGM",
-    0x65663358: None,  # Has fields: Condition
+    0x65663358: "gimmickFlowEvent",
     0xF21E3DF2: "gimmickEyepatchArea",
     0x7C065528: "gimmickEnemyDead",
-    0x815F9DEF: None,  # Has fields: Condition, Icon
-    0x41CBF846: None,  # Nopon puzzle gimmick list?  Has fields: AccessRange, IconOffset, Piece1-7, Marking1-7, Parts{Eye,Switch,Gate}
+    0x815F9DEF: "gimmickIconLocator",
+    0x41CBF846: "gimmickPuzzle",
     0x5E93DEC1: "gimmickBlackMist",
     0x9BDB275E: None,  # Has fields: Condition
     0x05112AA4: None,  # Has fields: affType
@@ -153,7 +152,7 @@ hashes = {
     0xAD08DF86: "BTL_Enemy",
     0xC1053235: "BTL_EnemyAi",
     0xC6B4111D: None,  # Enemy (unique/event?) drop table
-    0xFAB21EAA: None,  # Enemy meat drop table
+    0xFAB21EAA: "BTL_EnemyDrop_Material",
     0x88BBE290: "BTL_EnemyDrop_Normal",
     0x152F4D70: None,  # Has fields: RevGold
     0x63146EA1: "BTL_EnFamily",
@@ -178,8 +177,8 @@ hashes = {
     0xB8530CDC: None,  # Has fields: Frame, COMMAND, Param1-8
     0x090BBC2F: None,  # Has fields: Frame, COMMAND, Param1-8
     0x6220E526: None,  # Has fields: Frame, COMMAND, Param1-8
-    0x6E79134D: None,  # Has fields: Param (Param: e.g. "se_ch04011010", "arts_swing_medium", "en02011110_eff03")
-    0x6BFB2715: None,  # Has fields: Param (looks like a gauge gain list)
+    0x6E79134D: "BTL_Event_Param",  # FIXME: check if correct
+    0x6BFB2715: "BTL_Event_Condition",  # FIXME: check if correct
     0xD9CA0366: None,  # Has fields: Condition, Param, Subtitling
     0xE312B1C6: "BTL_Grow",
     0x405C97AC: "BTL_HitCameraParam",
@@ -195,7 +194,7 @@ hashes = {
     0xEDE2F037: "BTL_RoleSkill",
     0x7ECBAB62: "BTL_Stance",
     0x01ED884D: None,  # Has fields: EffID, MinScale, MaxScale
-    0x998A022B: None,  # No known fields
+    0x998A022B: "BTL_TargetLine",
     0x5E12B0D2: "BTL_Talent",
     0x599FEBD8: "BTL_TalentAptitude",
     0xD9D339FE: None,  # Has fields: {Num,Type,Param}01-40
@@ -216,7 +215,7 @@ hashes = {
     0x9A4C2763: None,  # (Ouroboros skill list) Has fields: Name, Type, Param, NeedSp, Link1-5, FormatNo, IconType, UIX, UIY
     0xB2DBA568: "BTL_ChainAttackCam",
     0x533D78EA: "BTL_Achievement",
-    0x64D43E80: None,  # Has fields: Target, ConditionType (empty table)
+    0x64D43E80: "BTL_EnPowerMutation",
     0xA1621DDF: "BTL_EnSummon",
     0x3FA1EE4F: None,  # Has fields: EnhanceID, Param (looks like skill effect list?)
     0x0578E8B7: None,  # Visual filter list
@@ -249,7 +248,7 @@ hashes = {
     0x8D233450: "bgmlist",
     0x173D04D6: "RSC_CollectionIcon",
     0xCE3F40EB: "RSC_GemIcon",
-    0x949AA63A: None,  # Has fields: Reward{,Num}1-20, Life, Gold, GoldDivide, SP, BehaviorID
+    0x949AA63A: "ITM_RewardAssort",
     0xE418C419: "ITM_RewardCollepedia",
     0x49125B68: "ITM_RewardQuest",
     0xD88E0DEB: None,  # Has fields: Colony, RespectPoint, BonusExp
@@ -258,34 +257,34 @@ hashes = {
     0xF936594B: None,  # Has fields: Condition, SpotName, Text, IconOffset, Bonfire, [XYZ]Offset
     0xC5C5F70E: None,  # Has fields: Category, FormationCooking, FormationTraining
     0x2521C473: "FLD_EnemyData",
-    0xD0DCFD18: None,  # Has fields: EventType, EventID, ContinueEvent, comment
-    0xF08FCF57: None,  # No known fields
-    0xD880C44D: None,  # (Related to quest item consumption/reward?) Has fields: ItemID, Count
-    0xE3AE53B3: None,  # Has fields: Gimmick, Command
-    0x09D17C70: None,  # Has fields: ArtsID, Status
-    0xF01E66DE: None,  # Has fields: SkillID, Status (empty table)
-    0xD0253D11: None,  # Has fields: ChrID, ClassID, ArtsID
+    0xD0DCFD18: "SYS_FlowEventList",
+    0xF08FCF57: "SYS_FlowEventFlag",
+    0xD880C44D: "SYS_FlowEventItem",
+    0xE3AE53B3: "SYS_FlowEventLaunchGimmick",
+    0x09D17C70: "SYS_FlowEventArtsStatus",
+    0xF01E66DE: "SYS_FlowEventSkillStatus",
+    0xD0253D11: "SYS_FlowEventArtsSet",
     0x8D9A36B7: None,  # Has fields: FlagBit
     0xA263E178: None,  # No known fields
-    0x23EE284B: None,  # Event list (10001+)
-    0x25B62687: None,  # Event list (15001+)
-    0xBB0F57A4: None,  # Event list (16001+)
-    0x5B1D40C4: None,  # Event list (20001+)
+    0x23EE284B: None,  # Event list (10001+: story events)
+    0x25B62687: None,  # Event list (15001+: field events)
+    0xBB0F57A4: None,  # Event list (16001+: quest events)
+    0x5B1D40C4: None,  # Event list (20001+: dialogue events)
     0xCC55A8C8: None,  # Has fields: setupName, objName, objType, objID, costume, objModel, wpnBlade, spWeapon
     0x3CF65A32: "EVT_nearfar",
     0xDB0270B0: None,  # Has fields: scenario, event, map (empty table)
     0x98D41CEB: "EVT_MapObjList",
     0x9994480F: "EVT_Place",
     0xABC5B89C: "EVT_HideList",  # FIXME: unclear if correct
-    0x065DE649: None,  # Has fields: Character
+    0x065DE649: "EVT_TalkMouth",
     0xD8C16C44: None,  # Has fields: Facial, Character
     0xE36B8F14: "EVT_Gradation",
     0x3AE0FC2B: None,  # Has fields: ColorScale, WhiteAddRate
     0x88EF0B3C: "EVT_Vignette",
-    0x8B3160C1: None,  # Has fields: Exp, Pos[XY}, Scale[XY}, Wave{Rate,Freq,Random}, StartOffset
+    0x8B3160C1: "EVT_RadialBlur",
     0xFE1D4EF0: "EVT_Color",
     0x81A91D19: "EVT_Dof",
-    0x8ED748D8: None,  # Has fields: ID, scale[XY]
+    0x8ED748D8: "EVT_ScreenShake",
     0x6BB765F3: "EVT_HeroEquip",
     0x07705A00: "QST_List",
     0xFF0E544C: "QST_Purpose",
@@ -312,8 +311,8 @@ hashes = {
     0x5E53D2EE: "SYS_WeatherList",
     0x9B7727C8: "SYS_WeatherTable",
     0x69F7C5FB: "RSC_WeatherSet",
-    0x0EE4CBE3: None,  # Has fields: FamilyTag, AiHungry, AiThirst, AiAnger
-    0xE3C4E636: None,  # Has fields: AiFlock, AiFormation, RoleTag, AiHoming
+    0x0EE4CBE3: "FLD_EnAiBase",
+    0xE3C4E636: "FLD_EnAiSetting",
     0x8C492368: None,  # No known fields
     0xDBF04CEB: "FLD_EnMove",
     0xF002B2F5: None,  # Has fields: affType, affName, actionTime1-4, defaultAnim, mountObj, mountTag, mountTag2, enableNopon
@@ -352,9 +351,9 @@ hashes = {
     0xEC6F90EE: "FLD_ObjList",
     0xB1963CFD: "MNU_ShopList",
     0xDCDBDB1F: "MNU_ShopTable",
-    0xB1902C5B: None,  # Has fields: {StartEvent,ReactionEvent,Condition,Repeatable,EndFlag}1-6
-    0x83E0F284: None,  # Has fields: Grouping, {Character,VoiceID,Text,Time}1-5
-    0xDAF44E8F: None,  # Has fields: Grouping, Character, VoiceID, Text, Spot, Info, Item
+    0xB1902C5B: "FLD_InterestEventTable",
+    0x83E0F284: "FLD_InterestEventStart",
+    0xDAF44E8F: "FLD_InterestEventReaction",
     0xFEF315B6: None,  # Has fields: EventID, Condition, SpotGimmick
     0xF9349351: None,  # Has fields: icon_index, type, obj_name, disp_range, disp_check
     0xFF057327: "CHR_UroBody",
@@ -373,7 +372,7 @@ hashes = {
     0xF185DC10: "RSC_Story",  # FIXME: unclear if correct
     0x92D8F17B: "FLD_RelationNpc",
     0x938A4DD1: "FLD_RelationColony",
-    0x4B91D8C8: None,  # Has fields: EventID, Comment
+    0x4B91D8C8: "FLD_KizunaChangeFlag",
     0x2BBE255B: None,  # Has fields: {NpcID,value}1-6, Comment
     0xE1C78647: None,  # Has fields: {ColonyID,value}1-3, Comment
     0x861D003A: None,  # Has fields: {RelationID,value}1-10, Comment
@@ -391,8 +390,8 @@ hashes = {
     0xF02EB97C: None,  # Recipe upgrade list
     0x6EC8096C: None,  # Canteen recipe list
     0x3B47669B: "QST_RequestItemSet",
-    0x1FCFB323: None,  # Has fields: {Condition,BGM}1-4
-    0x2CFCAF13: None,  # No known fields
+    0x1FCFB323: "SYS_BGMCondition",
+    0x2CFCAF13: "SYS_FlowEventAddFlag",
     0x65ACA8AC: "SYS_SystemOpen",
     0x5611DDA6: "MNU_GuestIconList",
     0x7C8EEF72: None,  # Has fields: eff_col
@@ -406,29 +405,29 @@ hashes = {
     0xF1E32CAF: "MNU_QuestTask",
     0x96ECF5BF: "MNU_InputAct",
     0xFB06EACE: "MNU_InputPad",
-    0x38031E0F: None,  # Has fields: Interval, Damage
+    0x38031E0F: "FLD_DamageFloor",
     0x6F56B53C: "SYS_CameraShake",
-    0xA5595837: None,  # Has fields: Main, Soup(?), Center1, Center2
+    0xA5595837: "FLD_MealObject",
     0xEED24855: None,  # Unique monster list
-    0x13B8DA8C: None,  # UM condition parameters (FLD_ConditionList type 9)
+    0x13B8DA8C: "FLD_ConditionUMonster",
     0x3CC7CE2D: "FLD_ConditionTutorial",
     0xAA6D70CA: "MNU_MapInfo",
     0xD5696E7F: "MNU_MapInfoFile",
     0x35D68F4D: None,  # Has fields: BoneName1-4, StepOffset, Vibration
-    0xF0F61B4E: None,  # Has fields: StepOffset1-4
+    0xF0F61B4E: "SYS_FootPrintOffset",  # FIXME: unclear if correct
     0x06955984: None,  # Has fields: Walk, Run, LandingDamage, Slide
-    0x5AC778BE: None,  # Has fields: Default, Soil, Sand, Grass, Wood, Iron, Snow, Carpet, Gel, Gravel, Water, Shallows, InWater, Mist
+    0x5AC778BE: "SYS_EffMaterial",
     0xEE61112B: "FLD_LookAt",  # FIXME: unclear if correct
     0xFB616D5F: "SYS_CharacterDirection",
     0x6009A5C3: "SYS_CommonDirection",
     0x2BE55EEA: "SYS_UniqueDirection",
     0x9ADB8D4C: "SYS_DirectionBranch",
     0x473B9203: "SYS_DirectionParam",
-    0xCBF26BB3: None,  # Has fields: Name, Caption, Type, Comment
+    0xCBF26BB3: "FLD_PerkPermanent",
     0xC2CE883D: None,  # Has fields: Type, Value1-20, Comment
-    0xDB31DA53: None,  # Has fields: {Name,Caption,Type,Value}1-3, Time, Comment
+    0xDB31DA53: None,  # Has fields: {Name,Caption,Type,Value}1-3, Time, Comment -> food perk list
     0x67BCB6FE: "SYS_CommonEffect",
-    0xC2C2933F: None,  # Has fields: Character, {Motion,Probability}01-05
+    0xC2C2933F: "FLD_PcTalkAction",  # FIXME: unclear if correct
     0xAD80BED6: None,  # Has fields: Motion, MaxValue
     0xC60C0FBD: None,  # Has fields: Category, ValueOffset, ToonID(?), Comment
     0xE9E95941: None,  # Has fields: Category, ValueOffset, ToonID(?), Comment
@@ -460,7 +459,7 @@ hashes = {
     0xB52CB42D: None,  # Has fields: Before, Condition, After
     0x96AE47E6: "SYS_TutorialWaitTime",
     0x8E6B2295: None,  # Has fields: Category
-    0xF5EB8697: None,  # Has fields: MaxNumber, AddLv01-10
+    0xF5EB8697: "BTL_SpUnique",
     0xE6D8A7AE: "MNU_EventTheater_scn",
     0xD52EFD79: "MNU_FlagParam",
     0x09D4E3FD: None,  # Has fields: name ("fade_past_memory_short", "ma09a_gim_thunder" etc), comment
@@ -473,7 +472,7 @@ hashes = {
     0xCF66EB21: "QST_QuestImageList",
     0xB971C420: None,  # Has fields: Talent, ArtsID, Special
     0x5F654D94: None,  # Has fields: Talent, SkillID
-    0xAFD8D84D: None,  # Has fields: Type, R, G, B, Time, WaitEnd
+    0xAFD8D84D: "SYS_FlowEventFade",
     0xB93870C8: "SYS_TutorialMessage",
     0x2177D111: "MNU_VoiceList",
     0xE15A6DE7: None,  # Has fields: RewardA1-2, RewardB1-2
@@ -487,13 +486,13 @@ hashes = {
     0xFA253EBF: "BTL_AutoSetArts",
     0x139348CC: "BTL_AutoSetGem",
     0x13DED235: "BTL_AutoSetSkill",
-    0x1D96E424: None,  # (Possibly: MNU_QuestNotSell) Has fields: Condition, Item01-10
+    0x1D96E424: "MNU_QuestNotSell",
     0x7A066663: None,  # Has fields: TaskID, MapID, Comment
     0xE7251BBB: "MNU_MapSlide",  # FIXME: unclear if correct
     0x3D608A6E: "MNU_QuestFollow",
     0xA6AAF689: None,  # Has fields: PcID, ArtsID
-    0x5CD15665: None,  # (Possibly DLC related?) Has fields: DescText, ImageID, ImageNum, SortID, Comment
-    0xDA526616: None,  # (Possibly DLC related?) Has fields: VolID, TitleText, DescText, ImageID, SortID, Comment
+    0x5CD15665: "MNU_DLCVolInfo",
+    0xDA526616: "MNU_DLCContentsInfo",
     0x1623B3A0: None,  # (Possibly DLC related?) Has fields: ContentsID, DispType, DescText, ImageID, SortID, Comment
     0xA970CAF5: "MNU_DlcGift",
     0xCED21F4E: "MNU_PatchInfo",
@@ -513,7 +512,7 @@ hashes = {
     0xAA84C456: "msg_btl_enhance_cap",
     0x7907F75E: "msg_btl_enhance_name",
     0x455071CB: "msg_btl_roleact_caption",
-    0x56FFF926: None,  # Empty table
+    0x56FFF926: "msg_btl_roleact_cat",
     0xDC74E779: "msg_btl_skill_name",
     0x77B6A0EF: "msg_btl_stance_name",
     0xD96BDBBA: "msg_btl_subtitling",
@@ -537,7 +536,7 @@ hashes = {
     0x8554022B: "msg_mnu_cloudgem",
     0x2A9BD580: "msg_mnu_common_ms",
     0x10F03A79: "msg_mnu_comspot_ms",
-    0x23E826C6: None,  # Chapter end dialogue subtitles
+    0x23E826C6: "msg_mnu_diary_mono_ms",
     0xDF7177AE: "msg_mnu_dlc_info",
     0xABB95378: "msg_mnu_equip_detail",
     0x23A3F9FA: "msg_mnu_event_name",
@@ -554,8 +553,8 @@ hashes = {
     0xF1CBAC59: "msg_mnu_map_ms",
     0x5DFDA895: "msg_mnu_minimap_areaname",
     0xA61679BA: "msg_mnu_obj_info_name",
-    0xAAEBE79E: None,  # Opening credits (for Japanese voices)
-    0x5FEC6350: None,  # Opening credits (for English voices)
+    0xAAEBE79E: "msg_mnu_op_credits",
+    0x5FEC6350: "msg_mnu_op_credits_en",
     0x1F0DC7C2: "msg_mnu_operation_guide",
     0x5F68C7D2: "msg_mnu_option",
     0x83AAF628: "msg_mnu_other_ms",
@@ -568,9 +567,9 @@ hashes = {
     0x5C52C972: "msg_mnu_style_standard_ms",
     0x29821FC5: "msg_mnu_system_ms",
     0x6D15742F: "msg_mnu_title",
-    0x2902008F: None,  # Tutorial battle menu text
+    0x2902008F: "msg_mnu_trail_name",  # Presumably a misspelling of "trial"
     0xBBF540E7: "msg_mnu_tutorial_tips",
-    0xA1A111AE: None,  # Field popup text (landmark discovery etc.)
+    0xA1A111AE: "msg_mnu_update_ms",
     0xEA19B333: "msg_qst_RequestItemSet",
     0x45A2D5AD: "msg_qst_overwrite",  # FIXME: unclear if correct
     0xAD40857C: "msg_qst_task",
@@ -596,7 +595,7 @@ hashes = {
     0x32601547: "msg_loading_tips",
     0x28E8B08C: "msg_location_name",
     0x6436BD4A: "msg_npc_name",
-    0xEDFB4E9F: None,  # NPC titles
+    0xEDFB4E9F: "msg_npc_tag_name",
     0xBA34C46E: None,  # PC names
     0x16B245E3: "msg_shop_name",
     0xE48A94FF: "msg_sys_access_message",
@@ -618,7 +617,272 @@ hashes = {
     0xF685A94E: None,
     0x981E9686: None,
     0xBF147F74: None,
-    
+
+    # Per-map gimmick tables:
+    0x04A1DCB1: "ma01a_GMK_BGM",
+    0x85EC3F24: "ma01a_GMK_BlackMist",
+    0x484E2D46: "ma01a_GMK_Collection",
+    0xF442810F: "ma01a_GMK_Corpse",
+    0x568EE088: "ma01a_GMK_Door",
+    0xB9953087: "ma01a_GMK_EnemyAff",
+    0x2356AECF: "ma01a_GMK_EnemyDead",
+    0xB7FACD23: "ma01a_GMK_EnemyPop",
+    0x3A8DB47D: "ma01a_GMK_EnemyWave",
+    0x66BE92FC: "ma01a_GMK_EtherPoint",
+    0xFBA1D750: "ma01a_GMK_Event",
+    0xEDEB8455: "ma01a_GMK_EyepatchArea",
+    0x9F3B5150: "ma01a_GMK_FieldLock",
+    0x1310F362: "ma01a_GMK_FixedMob",
+    0xB383E09E: "ma01a_GMK_FlowEvent",
+    0x80069C50: "ma01a_GMK_FootPrint",
+    0xF5C5CC26: "ma01a_GMK_Grave",
+    0x24D0F7C7: "ma01a_GMK_IconLocator",
+    0xCA37CB23: "ma01a_GMK_Interest",
+    0x9F336731: "ma01a_GMK_Location",
+    0xA8D63D8F: "ma01a_GMK_MapJumpList",
+    0x042D6C87: "ma01a_GMK_Mob",
+    0x94084666: "ma01a_GMK_Object",
+    0x2897B486: "ma01a_GMK_Precious",
+    0xABD3FA12: "ma01a_GMK_SDropping",
+    0x7A6BAA0F: "ma01a_GMK_SE",
+    0xCA3A550C: "ma01a_GMK_Schedule",
+    0xD3CA0EAC: "ma01a_GMK_TreasureBox",
+    0x98D399DD: "ma01a_GMK_Weather",
+    0xBF7E7932: "ma04a_GMK_BGM",
+    0x5329F692: "ma04a_GMK_BlackMist",
+    0xFF93F580: "ma04a_GMK_Collection",
+    0xDC55E2C8: "ma04a_GMK_Corpse",
+    0x8C52C8B3: "ma04a_GMK_Door",
+    0x88B840A1: "ma04a_GMK_EnemyAff",
+    0x1C95A83B: "ma04a_GMK_EnemyDead",
+    0x778E3103: "ma04a_GMK_EnemyPop",
+    0x067B90BA: "ma04a_GMK_EnemyWave",
+    0x33FE07E9: "ma04a_GMK_EtherPoint",
+    0xB3221521: "ma04a_GMK_Event",
+    0x0256635F: "ma04a_GMK_FieldLock",
+    0x18BC09D6: "ma04a_GMK_FixedMob",
+    0xE86E7B89: "ma04a_GMK_FlowEvent",
+    0xF38259C1: "ma04a_GMK_FootPrint",
+    0x0721A1D6: "ma04a_GMK_Grave",
+    0x29384571: "ma04a_GMK_IconLocator",
+    0xB9F56093: "ma04a_GMK_Interest",
+    0x4C930865: "ma04a_GMK_Location",
+    0x3EC0C5D6: "ma04a_GMK_MapJumpList",
+    0x8DB9C573: "ma04a_GMK_Mob",
+    0x6AE57581: "ma04a_GMK_Object",
+    0xB6B2C14B: "ma04a_GMK_Precious",
+    0x58115357: "ma04a_GMK_Puzzle",
+    0x8D25BEAB: "ma04a_GMK_SDropping",
+    0xCFBD8F67: "ma04a_GMK_SE",
+    0x5EE882F4: "ma04a_GMK_Schedule",
+    0x11575C39: "ma04a_GMK_TreasureBox",
+    0x08EB258E: "ma04a_GMK_Weather",
+    0xDACBF97D: "ma07a_GMK_BGM",
+    0x7D77D9D9: "ma07a_GMK_BlackMist",
+    0xF52DD204: "ma07a_GMK_Collection",
+    0x2690AECB: "ma07a_GMK_Corpse",
+    0xDF20B1AD: "ma07a_GMK_Door",
+    0x3148B809: "ma07a_GMK_Elevator",
+    0x61BB4F70: "ma07a_GMK_ElevatorCSw",
+    0x8E35E016: "ma07a_GMK_ElevatorDoor",
+    0xFDFC56DE: "ma07a_GMK_ElevatorSw",
+    0xEF785262: "ma07a_GMK_EnemyAff",
+    0x8B960C6F: "ma07a_GMK_EnemyDead",
+    0x0277EA4F: "ma07a_GMK_EnemyPop",
+    0x292F9EC8: "ma07a_GMK_EnemyWave",
+    0x45F18C57: "ma07a_GMK_EtherPoint",
+    0x451F5A17: "ma07a_GMK_Event",
+    0x0814D855: "ma07a_GMK_FieldLock",
+    0x7DAE8D43: "ma07a_GMK_FixedMob",
+    0x66E17F29: "ma07a_GMK_FlowEvent",
+    0x31338CDD: "ma07a_GMK_FootPrint",
+    0x72F28348: "ma07a_GMK_Grave",
+    0x3D96703D: "ma07a_GMK_IconLocator",
+    0x96B81691: "ma07a_GMK_Interest",
+    0x696784F9: "ma07a_GMK_Location",
+    0x04D0EFA0: "ma07a_GMK_MapJumpList",
+    0xD2B6A86A: "ma07a_GMK_Mob",
+    0xE7939CB2: "ma07a_GMK_Object",
+    0xF193906C: "ma07a_GMK_Precious",
+    0x6683B96B: "ma07a_GMK_Puzzle",
+    0x82937F70: "ma07a_GMK_SDropping",
+    0xA068C2AC: "ma07a_GMK_SE",
+    0x7A89211E: "ma07a_GMK_Schedule",
+    0x4DD862B4: "ma07a_GMK_TreasureBox",
+    0xE13AE2C3: "ma07a_GMK_Weather",
+    0x5FCF31FF: "ma09a_GMK_BGM",
+    0x89A99E06: "ma09a_GMK_BlackMist",
+    0x2A743DDE: "ma09a_GMK_Collection",
+    0x4F756026: "ma09a_GMK_Corpse",
+    0x7880EE13: "ma09a_GMK_Door",
+    0xCAA71547: "ma09a_GMK_Elevator",
+    0x4E7CCBB4: "ma09a_GMK_ElevatorCSw",
+    0xAA65722B: "ma09a_GMK_ElevatorDoor",
+    0x9C7D503B: "ma09a_GMK_ElevatorSw",
+    0x4C9F05DE: "ma09a_GMK_EnemyAff",
+    0x1F86813A: "ma09a_GMK_EnemyDead",
+    0x7BECF394: "ma09a_GMK_EnemyPop",
+    0x83386BFE: "ma09a_GMK_EnemyWave",
+    0x3E87DC6F: "ma09a_GMK_EtherPoint",
+    0x87E28CBB: "ma09a_GMK_Event",
+    0x94120285: "ma09a_GMK_EyepatchArea",
+    0xFA756D39: "ma09a_GMK_FieldLock",
+    0x7114BD9F: "ma09a_GMK_FixedMob",
+    0xC911D9D7: "ma09a_GMK_FlowEvent",
+    0x37929B05: "ma09a_GMK_FootPrint",
+    0x5C1C9763: "ma09a_GMK_Grave",
+    0xC8573A7A: "ma09a_GMK_IconLocator",
+    0x346507C8: "ma09a_GMK_Interest",
+    0xC787DDCA: "ma09a_GMK_Location",
+    0xD2AAAAD4: "ma09a_GMK_MapJumpList",
+    0x5803D22C: "ma09a_GMK_Mob",
+    0x67A747F3: "ma09a_GMK_Object",
+    0x30C9DAD1: "ma09a_GMK_Precious",
+    0x07C86B78: "ma09a_GMK_SDropping",
+    0x7035C808: "ma09a_GMK_SE",
+    0x325EFCF7: "ma09a_GMK_Schedule",
+    0x982DFD15: "ma09a_GMK_TreasureBox",
+    0xCB1B986F: "ma11a_GMK_BGM",
+    0x6CF533BE: "ma11a_GMK_BlackMist",
+    0x320FBEE9: "ma11a_GMK_Collection",
+    0xDEABFBF4: "ma11a_GMK_Corpse",
+    0x6F9C7F96: "ma11a_GMK_Door",
+    0x42C29E16: "ma11a_GMK_Elevator",
+    0xF2DADFA3: "ma11a_GMK_ElevatorCSw",
+    0xC29B79CC: "ma11a_GMK_ElevatorDoor",
+    0xE7F7A60B: "ma11a_GMK_ElevatorSw",
+    0xAE8F7F19: "ma11a_GMK_EnemyAff",
+    0x7C7385A7: "ma11a_GMK_EnemyDead",
+    0xC76401A3: "ma11a_GMK_EnemyPop",
+    0xD1D0C6DF: "ma11a_GMK_EnemyWave",
+    0x0C540EDB: "ma11a_GMK_EtherPoint",
+    0xEC512E0E: "ma11a_GMK_Event",
+    0x38986FE6: "ma11a_GMK_EyepatchArea",
+    0xF491C81A: "ma11a_GMK_FieldLock",
+    0x68A585C9: "ma11a_GMK_FixedMob",
+    0x086E1954: "ma11a_GMK_FlowEvent",
+    0xF2F859A5: "ma11a_GMK_FootPrint",
+    0x9BF47F1F: "ma11a_GMK_Grave",
+    0xA5A1DD24: "ma11a_GMK_IconLocator",
+    0x1B9F958C: "ma11a_GMK_Interest",
+    0x90C9B3BB: "ma11a_GMK_Location",
+    0x72BFB1CB: "ma11a_GMK_MapJumpList",
+    0xE72501AC: "ma11a_GMK_Mob",
+    0xAE60B64B: "ma11a_GMK_Object",
+    0x78D1E214: "ma11a_GMK_Precious",
+    0x3FE2E815: "ma11a_GMK_Puzzle",
+    0x5970FDF6: "ma11a_GMK_SDropping",
+    0x4968C64D: "ma11a_GMK_SE",
+    0x73660EB3: "ma11a_GMK_Schedule",
+    0xEBA530C2: "ma11a_GMK_TreasureBox",
+    0x0750E780: "ma11a_GMK_Weather",
+    0x4E40AEEB: "ma14a_GMK_EnemyDead",
+    0x232003CA: "ma14a_GMK_EnemyPop",
+    0x801E851E: "ma14a_GMK_Event",
+    0x07E929E6: "ma14a_GMK_FieldLock",
+    0x40B156D1: "ma14a_GMK_FixedMob",
+    0x45D233A1: "ma14a_GMK_Interest",
+    0xCF4772C2: "ma14a_GMK_Location",
+    0xB77EF7D3: "ma14a_GMK_MapJumpList",
+    0x99D4E0C8: "ma14a_GMK_Mob",
+    0xE9BE9D87: "ma14a_GMK_Object",
+    0x2E91445C: "ma14a_GMK_SE",
+    0x7E10FCE2: "ma14a_GMK_Schedule",
+    0x05BF69D7: "ma14a_GMK_TreasureBox",
+    0xA4246CAE: "ma15a_GMK_BGM",
+    0x5138D4F3: "ma15a_GMK_Collection",
+    0x00B64CCA: "ma15a_GMK_Door",
+    0x562ED5D1: "ma15a_GMK_Elevator",
+    0xDE41D550: "ma15a_GMK_ElevatorCSw",
+    0x179CD936: "ma15a_GMK_ElevatorDoor",
+    0x7581CC19: "ma15a_GMK_ElevatorSw",
+    0x09A76E98: "ma15a_GMK_EnemyAff",
+    0x86425FCE: "ma15a_GMK_EnemyDead",
+    0x7A517BD1: "ma15a_GMK_EnemyPop",
+    0xCCCCA102: "ma15a_GMK_EtherPoint",
+    0x980AA0D5: "ma15a_GMK_Event",
+    0x729D3A60: "ma15a_GMK_EyepatchArea",
+    0x94A54537: "ma15a_GMK_FieldLock",
+    0x29DFEC6E: "ma15a_GMK_FixedMob",
+    0x6461E0A2: "ma15a_GMK_FootPrint",
+    0x1C78621F: "ma15a_GMK_Grave",
+    0x151A9839: "ma15a_GMK_IconLocator",
+    0xB2FE04B6: "ma15a_GMK_Interest",
+    0x243E6271: "ma15a_GMK_Location",
+    0xED1F5BDA: "ma15a_GMK_MapJumpList",
+    0x3C8E3EEF: "ma15a_GMK_Mob",
+    0x7185B927: "ma15a_GMK_Object",
+    0xDBD5150D: "ma15a_GMK_Precious",
+    0xBA0E6DBC: "ma15a_GMK_SE",
+    0xC1EE0D8F: "ma15a_GMK_Schedule",
+    0x4098C72D: "ma15a_GMK_TreasureBox",
+    0x6AC7D2F4: "ma17a_GMK_BGM",
+    0x63A33108: "ma17a_GMK_Collection",
+    0x1260820A: "ma17a_GMK_Door",
+    0xC965487A: "ma17a_GMK_Elevator",
+    0xC52AD389: "ma17a_GMK_ElevatorCSw",
+    0x68291498: "ma17a_GMK_ElevatorDoor",
+    0xC537FDB7: "ma17a_GMK_ElevatorSw",
+    0x8ECB810A: "ma17a_GMK_EnemyAff",
+    0xF4C65A41: "ma17a_GMK_EnemyPop",
+    0xC0ABDCDC: "ma17a_GMK_EnemyWave",
+    0xDAC22F3C: "ma17a_GMK_Event",
+    0x221452D2: "ma17a_GMK_FlowEvent",
+    0x48FAEE67: "ma17a_GMK_Grave",
+    0x3C2EDEA1: "ma17a_GMK_IconLocator",
+    0xDA1657AD: "ma17a_GMK_Interest",
+    0xDE1DB7BB: "ma17a_GMK_Location",
+    0x6FABC0A3: "ma17a_GMK_MapJumpList",
+    0xA5E3C704: "ma17a_GMK_Object",
+    0x6A79E665: "ma17a_GMK_Precious",
+    0x7C9F69DC: "ma17a_GMK_SE",
+    0x2475C723: "ma17a_GMK_TreasureBox",
+    0x13613F65: "ma17a_GMK_Weather",
+    0x8932D6DA: "ma20a_GMK_BlackMist",
+    0x87D440CB: "ma20a_GMK_Event",
+    0x79C5B81C: "ma20a_GMK_FlowEvent",
+    0xA3C362AD: "ma20a_GMK_Location",
+    0x7A54A077: "ma20a_GMK_SE",
+    0x8186EE86: "ma21a_GMK_MapJumpList",
+    0xD80B9EAE: "ma21a_GMK_SE",
+    0x62315D31: "ma22a_GMK_BGM",
+    0x4F6CA7E6: "ma22a_GMK_Collection",
+    0x4B1E4808: "ma22a_GMK_Elevator",
+    0xCC8E3A38: "ma22a_GMK_ElevatorCSw",
+    0x50291CF4: "ma22a_GMK_ElevatorDoor",
+    0x5D271081: "ma22a_GMK_ElevatorSw",
+    0xAC389ED8: "ma22a_GMK_EnemyAff",
+    0xED49560F: "ma22a_GMK_EnemyDead",
+    0x0CD3B481: "ma22a_GMK_EnemyPop",
+    0x56FD977F: "ma22a_GMK_EtherPoint",
+    0xFDF99966: "ma22a_GMK_Event",
+    0x73C07245: "ma22a_GMK_Grave",
+    0x7E210B2E: "ma22a_GMK_IconLocator",
+    0x704C2150: "ma22a_GMK_Interest",
+    0x48EB542B: "ma22a_GMK_Location",
+    0xB6FE0BE7: "ma22a_GMK_MapJumpList",
+    0xA86F352B: "ma22a_GMK_Object",
+    0x893F6918: "ma22a_GMK_Precious",
+    0x1C28797B: "ma22a_GMK_SE",
+    0x8E71D160: "ma22a_GMK_TreasureBox",
+    0x6BD005A9: "ma90a_GMK_BGM",
+    0x6488F3EB: "ma90a_GMK_Collection",
+    0x1533AF21: "ma90a_GMK_Door",
+    0x51017024: "ma90a_GMK_Elevator",
+    0x2DC63496: "ma90a_GMK_ElevatorCSw",
+    0x9F039384: "ma90a_GMK_ElevatorDoor",
+    0x510E06DB: "ma90a_GMK_ElevatorSw",
+    0x6999DAFE: "ma90a_GMK_EnemyPop",
+    0x709740B5: "ma90a_GMK_Event",
+    0xFC131C1D: "ma90a_GMK_FieldLock",
+    0x5D584FD5: "ma90a_GMK_FlowEvent",
+    0x2F52EAA9: "ma90a_GMK_Location",
+    0x803EFBB0: "ma90a_GMK_Object",
+    0xD3ADCF9B: "ma90a_GMK_Precious",
+    0xFC8B2F17: "ma90a_GMK_SDropping",
+    0x70EB4338: "ma90a_GMK_SE",
+    0x56902927: "ma90a_GMK_TreasureBox",
+
     # Event tables:
     0x71ABA395: "msg_ask110001",
     0xA0850A64: "msg_ask110003",
@@ -4232,6 +4496,7 @@ hashes = {
     0xD0FE369E: "BTL_TL_PrmRev29",
     0xCE6B3ED3: "BTL_TL_PrmRev30",
     0xA7EAC207: "BTL_TL_PrmRev31",
+    0x62C9918F: "BTL_TL_PrmRev32",
     0x310AE49E: "BTL_WpnParam01",
     0x71FCA5C7: "BTL_WpnParam02",
     0xE00E4C3C: "BTL_WpnParam03",
@@ -4267,6 +4532,8 @@ hashes = {
     0x0EE98229: "BTL_WpnParamU4",
     0xC82B9EDC: "BTL_WpnParamU5",
     0x1C97E25E: "BTL_WpnParamU6",
+    0x79EC47C7: "FLD_EnTribe",  # FIXME: unclear if correct
+    0x36C6913C: "ITM_RewardCollectionList",
     0xF8207CBA: "MNU_FacePatternList",
     0xD90FF31C: "MNU_FontSet01",
     0x06079AEA: "MNU_FontSet01_cn",
@@ -4322,6 +4589,8 @@ hashes = {
     0x2CA6CE8E: "30",
 
     0x5E097F2E: "AITag",
+    0x7F149F22: "AITag0",
+    0x058AF124: "AITag1",
     0xC87D2E5D: "AccessCheck",
     0x6BCFDE50: "AccessCondition",
     0xF1DE4269: "AccessMsg",
@@ -4333,7 +4602,9 @@ hashes = {
     0x7C61794C: "ActSpeed",
     0xEDA5DA5B: "ActType",
     0xF59B6FEA: "Action",
+    0x7CDB7C8C: "ActionEffectType",
     0x234F4F14: "ActionType",
+    0xE6227FAC: "ActiveTimeTag",
     0x9EEA5C71: "AddCondition1",
     0x3D3E9434: "AddCondition2",
     0x0403A96F: "AddCondition3",
@@ -4354,6 +4625,18 @@ hashes = {
     0xEC32C9A1: "AddCondition18",
     0x642FF971: "AddCondition19",
     0x3609DADD: "AddCondition20",
+    0x8006FFC4: "AddFlagName1",
+    0xADBCD00D: "AddFlagName2",
+    0xD0FFF2A3: "AddFlagName3",
+    0xC10FCB49: "AddFlagName4",
+    0x7ADBF9B1: "AddFlagType1",
+    0x293D3D98: "AddFlagType2",
+    0x4CAE166E: "AddFlagType3",
+    0xDD257B6A: "AddFlagType4",
+    0x4DAB5107: "AddFlagValue1",
+    0xE3247C1A: "AddFlagValue2",
+    0x64BE0F5B: "AddFlagValue3",
+    0x2657EE00: "AddFlagValue4",
     0xDD7BC38E: "AddLv01",
     0x66C7BA45: "AddLv02",
     0xCB159A4C: "AddLv03",
@@ -4427,14 +4710,17 @@ hashes = {
     0x7698141C: "Appear",
     0x045C6899: "AppearScale",
     0xC36BF063: "Appearance",
+    0xEA82E2C3: "ApplyGroundColor",
     0xC4AE94F9: "ApplyRatio",
     0xEFD483D9: "Argument1",
     0x62B6A631: "Argument2",
+    0xB31C4895: "ArrowColonyFlag",
     0xCF45505F: "ArrowDir1",
     0xD063B5DD: "ArrowDir2",
     0x3B5DA661: "ArrowDir3",
     0x31173B6C: "ArrowDir4",
     0xFF4DA1AE: "ArrowDir5",
+    0x9BF53588: "ArrowNpcFlag",
     0x9271FD5D: "ArrowType1",
     0xE1EFA90D: "ArrowType2",
     0xAD55EA7C: "ArrowType3",
@@ -4452,6 +4738,7 @@ hashes = {
     0x16CE8F24: "ArtsCategory",
     0x453BBF2B: "ArtsID",
     0x2FC5B154: "ArtsNo",
+    0x4E654936: "ArtsSE",
     0x82A6D407: "ArtsSet01",
     0x2C32E5B0: "ArtsSet02",
     0xA6A893ED: "ArtsSet03",
@@ -4474,6 +4761,13 @@ hashes = {
     0x0370178A: "ArtsSlot13",
     0x22758A44: "ArtsSlot14",
     0x9489AAD1: "ArtsSlot15",
+    0x0A52D0C1: "ArtsSlotType1",
+    0xCFD9A0C9: "ArtsSlotType2",
+    0xFB397389: "ArtsSlotType3",
+    0x1EF2E308: "ArtsSlotType4",
+    0x66211B62: "ArtsSlotType5",
+    0x8D132D2D: "ArtsSlotType6",
+    0x80B19D19: "ArtsSpEffect",
     0x93C58FAC: "ArtsType",
     0xD3855917: "ArtsVoice1",
     0xCA233721: "ArtsVoice2",
@@ -4499,7 +4793,11 @@ hashes = {
     0x70F95E7C: "Assign15",
     0xA9DAA9D4: "Assign16",
     0x4336108C: "Atk",
-    0xE039A529: "AtkBonus",  # FIXME: unclear if correct
+    0xE039A529: "AtkBonus",
+    0xA3EB672B: "AtkBonusMax1",
+    0xEFB8CCD2: "AtkBonusMax2",
+    0xD425EB05: "AtkBonusMin1",
+    0x74D83F2B: "AtkBonusMin2",
     0xAA16BC6B: "AtkHeal",
     0xA744C97B: "AtkRev",
     0x1EE09B1F: "AtkRevM",
@@ -4512,6 +4810,7 @@ hashes = {
     0x944D4D65: "Attenuation",
     0xEEB398A0: "AttenuationScale",  # FIXME: unclear if correct
     0xCBA8067E: "AttrAnim",  # FIXME: unclear if correct
+    0x530C9455: "AuraAwakeLev",
     0xD8B07410: "AutoAttack1",
     0x8DC7FEE3: "AutoAttack2",
     0x039647DD: "AutoSet1",
@@ -4529,14 +4828,19 @@ hashes = {
     0xDAE723DC: "BGM3",
     0xC5101EA7: "BGM4",
     0xC32883FD: "BaseEnemy",
+    0x5F712FFA: "BaseEventName",
+    0x36A5C0B6: "BaseImageNo",
     0xDDF9618D: "BaseNum",
     0x594242A6: "BaseNum2",
     0xED10BAF9: "BaseNum3",
     0x38025F91: "BaseProb",
     0xCCB52419: "BaseRecipe",
     0x23C6CBED: "BaseResource",
+    0x3D016DDA: "BaseTalkID",
     0xD622A439: "BaseTime",
     0x96802080: "BattleCategory",
+    0x210044ED: "BattleLockID",
+    0x977F1E8D: "BattleRockID",
     0x30499B89: "BdatNum",
     0x27DD2297: "Before",
     0x64FCF627: "BeforeWeather",
@@ -4594,17 +4898,37 @@ hashes = {
     0xBD30E046: "CaseNoah",
     0xF4C2CE83: "CaseSena",
     0x10391E96: "CaseTaion",
+    0xD31885E6: "CastEndFrm",
     0xCD3DA04B: "CastLength",
+    0x8B13A658: "CastStartFrm",
+    0x29619DB4: "CatBGM",
     0xAB8D5038: "CatMain",  # FIXME: unclear if correct
     0x689B60B2: "Category",
     0xD8485D1F: "CategoryPriority",
     0x1FAF3916: "Center1",
     0xC276278D: "Center2",
     0x005FD5C3: "ChainArts",
+    0x3AF915B3: "ChainGaugeUp",
     0xA49EBFA0: "ChainOrder",
     0x5781C0FE: "ChainUp",
     0x57CF2FBE: "Change",
+    0x3420D05D: "ChangeCollepediaID1",
+    0x5D9683E7: "ChangeCollepediaID2",
+    0xE48341CC: "ChangeCollepediaID3",
     0xEA271ECB: "ChangeFile",
+    0x2C592F34: "ChangeFlagName1",
+    0xFCC9CCEE: "ChangeFlagName2",
+    0xA3DEC704: "ChangeFlagName3",
+    0xD543A95B: "ChangeFlagName4",
+    0x6609FF5C: "ChangeFlagType1",
+    0x0E1837E2: "ChangeFlagType2",
+    0xB40B9890: "ChangeFlagType3",
+    0xBBD8114E: "ChangeFlagType4",
+    0xE9908288: "ChangeFlagValue1",
+    0xA4DBF8BE: "ChangeFlagValue2",
+    0xB5109B91: "ChangeFlagValue3",
+    0x0F4236D7: "ChangeFlagValue4",
+    0x869329CC: "ChangeStatusCondition",
     0x372B6726: "Chapter",
     0xEABBB65C: "Character",
     0x23FF3AA9: "Character1",
@@ -4627,6 +4951,7 @@ hashes = {
     0xDF7C29E2: "ChrType",
     0xCD123CC1: "ClassID",
     0xAFBC9389: "CloseEffect",
+    0x216442BB: "CloseSeID",
     0x34AF34F8: "Collection",
     0x82E7EFEB: "CollectionID",
     0x3EE2AE1D: "CollepediaCondition1",
@@ -4639,6 +4964,8 @@ hashes = {
     0xF9287E80: "ColonyID1",
     0x7FAA81FB: "ColonyID2",
     0x144A602C: "ColonyID3",
+    0xAEDF6338: "ColonyIconFlag",
+    0x77F25C30: "ColonyRelationID",
     0xCC59D227: "Color",
     0x3566BD5E: "ColorB",
     0x352A786D: "ColorEye",
@@ -4647,6 +4974,8 @@ hashes = {
     0x71ED382C: "ColorR",
     0x2BB832A4: "ColorScale",
     0x3F14D64E: "ColorSkin",
+    0xFB976DA4: "ComSpotGmk",
+    0xDA375209: "ComSpotLocation",
     0x57A87F30: "ComboStage",
     0x7CC7F79F: "Command",
     0x890BD622: "Comment",
@@ -4663,6 +4992,7 @@ hashes = {
     0xFA2713A5: "CompBonus5",
     0xD20A0557: "Cond1",
     0x35329DDF: "Cond2",
+    0xD29F8471: "CondParam1",
     0x591E3B51: "Condition",
     0x3D6B02F6: "Condition1",
     0x4D3D24A1: "Condition2",
@@ -4670,6 +5000,7 @@ hashes = {
     0xE2D5DA44: "Condition4",
     0x167E711F: "Condition5",
     0xF0D6BD4D: "Condition6",
+    0x7652ED89: "ConditionNoTarget",
     0x9F758CA5: "ConditionParam",
     0x914E9457: "ConditionType",
     0x5997EDFA: "Conditon1",
@@ -4722,10 +5053,14 @@ hashes = {
     0x9E5557E6: "DamageRev",
     0x8B2BDE0F: "DamageRevHigh",
     0xCE1951BC: "DamageRevLow",
+    0x3DFC9709: "DeBuffPoint",
+    0xD18FA281: "DeBuffType",
+    0xE081C101: "DebScenarioFlag",
     0x85A8D5B5: "Debuff",
     0xCC2A50A4: "DebugFlag1",
     0xB6BB1396: "DebugFlag2",
     0x8238A725: "DebugID",
+    0xAD18020E: "DebugMemo",
     0x50C06388: "DebugName",
     0x8552A9F3: "DebugName2",
     0xD2929871: "DebugName3",
@@ -4748,7 +5083,11 @@ hashes = {
     0x2E11014E: "DefLvType",
     0x02C1C5DC: "DefRev",
     0xE5C59521: "DefTalent",
+    0xD34675FE: "DefTalentLv",
+    0x1D10EBD3: "DefTalentModel",
+    0xCA046306: "DefValueMax",
     0x48DB8265: "Default",
+    0x87569094: "DefaultBdatPrefix",
     0x976E2908: "DefaultMotion",
     0xA0CCBA9A: "DefaultOn",  # FIXME: unclear if correct
     0x555B7A5A: "DefaultResource",
@@ -4757,12 +5096,20 @@ hashes = {
     0x07C915FD: "Detail2",
     0xB4AF1963: "Detail3",
     0x58DE5FA5: "Detail4",
+    0x09E98912: "DetailIndexText",
+    0xB98E8110: "DetailInfoText",
     0x288D78D1: "DetailText1",
     0xAF75D2CE: "DetailText2",
     0xAAA12595: "DetailText3",
     0x68D607C5: "DetailText4",
     0x9F7EDAF7: "DetailText5",
     0xEAA4090C: "DetailText6",
+    0x4FA85387: "DetailValType1",
+    0x5F558362: "DetailValType2",
+    0x51487BCB: "DetailValType3",
+    0x79DE9B4A: "DetailValType4",
+    0xEA7B0E1A: "DetailValType5",
+    0xFF8B60F0: "DetailValType6",
     0x48FF3C5F: "DexBase",
     0xE25262E7: "DexLv1",
     0x4ECB1F28: "DexLv99",
@@ -4771,6 +5118,7 @@ hashes = {
     0x5494A420: "DexRev2",
     0x3CF79FDB: "DexRevBonus",
     0x6BC34A9D: "Difficulty",
+    0x2EE73E6B: "DirArtsNum",
     0x7E4AA0D7: "Direct",
     0x60F22C6D: "DirectFrm",
     0xF0FD1B0E: "DirectType",
@@ -4795,6 +5143,7 @@ hashes = {
     0x49C0DEBA: "DmgMgn4",
     0xCA65D2CD: "DmgMgn5",
     0x0213C69E: "DmgRange",
+    0x1A8501F1: "DmgRegionField", # FIXME: unclear if correct
     0xC23E7D15: "DmgRt01",
     0x6CE83942: "DmgRt02",
     0x5C6420B9: "DmgRt03",
@@ -4812,7 +5161,13 @@ hashes = {
     0x6D763CB5: "DmgRt15",
     0x49AE653A: "DmgRt16",
     0x917A91FA: "Door",
+    0x7FFE5CDE: "DoorLockStatus1",
+    0x2B5ECB21: "DoorLockStatus2",
     0xCE9351B1: "DoorStatus",
+    0x129B7A5D: "DownSeID",
+    0x46B2B4B7: "DropDownCat1",
+    0x538AEB72: "DropDownCat2",
+    0x67885A64: "DropLvRev",
     0xE5163D72: "DropProb1",
     0xAF87F02E: "DropProb2",
     0x88CFB614: "DropProb3",
@@ -4821,12 +5176,15 @@ hashes = {
     0x8E8EA93A: "DropProb6",
     0x2C88FAA3: "DropProb7",
     0x683D7A3A: "DropProb8",
+    0x0BFE4F15: "DropUpCat1",
+    0x472BBEF8: "DropUpCat2",
     0x69C4C06B: "DupType",
     0x061F00A3: "Duration",
 
     0x384A8A96: "EArmor",
     0xEF00B6DA: "EArmor1",
     0xC480EDF7: "EArmor2",
+    0xDA5EB0D5: "EArmorBonus",
     0x9576DF93: "E_LookPosType",
     0x2774563C: "E_LookX",
     0x1721C6CD: "E_LookY",
@@ -4841,7 +5199,9 @@ hashes = {
     0x56D033F5: "EffPack2",
     0x746716AC: "EffPack3",
     0xFFA47A48: "EffScale",
+    0x237F7E36: "EffStandLoop",
     0xBB08DA4F: "EffType",
+    0xE9B268D6: "EffValType",
     0xECFF4F2A: "Effect",
     0x9CEA86B5: "EffectCondition",
     0xBB44C6DD: "EffectID",
@@ -4893,17 +5253,24 @@ hashes = {
     0xEB40457F: "Elite5",
     0xF34BD15B: "Elite6",
     0xE855DE0C: "EliteScale",
+    0xC401CF1F: "EnArtsAchieve",
     0x32984956: "EnFamily",
+    0x984FF781: "EnResistCombo",
+    0xC1A632D6: "EnResistReaction",
     0x4CA550A7: "EnSize",
+    0x1F1D8024: "EnSkillAchieve",
     0x6029A27F: "EndAlpha",
     0x5F2088FA: "EndCheck",
     0xF1F54917: "EndCheckType",
+    0x5FE42B8B: "EndDelayFrame",
+    0xFFC9E289: "EndDirectionID",
     0x5D7ACE60: "EndFlag1",
     0xAF9F666F: "EndFlag2",
     0xB45F241C: "EndFlag3",
     0x6AA0478F: "EndFlag4",
     0x7E2A5E2B: "EndFlag5",
     0x7DB17798: "EndFlag6",
+    0x752A4CB6: "EndFlagName",
     0x815DFE9D: "EndFrm",
     0x22207986: "EndPos",
     0xC8AF01C8: "EndX",
@@ -4912,6 +5279,8 @@ hashes = {
     0x29210A2C: "Endf1",
     0x2665EB57: "Endf2",
     0x8AD2184D: "Endf3",
+    0xD3897F4C: "EnemyAiHead",
+    0xAA60B6DF: "EnemyAiTail",
     0x3BBE76C9: "EnemyDead", 
     0x611E819D: "EnemyExp",
     0xAAEA8654: "EnemyFamily",
@@ -4926,8 +5295,32 @@ hashes = {
     0xBD1AA5B8: "EnemyID01",
     0x7318D357: "EnemyID02",
     0x3F1ED434: "EnemyID03",
-    0x516AAE38: "EnemyInfo",  # FIXME: unclear if correct
+    0x516AAE38: "EnemyInfo",
+    0x6D94961B: "EnemyOffsetX",
+    0x736D57B6: "EnemyOffsetY",
+    0x76532DD6: "EnemyOffsetZ",
+    0xFA0D7543: "EnemyPopRate1",
+    0x29D1F901: "EnemyPopRate2",
+    0x187ADE0F: "EnemyPopRate3",
+    0x4216C90C: "EnemyPopRate4",
+    0x2F54A6B8: "EnemyPopType",
     0x0C149953: "EnemyTalentExp",
+    0x0C961F78: "EnemyUseArts01",
+    0xFA909155: "EnemyUseArts02",
+    0xF6C5B5D8: "EnemyUseArts03",
+    0x3E1F85D8: "EnemyUseArts04",
+    0x577E02FE: "EnemyUseArts05",
+    0x1D0E7BE9: "EnemyUseArts06",
+    0xDB4BB9E4: "EnemyUseArts07",
+    0x53E8D116: "EnemyUseArts08",
+    0x072C6D89: "EnemyUseArts09",
+    0xFD30580E: "EnemyUseArts10",
+    0xDE1DFC21: "EnemyUseArts11",
+    0x6241D91C: "EnemyUseArts12",
+    0xFABC0ACE: "EnemyUseArts13",
+    0x381F8436: "EnemyUseArts14",
+    0xCB3D5986: "EnemyUseArts15",
+    0xA6FE9EF9: "EnemyUseArts16",
     0x71EA2CA6: "EnemyWave",
     0xBE1E9570: "Enhance",
     0x3B31AAA4: "Enhance1",
@@ -4958,11 +5351,21 @@ hashes = {
     0x3E948624: "EnhanceSlot1",
     0xC9738403: "EnhanceSlot2",
     0x51954738: "EquipType",
+    0x5623FEE0: "EtherPatternFlag",
     0xEF0DD561: "EtherPoint",
     0x98B5A07E: "Event",
     0x5104C2B6: "EventID",
     0xEE4909E8: "EventName",
+    0x3268DB15: "EventName1",
     0x13F69CCE: "EventName2",
+    0x97EBB1F0: "EventName3",
+    0x7C25CEE6: "EventName4",
+    0x787F8446: "EventName5",
+    0x3D8FE88B: "EventName6",
+    0xE89EFFAF: "EventName7",
+    0x811877CF: "EventName8",
+    0xC93A315D: "EventName9",
+    0x5836CB06: "EventName10",
     0x2D96F183: "EventOnly",
     0x826E8B95: "EventTable",  # FIXME: unclear if correct
     0x569E4759: "EventType",
@@ -4972,6 +5375,14 @@ hashes = {
     0xA12FF282: "ExpRate",
     0x58B00160: "ExpRevHigh",
     0x2220481D: "ExpRevLow",
+    0xCC219526: "ExtraParamName",
+    0x1A52AD72: "ExtraParamName1",
+    0xEE51FB0B: "ExtraParamName2",
+    0x3208E0FB: "ExtraParamName3",
+    0x3B6EFBAE: "ExtraParamValue",
+    0x8B35906C: "ExtraParamValue1",
+    0x0AA50038: "ExtraParamValue2",
+    0xF5B941FC: "ExtraParamValue3",
     0xA7197D4F: "Eye",
     0x06F82010: "EyeMotion",
     0x082F3B92: "EyeMotion1",
@@ -4980,11 +5391,16 @@ hashes = {
     0xC9136322: "EyepatchArea",
 
     0x0DD5EF1F: "Facial",
+    0x11B39383: "FadeInTime",
+    0xC2D769FF: "FadeOutTime",
     0x70546B59: "FadeTime",
     0x08C194FF: "FallRange",
     0xDF6378CD: "FallSpeed",
     0x701C97C7: "FamilyTag",  # FIXME: unclear if correct
+    0x9D3D250E: "FarClipEnd",
+    0xE564ECBB: "FarClipStart",
     0xFBD9A20D: "FieldIcon",
+    0xB5DC0AFE: "FieldLookAt",
     0x6F61FFC1: "FilterIndex",
     0xD2D5B25A: "FilterName",
     0x85FB836A: "FirstNamed1",
@@ -5005,26 +5421,44 @@ hashes = {
     0xD7B5C7A8: "Flag5",
     0x4AA7B52F: "Flag6",
     0x4A4A2172: "FlagBit",
+    0x9C7DD3E7: "FlagCoolDown",
+    0x593CA067: "FlagDirArts",
     0x972A5125: "FlagID",
     0xDA6D358F: "FlagMax",
     0xA8D0C912: "FlagMin",
+    0x09446249: "FlagNoLimit",  # FIXME: unclear if correct
+    0xD8391710: "FlagNoReward",
     0x9D810ADA: "FlagPrt",  # FIXME: unclear if correct
+    0x8FFC0AC6: "FlagSetArts",
     0xE5CC8125: "FlagType",
     0x33CAEB2F: "FldCond",
+    0xFFA9A196: "FlgColiOff",
+    0xDE3DD97D: "FlgColonyReleased",
+    0xAA7B6559: "FlgDmgFloor",
     0xDF127B9E: "FlgFixed",
+    0xCB8CA51B: "FlgLevAttack",
+    0x84FBF2CE: "FlgMoveFloor",
+    0x12BAB949: "FlgNoDead",
+    0xD80DA70D: "FlgNoFalling",
+    0xFA4FB522: "FlgNoTarget",
+    0x89355BFE: "FlgNoVanish",
     0xE06BCC5C: "FlgSerious",
+    0xA94FB2E1: "FlgSpDead",
     0x58DF450A: "FlyHeight",
     0x8D21284B: "Focus",
+    0xE1C71508: "FollowFinishTime",  # FIXME: unclear if correct
     0x9FBC8DD1: "Foot",
     0x58DBEA70: "FootEffect",
-    0xF3FA6A3D: "FootPrint",
     0x885D514C: "FootL00",
     0x394E89F7: "FootL01",
     0x98ECD62B: "FootL02",
+    0xF3FA6A3D: "FootPrint",
     0x0E91931F: "FootR00",
     0x32DD318D: "FootR01",
     0x8A3C534C: "FootR02",
+    0x9E9F6650: "FootSeType",
     0x654802CF: "FootStep",
+    0xDB99BDE6: "FootStepEff",
     0x4F15F5FA: "Force",
     0x26FE34A4: "ForgePoint",
     0x38744A05: "ForgeType",
@@ -5034,15 +5468,24 @@ hashes = {
     0x4AEFCDBD: "Formation3",
     0xFC0937EB: "Formation4",
     0x41E48985: "FormationCooking",
+    0x139A6A3B: "FormationCookingAction",
     0xF324975C: "FormationID",
+    0x7332CD5E: "FormationTopWindow",
     0x5DD44D44: "FormationTraining",
     0x162DC154: "Frame",
+    0x49046752: "FreePieceID1",
+    0x908725F1: "FreePieceID2",
+    0x2D1A9634: "FreePieceID3",
+    0x15F54D16: "FreePieceID4",
+    0x72254B1B: "FreePieceID5",
 
     0x7D180799: "G",
     0xA2292967: "Gel",
     0xB93324D2: "GemLv",
     0x88059BFB: "GemSlot",
     0xB381A9C7: "Gender",
+    0x42284E7E: "GetEnArts",
+    0xB49D11C4: "GetEnSkill",
     0xA7C9DF3F: "GetNumber",  # FIXME: unclear if correct
     0x7EC6903F: "GetRatio",
     0xECEA2C59: "Gimmick",
@@ -5052,6 +5495,9 @@ hashes = {
     0x3948DC33: "Gold",
     0xA2EA4FA8: "GoldDivide",
     0xFF7B1688: "GoldDivideRev",
+    0x62251BB4: "GoldDropRsc1",
+    0x016CC2DD: "GoldDropRsc2",
+    0xDBCC2E4A: "GoldDropRsc3",
     0xA80DA2A9: "GoldRate",
     0xBA987525: "GraphicsID",
     0xFF4AE68A: "Grass",
@@ -5064,6 +5510,7 @@ hashes = {
     0x039F7060: "GroupFlg",
     0xBF00898F: "GroupID",
     0xC2FE2D21: "GroupName",
+    0xE416DB96: "GroupVoiceId",  # FIXME: unclear if correct
     0x6EC39CF7: "Grouping",
     0x421F2243: "GrowSetting",
     0x65420E8A: "GrowTP",
@@ -5071,12 +5518,14 @@ hashes = {
     0x3D560F4F: "GuardRate",
     0x93553712: "GuardRate2",
     0xA40F8788: "GuardRev",
+    0x23EE034A: "GuardSE",
 
     0xFAE4E776: "HERO",
     0x6A533A4F: "Hard",
     0x037BA199: "Hate",
     0xBDCD27BC: "HateRev",
     0x05777012: "Head",
+    0xC5D91F92: "HeadBoneName",
     0x7312F316: "Heal",
     0x7681AAB4: "HealRev",
     0x23A849B1: "HealType",
@@ -5084,7 +5533,14 @@ hashes = {
     0x2B0F682A: "HealerProb1",
     0xB76A556E: "HealerProb2",
     0xA1E2BF1B: "HealerProb3",
+    0xD6A42E29: "HeroChainEff",
+    0xA9F6CEEB: "HeroFlagNo",
     0x9AFDCD9C: "Hide",
+    0x4D189057: "HideTaskUI1",
+    0xAA9F58AB: "HideTaskUI2",
+    0xE7FED45F: "HideTaskUI3",
+    0x3D8543D2: "HideTaskUI4",
+    0x28947DB8: "HideUI",
     0x71DA17C2: "HideWeapon",
     0xD7EFBEEF: "Hip",
     0x926C6645: "HitDirID01",
@@ -5130,13 +5586,15 @@ hashes = {
     0xF6F16AA5: "HpMaxLv1",
     0x3396A06A: "HpMaxLv99",
     0x642232EC: "HpMaxRev",
-    0x5130AF24: "HpMaxRevBonus",
     0xC03F8D8E: "HpMaxRev1",
     0x86434390: "HpMaxRev2",
+    0x5130AF24: "HpMaxRevBonus",
     0xAE6E5368: "HudIcon",
 
     0xDBEA0DF4: "ID",
     0x20E8CF56: "IK",
+    0x1574263C: "IKEndF",
+    0x54F99027: "IKStartF",
     0x7FDAC4D9: "Icon",
     0x746F48F7: "IconFlag",
     0x846CE59D: "IconIndex",
@@ -5144,7 +5602,9 @@ hashes = {
     0xFC719450: "IconNo",
     0x91274C4E: "IconOffset",
     0x17ABEC63: "IconType",
+    0xC1781370: "IdBattleEnemy",
     0xA660D3E2: "IdBgm",
+    0xFA3EE6E3: "IdDropPrecious",
     0x6C228F62: "IdMove",
     0xB3C31799: "IgnoreCondition",
     0x88FA752C: "IkName",
@@ -5157,6 +5617,7 @@ hashes = {
     0x998E1DA5: "ImageNo5",
     0x8784C9EE: "ImageNo6",
     0x5CBF7E35: "ImageNum",
+    0x5148747A: "ImagePageNo",
     0x0E35ECDD: "ImpSE",
     0x6AFEE7AF: "Impact",
     0x23B977D9: "ImpactEnhance",
@@ -5189,7 +5650,10 @@ hashes = {
     0x8DF6B770: "IsGround",
     0x508AAF22: "IsLoop",
     0x0122131E: "IsPc",
+    0xFAD55D6B: "IsQuestList1",
+    0x1009E2FE: "IsQuestList2",
     0x38F7B663: "IsTop",
+    0xC4350E77: "IsUroboros",
     0xEBF43C80: "IsWater",
     0xE7F3EA97: "Item",
     0xDB6D9154: "Item1",
@@ -5249,9 +5713,19 @@ hashes = {
     0xEFCB767A: "ItemRate8",
     0x97CAD9C2: "ItemRate9",
     0x95989B87: "ItemRate10",
+    0x0EBDC59D: "ItemSetID1",
+    0x577F647D: "ItemSetID2",
+    0x809686D3: "ItemSetID3",
+    0x38AACEA8: "ItemSetID4",
+    0x0A66E247: "ItemSetID5",
+    0xB9CE5718: "ItemSetID6",
+    0x318EC320: "ItemSetID7",
+    0xA191204C: "ItemSetID8",
+    0xD4C96118: "ItmGemID",
 
     0xA492DCCC: "Job",
 
+    0x210B556E: "KeepEnhance",
     0xC253A756: "Keepf",
     0xC4B89BE5: "KevesRate",
     0x87D7DB09: "KevesReward",
@@ -5265,11 +5739,13 @@ hashes = {
     0x9F939BC6: "KeyChr6",
     0x67174E6E: "KeyShift1",
     0x9C2CAE21: "KeyShift2",
+    0x54C1395A: "KillEffType",
     0x46009BBD: "KizunaFlag",
     0xD20CEFB1: "Knee",
 
     0xCBC5A6F6: "LandingDamage",
     0x67201E11: "LandingHeight",
+    0xB205900A: "LaunchSeID",
     0x09AC98EA: "Leader",
     0xD7E89FF1: "Length",
     0xFBDC9172: "LevPlus",
@@ -5288,6 +5764,7 @@ hashes = {
     0xCDC1A2C4: "LevelExp",
     0x097B63F4: "LevelHero",
     0x0355C603: "Life",
+    0xA0541F59: "LifeFireNum",
     0x91DAE7FF: "LimitPitch",
     0xA33037CE: "LimitRoll",
     0x499D339B: "Link1",
@@ -5295,6 +5772,7 @@ hashes = {
     0xB1AB7B41: "Link3",
     0x6D6CF579: "Link4",
     0x9010991B: "Link5",
+    0x3A8F0E6D: "LinkMapID",
     0xE9EE0483: "LinkQuest",
     0xBD1B2F64: "LinkQuestTask",
     0x1E08C2CD: "LinkQuestTaskID",
@@ -5318,6 +5796,7 @@ hashes = {
     0x0E93C20B: "LotID",
     0xC138277A: "LotRate",
     0x23F75898: "Lottery",
+    0x94540FAD: "LowerLimitHP",
     0x9143A12E: "Lv",
     0x3F5C31B7: "LvMax",
     0x83CFBB4A: "LvMin",
@@ -5326,7 +5805,9 @@ hashes = {
     0x441C30DF: "Map",
     0xAD11E3B6: "MapGimmickID",
     0xF96161CE: "MapID",
+    0xDB253205: "MapInfoId",
     0x8D5D1243: "MapJumpID",
+    0x4CB4073F: "MapPartsID",
     0xE9206287: "Marking1",
     0x7A10F206: "Marking2",
     0xE869AB5E: "Marking3",
@@ -5334,6 +5815,7 @@ hashes = {
     0x66E78B9A: "Marking5",
     0xE3A92C2B: "Marking6",
     0x69F8C198: "Marking7",
+    0xA71DE7C9: "MaterialDropProb",
     0x009B610D: "MaxDelay",
     0xDF998797: "MaxHeight",
     0x2C1A0BDB: "MaxLength",
@@ -5347,12 +5829,14 @@ hashes = {
     0xB1985607: "MenuCategory",  # FIXME: unclear if correct
     0x2DCB5F5B: "MenuGroup",
     0x9D56F17E: "MenuIcon",
+    0xB72A26B5: "MenuMapImage",
     0xF6837482: "MenuPriority",
     0xD33A871F: "MinLength",
     0x50617ECF: "MinScale",
     0x74427D74: "Mist",
     0x3B1C6214: "Model",
     0x3F4ADAAC: "ModelName",
+    0x3688BE7D: "ModelName1",
     0x83C071CC: "ModelName2",
     0x2972379F: "ModelType",
     0xD843CBFD: "MotRetarget",
@@ -5367,6 +5851,7 @@ hashes = {
     0x9D7EE1E4: "Motion05",
     0x8167FAB8: "MotionName1",
     0x4C66D85A: "MotionName2",
+    0xFE883CC0: "MotionPackName",
     0xE47BD850: "MotionState1",
     0xEC5AE7EE: "MotionState2",
     0x365739D2: "MotionState3",
@@ -5401,6 +5886,8 @@ hashes = {
     0xD207D308: "MountR",
     0x87F57F8B: "MoveBtl",
     0x89F92653: "MoveBtlRate",
+    0xB52CB9AE: "MoveFldRun",
+    0x80263D05: "MoveFldWalk",
     0xA85677F7: "MovePoint",  # FIXME: unclear if correct
     0xAE922AA5: "MoveRev",
     0x583DD79B: "MoveTime",
@@ -5425,7 +5912,11 @@ hashes = {
 
     0x18F585E3: "NPC",
     0xFD1D0979: "NPCID",
+    0x0A91148E: "NPCMountOut",
     0x8017C0D9: "NPCName",
+    0x2387C1DF: "NPCRscEx",
+    0x2163C59D: "NPCRscL",
+    0x573FA1AC: "NPCRscR",
     0x2AA46552: "NPC_A",
     0x05595AB2: "NPC_B",
     0x25EFA387: "Name",
@@ -5441,23 +5932,58 @@ hashes = {
     0xC6D66AC7: "Navi",
     0xDB45AA0C: "NcNum",
     0x3499D0C9: "NcType",
+    0xD861201F: "NearClipEnd",
+    0x3E8C27DE: "NearClipStart",
     0x84E8AD5A: "NeedCharacter",
     0xF8D8C576: "NeedEther",
+    0x84780749: "NeedExpLv02",
+    0x294EC047: "NeedExpLv03",
+    0x30888953: "NeedExpLv04",
+    0x1237843F: "NeedExpLv05",
+    0x3E9891DA: "NeedExpLv06",
+    0x12FF1AD0: "NeedExpLv07",
+    0xEFFC7A57: "NeedExpLv08",
+    0xD5A66079: "NeedExpLv09",
+    0xE0E23955: "NeedExpLv10",
+    0x988B3021: "NeedExpLv11",
+    0x815BF122: "NeedExpLv12",
+    0x9D4B5D44: "NeedExpLv13",
+    0xD81201A1: "NeedExpLv14",
+    0xD22D4768: "NeedExpLv15",
+    0x8F40A545: "NeedExpLv16",
+    0xB6C1CD06: "NeedExpLv17",
+    0x6B32395D: "NeedExpLv18",
+    0x342465D2: "NeedExpLv19",
+    0xDA84697E: "NeedExpLv20",
     0xD9A8D205: "NeedGold",
     0x3BDD1BFD: "NeedRecipe",
     0x6E37CB43: "NeedSp",
+    0x56518D61: "NeedTalentPoint1",
+    0x400BBD85: "NeedTalentPoint2",
+    0xA37F36F8: "NeedTalentPoint3",
+    0x59134EC7: "NeedTalentPoint4",
+    0xEE53958D: "NeedTalentPoint5",
+    0x714FEAE8: "NeedTalentPoint6",
     0x0D7DF762: "NextPremise",
     0x12D18C6A: "NextPurposeA",
     0xBAFEA17B: "NextPurposeB",
     0x76A96FE2: "Nickname",
+    0x681466DD: "NoCG",
     0x9C074FCE: "NoClear",
     0x442F728B: "NoCollision",
     0x1CD9A082: "NoSmoke",
     0xFC4FAC9F: "NoTelop",
     0x80F89F24: "NoUro",
+    0xF93D37D3: "NoahTalentArts",
     0x390B012D: "Normal",
+    0xB0E5FFB2: "NormalDropProb",
     0x4A86AE4A: "Not1",
     0xD0DB2BA8: "Not2",
+    0x854BAEB4: "NotDebugFlag1",
+    0x48390386: "NotDebugFlag2",
+    0xE06AC33F: "NotFollowRotate",
+    0x2FB65B0B: "NotIsQuestList1",
+    0x2EFAB4D4: "NotIsQuestList2",
     0xAD30EA95: "NotQuestFlag1",
     0x62558BB2: "NotQuestFlag2",
     0xFDD1BC8B: "NotQuestFlagMax1",
@@ -5512,6 +6038,7 @@ hashes = {
     0x02C1D331: "NpcID4",
     0x42DFEFDB: "NpcID5",
     0xFAF75E90: "NpcID6",
+    0xF6970859: "NpcIconFlag",
     0x43473909: "Num01",
     0x7F13A069: "Num02",
     0xBD587404: "Num03",
@@ -5575,6 +6102,7 @@ hashes = {
     0x32CF3E65: "OffsetZ",
     0x87510350: "OpenEffect",
     0xA5E65964: "OpenFlag",
+    0x0982F22A: "OpenSeID",
     0x3A3E8378: "Option1",  # FIXME: unclear if correct
     0xF57AF32D: "OrderCondition",
     0x247A535E: "OrderIcon",
@@ -5586,6 +6114,7 @@ hashes = {
     0x529B2FE3: "PArmor",
     0x1E6769F0: "PArmor1",
     0xD508BB12: "PArmor2",
+    0x10073C3A: "PArmorBonus",
     0xDB4FF313: "PC",
     0xB9AA5220: "PC01",
     0x0AE2E54E: "PC02",
@@ -5598,6 +6127,7 @@ hashes = {
     0x8C6B397A: "PCID1",
     0x75F5B631: "PCID2",
     0x433AB8D4: "PCID3",
+    0x6C172A8F: "PCMountOut",
     0xD08AF415: "PCPosition",
     0xFA05A914: "PageTitle1",
     0x9A442CDC: "PageTitle2",
@@ -5657,17 +6187,22 @@ hashes = {
     0x158392B3: "ParamEnd",
     0x48D0BE07: "ParamID",
     0x30A7B425: "ParamMax",
+    0x2C7B902E: "ParamMemo",
     0x6CCFF6C0: "ParamMin",
     0xA7E25CD6: "ParamStart",
     0x94FBFB5B: "PartsEye",
     0x81E7B2B8: "PartsGate",
     0xEEADBE35: "PartsId",
+    0xD01CFF98: "PartsInnerGate",
     0xEC5B9ED6: "PartsSwitch",
     0x1CF6B262: "PartsVisibility",
     0x3AD87FD3: "Party",
     0x22474F3E: "PartyLottery",
     0x18249A32: "PartyMax",
+    0x88494867: "PatchNameText",
+    0x486528F9: "PcAvoidDist",  # FIXME: unclear if correct
     0x60D0E60A: "PcID",
+    0xBEF4CB5F: "PcTalentParts",
     0x399D4E6D: "Physical",
     0x6891830B: "Piece1",
     0xCE3A0315: "Piece2",
@@ -5729,6 +6264,7 @@ hashes = {
     0xBC11E5B3: "Price3",
     0x0345ECE2: "PriceCondition",
     0x170127D3: "Priority",
+    0x216735E5: "PriorityUI",
     0x17276C8D: "Probability01",
     0xAE0EBFAC: "Probability02",
     0x27DC69B6: "Probability03",
@@ -5739,6 +6275,7 @@ hashes = {
     0x014F5C52: "Probability3",
     0x8970046A: "Probability4",
     0x163B426D: "ProbabilityIdle",
+    0xEADDB4E4: "PushSeID",
 
     0x4A7DF029: "QuestCategory",
     0xA672B4F4: "QuestFlag1",
@@ -5796,9 +6333,12 @@ hashes = {
     0xEB9ACA87: "ReAct14",
     0x714362C7: "ReAct15",
     0x1C71FF5D: "ReAct16",
+    0xA8AF8F6D: "ReActMax",
+    0x905CE8C5: "ReActMin",
+    0x423127F5: "ReActUI",
     0x5B5C1FC4: "ReactEnemy",
-    0x3BD5D0C5: "ReactPC",
     0x3799636E: "ReactNPC",
+    0x3BD5D0C5: "ReactPC",
     0x0D2C616E: "Reaction",
     0x35B38564: "ReactionEvent1",
     0xB2D345A0: "ReactionEvent2",
@@ -5834,6 +6374,7 @@ hashes = {
     0x2FD68965: "RelationID10",
     0xD756FD3F: "ReleaseCond",
     0xDF08DE22: "ReleaseFlag",
+    0x04F08203: "ReleaseStatusText",
     0x3978B5F7: "RemovePoint",
     0x7C078F20: "RemovePoint2",
     0x3C350692: "RemovePoint3",
@@ -5867,6 +6408,8 @@ hashes = {
     0x97E7543E: "RespectPoint",
     0x1D2066C9: "ResultA",
     0x16570FBD: "ResultB",
+    0x04DDBD06: "RevExpLevel",
+    0xEBF9CF26: "RevExpTalent",
     0xD9E8B7F5: "RevGold",
     0x7FD874AD: "Reward",
     0xBEBE21A6: "Reward1",
@@ -5918,6 +6461,8 @@ hashes = {
     0x41F45B76: "RewardNum20",
     0x81F47B72: "RewardSetA",
     0xFA8499A0: "RewardSetB",
+    0x685DB2EB: "RewardTypeA",
+    0xC8C6CA21: "RewardTypeB",
     0x189340C2: "RewordID",
     0x1FE3CF92: "RewordName",
     0x3BA43A7F: "RewordText",
@@ -5925,6 +6470,7 @@ hashes = {
     0x05F54B3F: "Role1",
     0x5B5CEBE7: "Role2",
     0x4AAF80EF: "Role3",
+    0xF9AC1D17: "RoleActMain",
     0x641767C7: "RoleActOff01",
     0x7432058D: "RoleActOff02",
     0xD3F9860D: "RoleActOff03",
@@ -5955,6 +6501,9 @@ hashes = {
     0xBB354466: "RscType",
     0xD6D7B29E: "RstBlow",
     0x30208976: "RstBreak",
+    0x42FB5A6E: "RstDebuffEth",
+    0xFBDD5A79: "RstDebuffPhy",
+    0x0ACBE885: "RstKback",
     0xD1F6D4A9: "RstSmash",
     0x5AB6C412: "Run",
 
@@ -6030,9 +6579,15 @@ hashes = {
     0x392AE7B6: "SeCondition",
     0x064F807E: "SeName",
     0x97D8A256: "SeRange",
+    0xFD6A9CE6: "SelectDownCat1",
+    0x7C8A56FD: "SelectDownCat2",
+    0xED896E40: "SelectUpCat1",
+    0x970D5AC6: "SelectUpCat2",
     0x02EF6156: "Sell",
     0x61EB3803: "SequentialID",
     0xDC6907B2: "SetAnim",
+    0x39EFCD0E: "SetAnimTime",
+    0x2DB107EA: "SetArtsNum",
     0x4B01A7A2: "SetItem1",
     0x7C77D821: "SetItem2",
     0xDDCCF720: "SetItem3",
@@ -6044,11 +6599,13 @@ hashes = {
     0xF44E371E: "SetItem9",
     0x6FE92D9C: "SetItem10",
     0xA703DDB8: "SetName",
+    0x3FF0695D: "SetUpType", # FIXME: SetUpType and SetUpUI both found in BTL_Arts_PC, seem to have correlated values
+    0x7E5326A3: "SetUpUI",
+    0xCDA0F15A: "SevEvent",
     0xFDE509B1: "Sex",
     0x32015D22: "Shallows",
     0xE0D1DACE: "Shape",
     0x895919DB: "ShipStart",
-    0xCDA0F15A: "SevEvent",
     0x1EDF66CB: "ShootHeight",
     0x00825588: "ShopCondition",
     0xB4BC8DE9: "ShopID",
@@ -6081,6 +6638,7 @@ hashes = {
     0x6A98F183: "Skill5",
     0x7E7DFE51: "Skill6",
     0x9534FCC4: "SkillID",
+    0x8B13A658: "SkillIdGet", # FIXME: unclear if correct
     0xC9DB78A2: "Slide",
     0x42ACCD11: "SlotIdx",
     0xFBE02251: "Slow",
@@ -6102,17 +6660,20 @@ hashes = {
     0x3ACA445C: "SortNo",
     0x55914E09: "SortParam",
     0x07003D62: "Sound",
-    0xF87E01F8: "Soup",  # FIXME: unclear if correct
+    0xF87E01F8: "Soup",
     0xFADD8F74: "SpBattle",
     0x36D44960: "SpMax",
     0x8AFDD2DD: "SpMax1",
     0xCF1E9F7B: "SpMax2",
     0x56182AE2: "SpModel1",
     0x407DF9B9: "SpModel2",
+    0x0B739303: "SpModelCond1",
+    0x21EA0C53: "SpModelCond2",
     0xB686C397: "SpProb",
     0x86A4CB86: "SpRecast1",
     0x825B4F1E: "SpRecast2",
     0x8CDDAF6A: "SpScale",
+    0x05DDF175: "SpUniqueEnemy",
     0xA7CD2D9C: "SpdFirst",
     0x7BE896BE: "SpdLast",
     0x96DD913C: "Special",
@@ -6124,6 +6685,18 @@ hashes = {
     0x54ADA678: "Spot",
     0x976A02FB: "SpotGimmick",  # FIXME: unclear if correct
     0xA907267C: "SpotName",
+    0x16F9E2CB: "StCrtc",
+    0xE1B1D651: "StEthDef",
+    0xBCA16DBC: "StGrdBack",
+    0x215C6589: "StGrdFront",
+    0x5BA94201: "StGrdLeft",
+    0xDB43B215: "StGrdRight",
+    0x4BC38D67: "StPhyDef",
+    0xEB049EC4: "StRevAgi",
+    0x7DF5A3B9: "StRevDex",
+    0x88336B00: "StRevHeal",
+    0x98D28C3C: "StRevHp",
+    0x10AEEB03: "StRevStr",
     0xA9C89843: "Stability",
     0x434EDE03: "Stance",
     0x999DB1DD: "Stance1",
@@ -6139,6 +6712,7 @@ hashes = {
     0x0681060A: "StartEvent4",
     0x6AB64516: "StartEvent5",
     0x38649888: "StartEvent6",
+    0xC6FE06F4: "StartFlagName",
     0xAD4D05BC: "StartOffset",
     0x99414D7C: "StartPos",
     0x0EF211C4: "StartPurpose",
@@ -6148,6 +6722,7 @@ hashes = {
     0x8B06CB0B: "Startf1",
     0x00F45CBA: "Startf2",
     0x70C10A38: "Startf3",
+    0x3FE9856C: "StateLoopNum",
     0x95CAA187: "StateName",
     0x35BA8008: "StateName1",
     0x06069715: "StateName2",
@@ -6163,6 +6738,8 @@ hashes = {
     0x17EE0B02: "StepOffset3",
     0x3302CEDB: "StepOffset4",
     0x7FEB0F45: "Still",
+    0xB1297C59: "StopDelayTime",  # FIXME: unclear if correct
+    0xAED00E22: "StopSeID",
     0xF2FA453F: "StoryID",
     0x866B049F: "StoryRsc",
     0x42D40247: "StoryTitle",
@@ -6173,10 +6750,12 @@ hashes = {
     0xCCCC2D9C: "StrengthRev1",
     0xE8884FA1: "StrengthRev2",
     0xDCEB755F: "StrengthRevBonus",
+    0x8298330C: "SubTitleText",
     0x7379AC7F: "SubType",
     0x9D381CE4: "Subtitling",
     0xA3A34068: "Summary",
     0xDAF856EF: "SummonData",
+    0x3AD184FF: "SummonEnemyPop",
     0xB6117BD8: "SummonType",
     0xB06CD4E4: "Swim",
     0xCC8F678E: "SwimHeight",
@@ -6187,6 +6766,8 @@ hashes = {
     0xD93E2CA9: "SwitchParts1",
     0x747C209F: "SwitchParts2",
     0xD95AAFC0: "SwitchParts3",
+    0x1FFEE16E: "SysOpenID",
+    0x43EBCECD: "SysWeatherID",
 
     0x168F9AFE: "TableID",
     0xFC21A92C: "Talent",
@@ -6234,6 +6815,31 @@ hashes = {
     0xF6BAD063: "TalentExpRevHigh",
     0x18C4BBE3: "TalentExpRevLow",
     0x9EB18DE8: "TalentID",
+    0x070B97DC: "TalentNPCArts1",
+    0x5FE145D8: "TalentNPCArts2",
+    0xC75D4FAF: "TalentNPCArts3",
+    0xC6883DAB: "TalentNPCArts4",
+    0x0B191EFE: "TalentNPCArts5",
+    0xB0893E4C: "TalentNPCArtsCond1",
+    0x40E39C7F: "TalentNPCArtsCond2",
+    0xE6469519: "TalentNPCArtsCond3",
+    0x1A07E10A: "TalentNPCArtsCond4",
+    0xBF7769BF: "TalentNPCArtsCond5",
+    0xEC506AC3: "TalentNPCSkill1",
+    0x4E11EA55: "TalentNPCSkill2",
+    0x1E06CE3E: "TalentNPCSkill3",
+    0xE00A36EC: "TalentNPCSkill4",
+    0xD083FF4A: "TalentNPCSkill5",
+    0xE1266B92: "TalentNPCSkill6",
+    0x2009A19D: "TalentNPCSkillCond1",
+    0x90CBC926: "TalentNPCSkillCond2",
+    0x5853DCD2: "TalentNPCSkillCond3",
+    0x64994419: "TalentNPCSkillCond4",
+    0x9F308CC9: "TalentNPCSkillCond5",
+    0x0D3B1F7D: "TalentNPCSkillCond6",
+    0x96BE32A0: "TalentNPCTalentArts",
+    0xE87B003C: "TalentNPCTalentArtsCond",
+    0x292D92D0: "TalentParamRev",
     0xB677DA57: "TalentPointRevHigh",
     0x15264911: "TalentPointRevLow",
     0xC8FC78C0: "TalkCategory",
@@ -6242,6 +6848,8 @@ hashes = {
     0x9A67BA94: "TalkID3",
     0x8C9FB525: "TalkID4",
     0xA9C1AADF: "TalkID5",
+    0x76AEE21F: "TalkListID",
+    0x1DB85A56: "TalkStartTime",
     0x30167069: "Talker",
     0x33BFB952: "Tank",
     0x1226410C: "TankAtk",
@@ -6325,7 +6933,12 @@ hashes = {
     0x276AEEEC: "Tutorial",
     0xCCBCA061: "TutorialID",
     0x52FFF41A: "TwinBonus",
+    0xDDFCC95A: "TwinBulletAngle",
+    0xDD4B97DA: "TwinBulletID",
+    0xA386541B: "TwinBulletNum",
+    0x4D51299D: "TwinBulletType",
     0x289E9D69: "TwinEff",
+    0xF60A9468: "TwinHitFrm",
     0x92E9CCC6: "TwinRadius",
     0x746585E5: "Type",
     0x0E12CEBC: "Type1",
@@ -6372,22 +6985,36 @@ hashes = {
     0xAA5E670A: "Type39",
     0xBBDEC830: "Type40",
 
+    0x712B8AF7: "UIName1",
+    0x0694C269: "UIName2",
+    0xDA99A527: "UIName3",
+    0x114FF153: "UIName4",
+    0xAD8839C3: "UIName5",
+    0x4BB72C2F: "UIName6",
+    0x82D83E85: "UIOff",
+    0x2C0FCB67: "UIParam1",
     0x1E43B8B1: "UIX",
     0xE21937B8: "UIY",
     0x32FC4F37: "Ultimate",
     0xFA8A1282: "Unique",
     0xB7A36E4D: "UniqueDirection",
+    0xC4EFD428: "UniqueDirectionL",
+    0x506DA4A5: "UniqueDirectionR",
     0x9146D0A4: "UnitText",
+    0x836D60B7: "UpSeID",
     0x60C02D92: "UpSpeed",
     0x91F2B0B9: "UroBody",
     0xEB9A43BB: "UroBodyID",
     0xED24DD29: "UroCondition",
     0x0B61396C: "UroID",
+    0xD7FED66D: "UroLimitedReaction",  # FIXME: unclear if correct
+    0x9D246ED5: "UroPartner",
     0x5670FDDD: "UroProb1",
     0xF1D17644: "UroProb2",
     0x497CAEFC: "UroProb3",
     0x0C35E68D: "UseChr",
     0x5E97EC7D: "UseHP",
+    0x33ADAA44: "UseIkLanding",
     0xA0AB85B5: "UseTalent",
     0x5DBC6429: "UseUro",
 
@@ -6412,6 +7039,7 @@ hashes = {
     0x1436F7D8: "Value19",
     0xF9AADF26: "Value20",
     0xA3115C7A: "ValueOffset",
+    0xB1BEA30C: "VanishEffectID",
     0x1BF4A556: "VanishParam1",
     0xE06543AD: "VanishParam2",
     0xFBB7BD7D: "VanishType",
@@ -6475,6 +7103,14 @@ hashes = {
     0x8D3FF459: "WeatherRate2",
     0x2CEE5731: "WeatherRate3",
     0xC24F931E: "WeatherRate4",
+    0x4C01A62E: "WeatherTimeMax1",
+    0xD51246D5: "WeatherTimeMax2",
+    0xB725F67D: "WeatherTimeMax3",
+    0xE0DA5283: "WeatherTimeMax4",
+    0x737C61FF: "WeatherTimeMin1",
+    0x55B78BC2: "WeatherTimeMin2",
+    0x270E98C7: "WeatherTimeMin3",
+    0x62A476ED: "WeatherTimeMin4",
     0xFF43DC29: "WeatheringRate",
     0x36CEE6A8: "Weight1",
     0xFD2FBE01: "Weight2",
@@ -6568,6 +7204,15 @@ hashes = {
     0xF18AED3E: "cut",
 
     0x006262B7: "data[0]",
+    0xAF79AEF6: "data[1]",
+    0x225221C5: "data[2]",
+    0x0BB9EA34: "data[3]",
+    0x03CD0317: "data[4]",
+    0x1B63D6E0: "data[5]",
+    0x83BAD1B0: "data[6]",
+    0xB3B1038A: "data[7]",
+    0x81F1BE34: "data[8]",
+    0x6008EC4A: "data[9]",
     0x29AF5FD1: "data[10]",
     0x7DC722E5: "data[11]",
     0x1A677824: "data[12]",
@@ -6578,15 +7223,6 @@ hashes = {
     0x80958FAF: "data[17]",
     0xE6C48DB6: "data[18]",
     0x1E54ADD5: "data[19]",
-    0xAF79AEF6: "data[1]",
-    0x225221C5: "data[2]",
-    0x0BB9EA34: "data[3]",
-    0x03CD0317: "data[4]",
-    0x1B63D6E0: "data[5]",
-    0x83BAD1B0: "data[6]",
-    0xB3B1038A: "data[7]",
-    0x81F1BE34: "data[8]",
-    0x6008EC4A: "data[9]",
     0xA8C7630A: "debugName",
     0x2F78C883: "defaultAnim",
     0x59928D37: "defaultEquip",
@@ -6595,8 +7231,8 @@ hashes = {
     0xC87317A1: "default_value",
     0x2A7CCEAA: "dispParts",
     0x2EEA20E7: "disp_check",
-    0x6A010A24: "disp_range",
     0x5EBFB0FB: "disp_name",
+    0x6A010A24: "disp_range",
     0x472A115E: "dist",
 
     0x819995FF: "edFadeColB",
@@ -7191,24 +7827,23 @@ class BdatTable(object):
         If id is out of range (when numeric) or not found (when a hash),
         None is returned.
         """
-        if isinstance(id, int):
-            row_index = id - self._rows[0][0]
-            if row_index >= 0 and row_index < len(self._rows):
-                return row_index
-            return None
-        else:
-            assert isinstance(id, str)
-            if field_index is None:
-                return self._hashid_map.get(id, None)
+        if field_index is None:
+            if isinstance(id, int):
+                row_index = id - self._rows[0][0]
+                if row_index >= 0 and row_index < len(self._rows):
+                    return row_index
+                return None
             else:
-                assert field_index > 0 and field_index < self.num_fields
-                assert self._fields[field_index].value_type == BdatValueType.HSTRING
-                if not self._hashid_field_map[field_index]:
-                    self._hashid_field_map[field_index] = {}
-                    for row in range(len(self._rows)):
-                        id = self._rows[row][field_index]
-                        self._hashid_field_map[field_index][id] = row
-                return self._hashid_field_map[field_index].get(id, None)
+                assert isinstance(id, str)
+                return self._hashid_map.get(id, None)
+        else:
+            assert field_index > 0 and field_index < self.num_fields
+            if not self._hashid_field_map[field_index]:
+                self._hashid_field_map[field_index] = {}
+                for row in range(len(self._rows)):
+                    id = self._rows[row][field_index]
+                    self._hashid_field_map[field_index][id] = row
+            return self._hashid_field_map[field_index].get(id, None)
 
     def get(self, row, field):
         """Return the content of the given cell."""
@@ -7317,8 +7952,10 @@ class BdatTable(object):
                 s += f'      <td>\n'
                 s += f'        <details>\n'
                 s += f'          <summary>{len(self._refs[i])} refs</summary>\n'
-                for ref in sorted(self._refs[i], key=lambda x: f'x[0]#x[1]'):
-                    s += f'          <a href="{ref[0]}.html#{ref[1]}">{ref[0]}#{ref[2]}</a>\n'
+                br = '     '
+                for ref in sorted(self._refs[i], key=BdatTable._refkey):
+                    s += f'          {br}<a href="{ref[0]}.html#{ref[1]}">{ref[0]}#{ref[2]}</a>\n'
+                    br = '<br/>'
                 s += f'        </details>\n'
                 s += f'      </td>\n'
             else:
@@ -7364,6 +8001,14 @@ class BdatTable(object):
             # end for
             outData.append(rowData)
         return json.dumps(outData)
+
+    @staticmethod
+    def _refkey(x):
+        """Key generator for sorting references."""
+        if isinstance(x[1], int) or x[1].isdecimal():
+            return f'{x[0]}#{x[1]:10d}'
+        else:
+            return f'{x[0]}#{x[1]}'
 
     def _print_value(self, value, field):
         """Return the given value formatted for HTML."""
@@ -7769,6 +8414,7 @@ row_name_fields = {
     'FLD_NpcList': 'field_7F0A3296',
     'FLD_NpcResource': 'Name',
     'FLD_NpcResource': 'Name',
+    'FLD_PerkPermanent': 'Name',
     'ITM_Accessory': 'Name',
     'ITM_Collection': 'Name',
     'ITM_Collepedia': 'Text',
@@ -7831,7 +8477,19 @@ text_xrefs = {
     'FLD_EnemyData': {'MsgName': ('msg_enemy_name', 'name')},
     'FLD_NpcList': {'field_7F0A3296': ('FLD_NpcResource', 'Name')},
     'FLD_NpcResource': {'Name': ('msg_npc_name', 'name'),
-                        'Nickname': ('EDFB4E9F', 'name')},
+                        'Nickname': ('msg_npc_tag_name', 'name')},
+    'FLD_PerkPermanent': {'Name': ('msg_fld_perk_name', 'name'),
+                          'Caption': ('msg_fld_perk_name', 'name')},
+    'FLD_RelationColony': {'Text1': ('msg_kizuna_name', 'name'),
+                           'Text2': ('msg_kizuna_name', 'name'),
+                           'Text3': ('msg_kizuna_name', 'name'),
+                           'Text4': ('msg_kizuna_name', 'name'),
+                           'Text5': ('msg_kizuna_name', 'name')},
+    'FLD_RelationNpc': {'Text1': ('msg_kizuna_name', 'name'),
+                        'Text2': ('msg_kizuna_name', 'name'),
+                        'Text3': ('msg_kizuna_name', 'name'),
+                        'Text4': ('msg_kizuna_name', 'name'),
+                        'Text5': ('msg_kizuna_name', 'name')},
     'ITM_Accessory': {'Name': ('msg_item_accessory', 'name')},
     'ITM_Collection': {'Name': ('msg_item_collection', 'name')},
     'ITM_Collepedia': {'Text': ('BEDB6533', 'name'),
@@ -7847,10 +8505,10 @@ text_xrefs = {
                      'Name2': ('msg_item_precious', 'name'),
                      'Caption2': ('msg_item_precious', 'name')},
     'MNU_MapInfo': {'disp_name': ('msg_mnu_minimap_areaname', 'name')},
-    'MNU_PatchDetailA': {'field_09E98912': ('msg_mnu_patch_info', 'name'),
-                         'field_B98E8110': ('msg_mnu_patch_info', 'name'),
+    'MNU_PatchDetailA': {'DetailIndexText': ('msg_mnu_patch_info', 'name'),
+                         'DetailInfoText': ('msg_mnu_patch_info', 'name'),
                          'field_444EEAFE': ('msg_mnu_patch_info', 'name')},
-    'MNU_PatchInfo': {'field_88494867': ('msg_mnu_patch_info', 'name'),
+    'MNU_PatchInfo': {'PatchNameText': ('msg_mnu_patch_info', 'name'),
                       'field_2AF7F370': ('msg_mnu_patch_info', 'name')},
     'MNU_ShopList': {'Name': ('msg_shop_name', 'name')},
     'MNU_saveload_scenario': {'Chapter': ('msg_mnu_saveload', 'name')},
@@ -7870,37 +8528,37 @@ text_xrefs = {
     'SYS_TutorialSummary': {'Title': ('msg_mnu_tutorial_tips', 'name')},
     'SYS_TutorialTask': {'Title': ('msg_mnu_tutorial_tips', 'name')},
     'SYS_TutorialTelop': {'Title': ('msg_mnu_tutorial_tips', 'name')},
+    'gimmickEnemyPop': {'GroupName': ('msg_enemy_group_name', 'name')},
+    'ma01a_GMK_EnemyPop': {'GroupName': ('msg_enemy_group_name', 'name')},
+    'ma04a_GMK_EnemyPop': {'GroupName': ('msg_enemy_group_name', 'name')},
+    'ma07a_GMK_EnemyPop': {'GroupName': ('msg_enemy_group_name', 'name')},
+    'ma09a_GMK_EnemyPop': {'GroupName': ('msg_enemy_group_name', 'name')},
+    'ma11a_GMK_EnemyPop': {'GroupName': ('msg_enemy_group_name', 'name')},
+    'ma14a_GMK_EnemyPop': {'GroupName': ('msg_enemy_group_name', 'name')},
+    'ma15a_GMK_EnemyPop': {'GroupName': ('msg_enemy_group_name', 'name')},
+    'ma17a_GMK_EnemyPop': {'GroupName': ('msg_enemy_group_name', 'name')},
+    'ma22a_GMK_EnemyPop': {'GroupName': ('msg_enemy_group_name', 'name')},
+    'ma90a_GMK_EnemyPop': {'GroupName': ('msg_enemy_group_name', 'name')},
+    'gimmickLocation': {'LocationName': ('msg_location_name', 'name')},
+    'ma01a_GMK_Location': {'LocationName': ('msg_location_name', 'name')},
+    'ma04a_GMK_Location': {'LocationName': ('msg_location_name', 'name')},
+    'ma07a_GMK_Location': {'LocationName': ('msg_location_name', 'name')},
+    'ma09a_GMK_Location': {'LocationName': ('msg_location_name', 'name')},
+    'ma11a_GMK_Location': {'LocationName': ('msg_location_name', 'name')},
+    'ma14a_GMK_Location': {'LocationName': ('msg_location_name', 'name')},
+    'ma15a_GMK_Location': {'LocationName': ('msg_location_name', 'name')},
+    'ma17a_GMK_Location': {'LocationName': ('msg_location_name', 'name')},
+    'ma20a_GMK_Location': {'LocationName': ('msg_location_name', 'name')},
+    'ma22a_GMK_Location': {'LocationName': ('msg_location_name', 'name')},
+    'ma90a_GMK_Location': {'LocationName': ('msg_location_name', 'name')},
     '03B52788': {'Title': ('msg_mnu_tutorial_tips', 'name')},  # Tutorial battle list
     '6EC8096C': {'Name': ('0103F5B8', 'name')},  # Canteen recipe list
     'BB82DEE6': {'Name': ('F6E689C3', 'name')},  # Chain attack TP bonuses
     'D9B88F26': {'Name': ('msg_btl_chainorder_name', 'name')},  # Chain attack card list
     'EED24855': {'GroupName': ('msg_enemy_group_name', 'name')},  # Unique monster list
-    # Per-map enemy lists
-    'gimmickEnemyPop': {'GroupName': ('msg_enemy_group_name', 'name')},
-    '0277EA4F': {'GroupName': ('msg_enemy_group_name', 'name')},
-    '0CD3B481': {'GroupName': ('msg_enemy_group_name', 'name')},
-    '232003CA': {'GroupName': ('msg_enemy_group_name', 'name')},
-    '6999DAFE': {'GroupName': ('msg_enemy_group_name', 'name')},
-    '778E3103': {'GroupName': ('msg_enemy_group_name', 'name')},
-    '7A517BD1': {'GroupName': ('msg_enemy_group_name', 'name')},
-    '7BECF394': {'GroupName': ('msg_enemy_group_name', 'name')},
-    'B7FACD23': {'GroupName': ('msg_enemy_group_name', 'name')},
-    'C76401A3': {'GroupName': ('msg_enemy_group_name', 'name')},
-    'EED24855': {'GroupName': ('msg_enemy_group_name', 'name')},
-    'F4C65A41': {'GroupName': ('msg_enemy_group_name', 'name')},
-    # Per-map location lists
-    'gimmickLocation': {'LocationName': ('msg_location_name', 'name')},
-    '243E6271': {'LocationName': ('msg_location_name', 'name')},
-    '2F52EAA9': {'LocationName': ('msg_location_name', 'name')},
-    '48EB542B': {'LocationName': ('msg_location_name', 'name')},
-    '4C930865': {'LocationName': ('msg_location_name', 'name')},
-    '696784F9': {'LocationName': ('msg_location_name', 'name')},
-    '90C9B3BB': {'LocationName': ('msg_location_name', 'name')},
-    '9F336731': {'LocationName': ('msg_location_name', 'name')},
-    'A3C362AD': {'LocationName': ('msg_location_name', 'name')},
-    'C787DDCA': {'LocationName': ('msg_location_name', 'name')},
-    'CF4772C2': {'LocationName': ('msg_location_name', 'name')},
-    'DE1DB7BB': {'LocationName': ('msg_location_name', 'name')},
+    'DB31DA53': {'Name1': ('msg_fld_perk_name', 'name'), 'Name2': ('msg_fld_perk_name', 'name'), # Food perk list
+                 'Name3': ('msg_fld_perk_name', 'name'), 'Caption1': ('msg_fld_perk_name', 'name'), 
+                 'Caption2': ('msg_fld_perk_name', 'name'), 'Caption3': ('msg_fld_perk_name', 'name') }
 }
 
 refset_arts_en = ('BTL_Arts_En', )
@@ -7911,11 +8569,13 @@ refset_enhance = ('BTL_Enhance', )
 refset_event = (('23EE284B', '25B62687', 'BB0F57A4', '5B1D40C4'), )
 refset_gimmick = ('SYS_GimmickLocation.GimmickID', )
 refset_item = (('ITM_Accessory', 'ITM_Collection', 'ITM_Collepedia', 'ITM_Cylinder', 'ITM_Gem', 'ITM_Info', 'ITM_Precious'), )
+refset_map = (('SYS_MapList'), )
 refset_npc = ('FLD_NpcList', )
 refset_pc = ('CHR_PC', )
 refset_quest = ('QST_List', )
 refset_quest_taskid = (('QST_TaskAsk', 'QST_TaskBattle', 'QST_TaskChase', 'QST_TaskCollect', 'QST_TaskCollepedia', 'QST_TaskCondition', 'QST_TaskEvent', 'QST_TaskFollow', 'QST_TaskGimmick', 'QST_TaskReach', 'QST_TaskRequest', 'QST_TaskTalk', 'QST_TaskTalkGroup'), )
 refset_skill = ('BTL_Skill_PC', )
+refset_stance = ('BTL_Stance', )
 refset_talent = ('BTL_Talent', )
 
 # List of fields which are always ID references to other tables.
@@ -7939,6 +8599,7 @@ field_xrefs = {
     'ColonyID3': 'FLD_ColonyList',
 
     'AccessCondition': refset_condition,
+    'ChangeStatusCondition': refset_condition,
     'Condition': refset_condition,  # Excluding FLD_ConditionList (special-cased below)
     'Condition1': refset_condition,
     'Condition2': refset_condition,
@@ -7946,6 +8607,7 @@ field_xrefs = {
     'Condition4': refset_condition,
     'Condition5': refset_condition,
     'Condition6': refset_condition,
+    'ConditionNoTarget': refset_condition,
     'Conditon1': refset_condition,
     'Conditon2': refset_condition,
     'Conditon3': refset_condition,
@@ -7980,6 +8642,8 @@ field_xrefs = {
     'EnhanceID': refset_enhance,
 
     'EnhanceEffect': 'BTL_EnhanceEff',
+
+    'Navi': refset_gimmick,
 
     'IK': 'RSC_IK',
     'IkName': 'RSC_IK',
@@ -8077,11 +8741,12 @@ field_xrefs = {
     'ShopItem19': refset_item,
     'ShopItem20': refset_item,
 
-    'CurrentMap': 'SYS_MapList',
-    'MapID': 'SYS_MapList',
-    'mapID': 'SYS_MapList',
-
     'MapJumpID': 'SYS_MapJumpList',
+
+    'CurrentMap': refset_map,
+    'LinkMapID': refset_map,
+    'MapID': refset_map,
+    'mapID': refset_map,
 
     'NPCID': refset_npc,
     'NpcID': refset_npc,
@@ -8101,13 +8766,25 @@ field_xrefs = {
 
     'Reaction': 'BTL_Reaction',
 
+    'DebScenarioFlag': 'SYS_ScenarioFlag',
     'ScenarioFlag': 'SYS_ScenarioFlag',
+
+    'SysOpenID': 'SYS_SystemOpen',
 
     'TalentID': refset_talent,
 
     'TutorialID': 'SYS_Tutorial',
 
+    'SysWeatherID': 'SYS_WeatherList',
+
     'field_E416DB96': '90A6221A',
+    
+    'Stance': refset_stance,
+    'Stance1': refset_stance,
+    'Stance2': refset_stance,
+    'Stance3': refset_stance,
+    'Stance4': refset_stance,
+    'Stance5': refset_stance,
 }
 
 # List of table-specific fields which are ID references to other tables.
@@ -8122,7 +8799,7 @@ table_xrefs = {
     'BTL_Arts_PC': {'StateName': 'BTL_MotionState',
                     'StateName2': 'BTL_MotionState',
                     'ArtsBuffDebuff': 'BTL_BuffDeBuff',
-                    'field_C401CF1F': 'BTL_Achievement'},
+                    'EnArtsAchieve': 'BTL_Achievement'},
     'BTL_AutoSetAccessory': {'Talent01': refset_item,
                              'Talent02': refset_item,
                              'Talent03': refset_item,
@@ -8249,8 +8926,9 @@ table_xrefs = {
                          'Talent31': refset_skill},
     'BTL_Combo': {'PreCombo': 'BTL_Combo'},
     'BTL_Enemy': {'Resource': 'BTL_EnRsc',
+                  'EnemyAiHead': 'BTL_EnemyAi',
+                  'EnemyAiTail': 'BTL_EnemyAi',
                   'EnemyFamily': 'BTL_EnFamily',
-                  'Stance': 'BTL_Stance',
                   'AutoSlot0': refset_arts_en,
                   'AutoSlot1': refset_arts_en,
                   'AutoSlot2': refset_arts_en,
@@ -8270,9 +8948,14 @@ table_xrefs = {
                   'ArtsSlot13': refset_arts_en,
                   'ArtsSlot14': refset_arts_en,
                   'ArtsSlot15': refset_arts_en,
+                  'EnhanceSlot0': refset_enhance,
+                  'EnhanceSlot1': refset_enhance,
+                  'EnhanceSlot2': refset_enhance,
                   'RageStance': 'BTL_Stance'},
     'BTL_Skill_PC': {'UseTalent': refset_talent,
-                     'UseChr': refset_pc},
+                     'UseChr': refset_pc,
+                     'EnSkillAchieve': 'BTL_Achievement'},
+    'BTL_SpUnique': {'SpUniqueEnemy': 'FLD_EnemyData'},
     'BTL_Talent': {'WeaponType': 'BTL_WpnType',
                    'WeaponType2': 'BTL_WpnType',
                    'TalentAptitude1': 'BTL_TalentAptitude',
@@ -8281,32 +8964,115 @@ table_xrefs = {
                    'TalentAptitude4': 'BTL_TalentAptitude',
                    'TalentAptitude5': 'BTL_TalentAptitude',
                    'TalentAptitude6': 'BTL_TalentAptitude'},
+    'CHR_PC': {'SpModelCond1': refset_condition,
+               'SpModelCond2': refset_condition,
+               'DefTalent': refset_talent,
+               'DefAcce1': refset_item,
+               'DefAcce2': refset_item,
+               'DefAcce3': refset_item,
+               'DefGem1': '1A109460',
+               'DefGem2': '1A109460',
+               'DefGem3': '1A109460',
+               'UroBody': 'CHR_UroBody',
+               'UroPartner': refset_pc,
+               'UroCondition': refset_condition,
+               'TalentNPCArts1': refset_arts_pc,
+               'TalentNPCArts2': refset_arts_pc,
+               'TalentNPCArts3': refset_arts_pc,
+               'TalentNPCArts4': refset_arts_pc,
+               'TalentNPCArts5': refset_arts_pc,
+               'TalentNPCArtsCond1': refset_condition,
+               'TalentNPCArtsCond2': refset_condition,
+               'TalentNPCArtsCond3': refset_condition,
+               'TalentNPCArtsCond4': refset_condition,
+               'TalentNPCArtsCond5': refset_condition,
+               'TalentNPCTalentArts': refset_arts_pc,
+               'TalentNPCTalentArtsCond': refset_condition,
+               'TalentNPCSkill1': refset_skill,
+               'TalentNPCSkill2': refset_skill,
+               'TalentNPCSkill3': refset_skill,
+               'TalentNPCSkill4': refset_skill,
+               'TalentNPCSkill5': refset_skill,
+               'TalentNPCSkill6': refset_skill,
+               'TalentNPCSkillCond1': refset_condition,
+               'TalentNPCSkillCond2': refset_condition,
+               'TalentNPCSkillCond3': refset_condition,
+               'TalentNPCSkillCond4': refset_condition,
+               'TalentNPCSkillCond5': refset_condition,
+               'TalentNPCSkillCond6': refset_condition,
+               'ChainOrder': 'D9B88F26',
+               'HeroChainEff': refset_enhance},
     'EVT_HeroEquip': {'pc': refset_pc},
+    'FLD_ColonyList': {'map': refset_map,
+                       'Reward1': 'FLD_PerkPermanent',
+                       'Reward2': 'FLD_PerkPermanent',
+                       'Reward3': 'FLD_PerkPermanent',
+                       'Reward4': 'FLD_PerkPermanent',
+                       'Reward5': 'FLD_PerkPermanent'},
     'FLD_ConditionClassLv': {'ClassID': refset_talent},
+    'FLD_ConditionQuest': {'QuestFlag1': (None, None, 'condition_quest'),
+                           'QuestFlag2': (None, None, 'condition_quest'),
+                           'NotQuestFlag1': (None, None, 'condition_quest'),
+                           'NotQuestFlag2': (None, None, 'condition_quest')},
     'FLD_ConditionScenario': {'ScenarioMin': 'SYS_ScenarioFlag',
                               'ScenarioMax': 'SYS_ScenarioFlag',
                               'NotScenarioMin': 'SYS_ScenarioFlag',
                               'NotScenarioMax': 'SYS_ScenarioFlag'},
-    'FLD_EnemyData': {'field_C1781370': 'BTL_Enemy',
+    'FLD_EnemyData': {'IdBattleEnemy': 'BTL_Enemy',
                       'field_C6717CFE': '152F4D70',  # guessed from UM drops and 152F4D70->C6B4111D link
-                      'field_42284E7E': refset_arts_pc,  # blue mage art learned 
-                      'field_B49D11C4': refset_skill},  # blue mage skill learned
-    'FLD_NpcList': {'Resource1': 'FLD_NpcResource',
+                      'IdDropPrecious': refset_item,
+                      'GetEnArts': refset_arts_pc,
+                      'GetEnSkill': refset_skill},
+    'FLD_InfoList': {'PieceID1': refset_item,
+                     'PieceID2': refset_item,
+                     'PieceID3': refset_item,
+                     'PieceID4': refset_item,
+                     'PieceID5': refset_item,
+                     'FreePieceID1': refset_item,
+                     'FreePieceID2': refset_item,
+                     'FreePieceID3': refset_item,
+                     'FreePieceID4': refset_item,
+                     'FreePieceID5': refset_item,
+                     'NeedCharacter': refset_pc},
+    'FLD_KizunaChangeFlag': {'EventID': refset_event,
+                             'NpcIconFlag': '2BBE255B',
+                             'ColonyIconFlag': 'E1C78647',
+                             'ArrowNpcFlag': '861D003A',
+                             'ArrowColonyFlag': 'FAC1F258'},
+    'FLD_NpcList': {'TalkListID': 'FLD_NpcTalkList',
+                    'Resource1': 'FLD_NpcResource',
                     'Resource2': 'FLD_NpcResource',
                     'Resource3': 'FLD_NpcResource',
                     'Resource4': 'FLD_NpcResource'},
+    'FLD_NpcTalkList': {'BaseTalkID': 'FLD_NpcTalkResource',
+                        'QuestTalk1': 'FLD_NpcTalkResource',
+                        'QuestTalk2': 'FLD_NpcTalkResource',
+                        'QuestTalk3': 'FLD_NpcTalkResource',
+                        'QuestTalk4': 'FLD_NpcTalkResource',
+                        'QuestTalk5': 'FLD_NpcTalkResource',
+                        'QuestTalk6': 'FLD_NpcTalkResource',
+                        'QuestTalk7': 'FLD_NpcTalkResource',
+                        'QuestTalk8': 'FLD_NpcTalkResource',
+                        'TalkID1': 'FLD_NpcTalkResource',
+                        'TalkID2': 'FLD_NpcTalkResource',
+                        'TalkID3': 'FLD_NpcTalkResource',
+                        'TalkID4': 'FLD_NpcTalkResource',
+                        'TalkID5': 'FLD_NpcTalkResource'},
     'FLD_RelationColony': {'field_6E741E84': 'FLD_ColonyList',
                            'field_32A30DD7': 'FLD_ColonyList'},
     'ITM_Collepedia': {'Reward1': 'ITM_RewardCollepedia',
-                       'RelationID': 'FLD_RelationNpc'},
+                       'RelationID': 'FLD_RelationNpc',
+                       'ColonyRelationID': 'FLD_RelationColony'},
     'ITM_RewardCollepedia': {'Reward1': refset_item},
     'ITM_RewardQuest': {'Reward1': refset_item,
                         'Reward2': refset_item,
                         'Reward3': refset_item,
                         'Reward4': refset_item},
-    'MNU_DlcGift': {'vol_id': '5CD15665',
-                    'contents_id': 'DA526616'},
-    'MNU_MapInfo': {'field_3A8F0E6D': 'SYS_MapList'},
+    'MNU_DLCVolInfo': {'field_2AF7F370': 'msg_mnu_dlc_info',
+                       'ReleaseStatusText': 'msg_mnu_dlc_info',
+                       'SubTitleText': 'msg_mnu_dlc_info'},
+    'MNU_DlcGift': {'vol_id': 'MNU_DLCVolInfo',
+                    'contents_id': 'MNU_DLCContentsInfo'},
     'MNU_MapInfoFile': {'top_id': 'MNU_MapInfo'},
     'MNU_ShopList': {'TableID': 'MNU_ShopTable'},
     'MNU_UroSkillList': {'SkillID': refset_skill,
@@ -8314,11 +9080,25 @@ table_xrefs = {
     'MNU_saveload_scenario': {'ScenarioCond': refset_condition},
     'QST_List': {'RewardSetA': 'ITM_RewardQuest',
                  'RewardSetB': 'ITM_RewardQuest',
-                 'StartPurpose': 'QST_Purpose'},
+                 'StartPurpose': 'QST_Purpose',
+                 'LinkQuest': 'QST_List'},
     'QST_Purpose': {'TaskID': 'QST_Task',
                     'NextPurposeA': 'QST_Purpose',
                     'NextPurposeB': 'QST_Purpose'},
+    'QST_Task': {'TaskID1': (None, None, 'qst_task'),
+                 'TaskID2': (None, None, 'qst_task'),
+                 'TaskID3': (None, None, 'qst_task'),
+                 'TaskID4': (None, None, 'qst_task')},
     'QST_TaskCollect': {'TargetID': refset_item},
+    'QST_TaskRequest': {'ItemSetID1': 'QST_RequestItemSet',
+                        'ItemSetID2': 'QST_RequestItemSet',
+                        'ItemSetID3': 'QST_RequestItemSet',
+                        'ItemSetID4': 'QST_RequestItemSet',
+                        'ItemSetID5': 'QST_RequestItemSet',
+                        'ItemSetID6': 'QST_RequestItemSet',
+                        'ItemSetID7': 'QST_RequestItemSet',
+                        'ItemSetID8': 'QST_RequestItemSet',
+                        'LinkQuestTask': 'QST_Task'},
     'QST_TaskTalk': {'TargetID': refset_npc},
     'RSC_IK': {'FootL00': 'RSC_FootIK',
                'FootR00': 'RSC_FootIK',
@@ -8332,20 +9112,27 @@ table_xrefs = {
                'LookAt': 'RSC_LookAtIK',
                'Eye': 'RSC_EyeIK',
                'field_30B5C5E1': '6B3F1942'},
+    'SYS_FlowEventArtsSet': {'ChrID': refset_pc,
+                             'ClassID': refset_talent,
+                             'ArtsID': refset_arts_pc},
     'SYS_MapJumpList': {'FormationID': refset_gimmick},
-    'SYS_MapList': {'WeatherData': 'SYS_WeatherTable'},
+    'SYS_MapList': {'ResourceId': 'RSC_MapFile',
+                    'WeatherData': 'SYS_WeatherTable'},
+    'SYS_Tutorial': {'EnemyInfo': 'SYS_TutorialEnemyInfo'},
     'SYS_TutorialEnemyInfo': {'field_10FF2123': refset_enemy,
                               'field_1A391DEB': refset_enemy,
                               'field_032170A4': refset_enemy},
     '02E2BD0D': {'affType': '76D0D7D9',
-                 'field_224F1DF3': '7A517BD1',
+                 'field_DC34361E': refset_gimmick,
+                 'field_224F1DF3': refset_gimmick,
                  'CollectionID': 'FLD_AffCollection'},
     '03B52788': {'Leader': refset_pc,
                  'Party': 'F9173812'},  # Tutorial battle list
     '0B368E78': {'EffectCondition': refset_condition,
                  'SeCondition': refset_condition},
     '152F4D70': {'field_791E2B72': 'C6B4111D'},  # see around v1.1.0:1b7cac
-    '1623B3A0': {'ContentsID': 'DA526616'},
+    '1623B3A0': {'ContentsID': 'MNU_DLCContentsInfo'},
+    '1A109460': {'ItmGemID': refset_item},  # mapping from gem ID to item ID
     '23EE284B': {'linkID': refset_event,
                  'linkCondition': 'FLD_ConditionList'},
     '25B62687': {'linkID': refset_event,
@@ -8385,26 +9172,36 @@ table_xrefs = {
                  'Arts6': refset_arts_pc},
     '76FFBF3F': {'affType': '76D0D7D9'},
     '7A066663': {'TaskID': refset_quest_taskid},
-    '949AA63A': {'Reward1': refset_item,
-                 'Reward2': refset_item,
-                 'Reward3': refset_item,
-                 'Reward4': refset_item,
-                 'Reward5': refset_item,
-                 'Reward6': refset_item,
-                 'Reward7': refset_item,
-                 'Reward8': refset_item,
-                 'Reward9': refset_item,
-                 'Reward10': refset_item,
-                 'Reward11': refset_item,
-                 'Reward12': refset_item,
-                 'Reward13': refset_item,
-                 'Reward14': refset_item,
-                 'Reward15': refset_item,
-                 'Reward16': refset_item,
-                 'Reward17': refset_item,
-                 'Reward18': refset_item,
-                 'Reward19': refset_item,
-                 'Reward20': refset_item},
+    '861D003A': {'RelationID1': 'FLD_RelationNpc',
+                 'RelationID2': 'FLD_RelationNpc',
+                 'RelationID3': 'FLD_RelationNpc',
+                 'RelationID4': 'FLD_RelationNpc',
+                 'RelationID5': 'FLD_RelationNpc',
+                 'RelationID6': 'FLD_RelationNpc',
+                 'RelationID7': 'FLD_RelationNpc',
+                 'RelationID8': 'FLD_RelationNpc',
+                 'RelationID9': 'FLD_RelationNpc',
+                 'RelationID10': 'FLD_RelationNpc'},
+    'ITM_RewardAssort': {'Reward1': refset_item,
+                         'Reward2': refset_item,
+                         'Reward3': refset_item,
+                         'Reward4': refset_item,
+                         'Reward5': refset_item,
+                         'Reward6': refset_item,
+                         'Reward7': refset_item,
+                         'Reward8': refset_item,
+                         'Reward9': refset_item,
+                         'Reward10': refset_item,
+                         'Reward11': refset_item,
+                         'Reward12': refset_item,
+                         'Reward13': refset_item,
+                         'Reward14': refset_item,
+                         'Reward15': refset_item,
+                         'Reward16': refset_item,
+                         'Reward17': refset_item,
+                         'Reward18': refset_item,
+                         'Reward19': refset_item,
+                         'Reward20': refset_item},
     'A3CAD8C7': {'Talent': refset_talent,
                  'arts01': refset_arts_pc,
                  'arts02': refset_arts_pc,
@@ -8412,15 +9209,12 @@ table_xrefs = {
                  'arts04': refset_arts_pc,
                  'arts05': refset_arts_pc,
                  'arts06': refset_arts_pc,
-                 'field_F93D37D3': refset_arts_pc},
+                 'NoahTalentArts': refset_arts_pc},
     'A6AAF689': {'ArtsID': refset_arts_pc},
     'B971C420': {'Talent': refset_talent,
                  'ArtsID': (('BTL_Arts_PC', 'E29EF7E9'), )},
     'BF287371': {'affType': '76D0D7D9'},
     'C29E28FD': {'Object1': 'RSC_MapObjList'},
-    'D0253D11': {'ChrID': refset_pc,
-                 'ClassID': refset_talent,
-                 'ArtsID': refset_arts_pc},
     'D327B2BC': {'TaskID': 'QST_Task'},
     'D9B88F26': {'CompBonus1': refset_enhance,
                  'CompBonus2': refset_enhance,
@@ -8448,6 +9242,10 @@ table_xrefs = {
                  'ArtsSet05': 'A3CAD8C7',
                  'PC06': refset_pc,
                  'ArtsSet06': 'A3CAD8C7'},
+    'FAC1F258': {'RelationID1': 'FLD_RelationColony',
+                 'RelationID2': 'FLD_RelationColony',
+                 'RelationID3': 'FLD_RelationColony',
+                 'RelationID4': 'FLD_RelationColony'},
 }
 
 def add_xref(table, row, field_idx, value, target_table, target_row):
@@ -8490,7 +9288,27 @@ def resolve_field_xrefs(tables, table, field_idx, target, add_link):
             target_table = None
             target_row = None
             for name in target_tables:
-                if name == 'SYS_GimmickLocation.GimmickID':
+                if name is None:
+                    if target[2] == 'condition_quest':
+                        flag_idx = field_idx+1
+                        if table.get(row, flag_idx) == 1:
+                            test_table = tables['QST_List']
+                        else:
+                            assert table.get(row, flag_idx) == 0
+                            test_table = tables['QST_Purpose']
+                        test_row = test_table.id_to_row(id)
+                    elif target[2] == 'qst_task':
+                        type_idx = field_idx-1
+                        type = table.get(row, type_idx)
+                        assert type >= 0
+                        typename = ('Battle', 'Talk', 'Event', 'Ask',
+                                    'Reach', 'Chase', 'Request', 'Collect',
+                                    'Collepedia', 'Gimmick', 'Follow', 'Condition')[type]
+                        test_table = tables[f'QST_Task{typename}']
+                        test_row = test_table.id_to_row(id)
+                    else:
+                        raise Exception(f'Unhandled special case: {target[2]}')
+                elif name == 'SYS_GimmickLocation.GimmickID':
                     test_table = tables['SYS_GimmickLocation']
                     idx_GimmickID = test_table.field_index('GimmickID')
                     test_row = test_table.id_to_row(id, idx_GimmickID)
@@ -8504,7 +9322,7 @@ def resolve_field_xrefs(tables, table, field_idx, target, add_link):
                     else:
                         raise ValueError(f'Duplicate ID {id} in table {target_table_name} (reference from {table.name}#{table.get(row, 0)})')
             if target_row is None:
-                # Suppress known unamtched cases
+                # Suppress intentionally unmatching cases
                 if table.name == 'QST_Purpose' and table.field(field_idx).name.startswith('NextPurpose') and (id == 30000 or id == 30001):
                     pass
                 elif table.name == 'QST_TaskTalk' and table.field(field_idx).name == 'TargetID' and re.match(r'^[0-9]+$', id):
@@ -8512,39 +9330,42 @@ def resolve_field_xrefs(tables, table, field_idx, target, add_link):
                 else:
                     print(f'Warning: {table.name}[{table.get(row, 0)}].{table.field(field_idx).name} ({id}) not matched', file=sys.stderr)
                 continue
-            if len(target) > 1:
+            if len(target) > 1 and target[1] is not None:
                 target_field = target_table.field_index(target[1])
                 value = target_table.get(target_row, target_field)
                 if value is None or value == '':
                     value = id
-                elif len(target) > 2:
-                    if target[2] == 'enhance':
-                        for n in (1,2,3):
-                            param_idx = table.field_index(f'Param{n}', True)
-                            if param_idx is not None:
-                                param = table.get(row, param_idx)
-                                if isinstance(param, float):
-                                    param = f'{param:g}'
-                                value = value.replace(f'[ML:EnhanceParam paramtype={n} ]', param)
-                    elif target[2] == 'urobody_name':
-                        target_row += 81
-                        value = target_table.get(target_row, target_field)
-                    elif target[2] == 'achievement':
-                        value = target_table.get(target_row, target_field)
-                        idx_type = table.field_index('AchieveType')
-                        idx_param1 = table.field_index('Param1')
-                        idx_param2 = table.field_index('Param2')
-                        type = table.get(row, idx_type)
-                        param1 = table.get(row, idx_param1)
-                        param2 = table.get(row, idx_param2)
-                        if type <= 7:
-                            value += f' ({param1})'
-                        elif type != 255:
-                            value += f' ({param2})'
-                    else:
-                        raise ValueError(target[2])
-            else: # len(target) <= 1
-                value = None  # default rules
+            else:
+                value = None  # Default rules
+            if len(target) > 2:
+                if target[2] == 'enhance':
+                    value = str(value)
+                    for n in (1,2,3):
+                        param_idx = table.field_index(f'Param{n}', True)
+                        if param_idx is not None:
+                            param = table.get(row, param_idx)
+                            if isinstance(param, float):
+                                param = f'{param:g}'
+                            value = value.replace(f'[ML:EnhanceParam paramtype={n} ]', param)
+                elif target[2] == 'urobody_name':
+                    target_row += 81
+                    value = target_table.get(target_row, target_field)
+                elif target[2] == 'achievement':
+                    value = target_table.get(target_row, target_field)
+                    idx_type = table.field_index('AchieveType')
+                    idx_param1 = table.field_index('Param1')
+                    idx_param2 = table.field_index('Param2')
+                    type = table.get(row, idx_type)
+                    param1 = table.get(row, idx_param1)
+                    param2 = table.get(row, idx_param2)
+                    if type <= 7:
+                        value += f' ({param1})'
+                    elif type != 255:
+                        value += f' ({param2})'
+                elif target[2] in ('condition_quest', 'qst_task'):
+                    pass  # No additional logic
+                else:
+                    raise Exception(f'Unhandled special case: {target[2]}')
             if add_link:
                 add_xref(table, row, field_idx, value, target_table, target_row)
             else:
@@ -8558,6 +9379,8 @@ def resolve_xrefs(tables):
     for table_name, fields in text_xrefs.items():
         if table_name == 'FLD_NpcList':
             continue  # force after FLD_NpcResource
+        if not table_name in tables:
+          continue  # force skip missing tables
         table = tables[table_name]
         for field, target in fields.items():
             resolve_field_xrefs(tables, table, table.field_index(field),
@@ -8611,11 +9434,8 @@ def resolve_xrefs(tables):
                         assert type > 0
                         typename = ('List', 'Scenario', 'Quest', 'Env',
                                     'Flag', 'Item', 'PT', 'MapGimmick',
-                                    None, 'Tutorial', 'PcLv', 'ClassLv')[type-1]
-                        if typename is None:
-                            target_table = tables['13B8DA8C']
-                        else:
-                            target_table = tables[f'FLD_Condition{typename}']
+                                    'UMonster', 'Tutorial', 'PcLv', 'ClassLv')[type-1]
+                        target_table = tables[f'FLD_Condition{typename}']
                         add_xref(table, row, field_idx, None,
                                  target_table, target_table.id_to_row(cond))
                 else:
@@ -8637,9 +9457,11 @@ def resolve_xrefs(tables):
                                 add_xref(table, row, field_idx, None,
                                          target_table, target_row)
 
-    # Special links from event text names to text tables
+    # Special links from table names to tables
     for name, table in tables.items():
-        for field_name in ('mstxt', 'mstxt_ext'):
+        for field_name in ('ForgeType',            # ITM_Accessory
+                           'TalentParamRev',       # BTL_Talent
+                           'mstxt', 'mstxt_ext'):  # Event lists
             field = table.field_index(field_name, True)
             if field is not None:
                 for row in range(table.num_rows):
