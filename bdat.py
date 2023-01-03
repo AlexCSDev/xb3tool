@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 #
-# Parse tables from Xenoblade BDAT files into per-table HTML files.
-# Works with BDATs from Xenoblade 2 or later (Xenoblade X should also work
-# if support for big-endian data is added).
+# Parse tables from Xenoblade 3 BDAT files into per-table HTML files.
+# The core logic can be used for BDATs from Xenoblade X or later
+# (Xenoblade X requires adding support for big-endian data).
 #
 # Requires Python 3.6 or later.
 #
@@ -11,11 +11,11 @@
 
 import argparse
 import enum
+import glob
 import os
 import re
 import struct
 import sys
-import json
 
 
 ########################################################################
@@ -254,7 +254,7 @@ hashes = {
     0xD88E0DEB: "ITM_RewardGrieve",
     0xB7136B52: "ITM_RewardDroppedSupplies",
     0xFF63B067: "SYS_DropItemBehavior",
-    0xF936594B: None,  # Rest spot list
+    0xF936594B: "GMK_ComSpot",
     0xC5C5F70E: None,  # Has fields: Category, FormationCooking, FormationTraining
     0x2521C473: "FLD_EnemyData",
     0xD0DCFD18: "SYS_FlowEventList",
@@ -346,7 +346,7 @@ hashes = {
     0x1432D8A7: "MNU_dialog",
     0xCD3B3FC3: "MNU_action_hud",
     0xC29E28FD: None,  # Has fields: MenuCategory, Object1, ObjPoint1
-    0x02913D16: None,  # Has fields: CaseNoah, CaseMio, CaseEunie, CaseTaion, CaseLanz, CaseSena, HideWeapon
+    0x02913D16: "RSC_PcTalentParts",
     0x20992C15: "SYS_Mount",
     0xEC6F90EE: "FLD_ObjList",
     0xB1963CFD: "MNU_ShopList",
@@ -468,7 +468,7 @@ hashes = {
     0x9BF7EEDC: "FLD_EnemyAff",
     0xD147C68F: "SYS_TutorialSummary",
     0x7D70A887: "SYS_TutorialArrow",
-    0x39D667D1: None,  # (Possibly: RSC_PcCostumeOpen) Has fields: Talent, Flag1-6, Name1-6, DLC
+    0x39D667D1: "RSC_PcCostumeOpen",
     0xCF66EB21: "QST_QuestImageList",
     0xB971C420: None,  # Has fields: Talent, ArtsID, Special
     0x5F654D94: None,  # Has fields: Talent, SkillID
@@ -602,7 +602,9 @@ hashes = {
     0x3BEB99D8: "msg_system_popup",
     0x1BBC9E6B: "msg_tutorial_ui",
     0x8EF4CF86: "msg_weather_name",
-    0x331C38A9: None,  # All these tables are not present in the data
+    # All these tables are not present in the 1.1.0 data and may be
+    # reserved for future updates or DLC releases.
+    0x331C38A9: None,  # Flag documentation (design doc? seen in DLC 2 data)
     0xA942668F: None,
     0x3F3EBDB4: None,
     0xFD25F733: None,
@@ -630,6 +632,7 @@ hashes = {
     0xB7FACD23: "ma01a_GMK_EnemyPop",
     0x3A8DB47D: "ma01a_GMK_EnemyWave",
     0x66BE92FC: "ma01a_GMK_EtherPoint",
+    0xABE6D9C7: "ma01a_GMK_EtherSphere",
     0xFBA1D750: "ma01a_GMK_Event",
     0xEDEB8455: "ma01a_GMK_EyepatchArea",
     0x9F3B5150: "ma01a_GMK_FieldLock",
@@ -661,6 +664,7 @@ hashes = {
     0x778E3103: "ma04a_GMK_EnemyPop",
     0x067B90BA: "ma04a_GMK_EnemyWave",
     0x33FE07E9: "ma04a_GMK_EtherPoint",
+    0x44D5C7AE: "ma04a_GMK_EtherSphere",
     0xB3221521: "ma04a_GMK_Event",
     0x0256635F: "ma04a_GMK_FieldLock",
     0x18BC09D6: "ma04a_GMK_FixedMob",
@@ -696,6 +700,7 @@ hashes = {
     0x0277EA4F: "ma07a_GMK_EnemyPop",
     0x292F9EC8: "ma07a_GMK_EnemyWave",
     0x45F18C57: "ma07a_GMK_EtherPoint",
+    0x9B4061D7: "ma07a_GMK_EtherSphere",
     0x451F5A17: "ma07a_GMK_Event",
     0x0814D855: "ma07a_GMK_FieldLock",
     0x7DAE8D43: "ma07a_GMK_FixedMob",
@@ -731,6 +736,7 @@ hashes = {
     0x7BECF394: "ma09a_GMK_EnemyPop",
     0x83386BFE: "ma09a_GMK_EnemyWave",
     0x3E87DC6F: "ma09a_GMK_EtherPoint",
+    0x27255BE5: "ma09a_GMK_EtherSphere",
     0x87E28CBB: "ma09a_GMK_Event",
     0x94120285: "ma09a_GMK_EyepatchArea",
     0xFA756D39: "ma09a_GMK_FieldLock",
@@ -765,6 +771,7 @@ hashes = {
     0xC76401A3: "ma11a_GMK_EnemyPop",
     0xD1D0C6DF: "ma11a_GMK_EnemyWave",
     0x0C540EDB: "ma11a_GMK_EtherPoint",
+    0xEF9BAE89: "ma11a_GMK_EtherSphere",
     0xEC512E0E: "ma11a_GMK_Event",
     0x38986FE6: "ma11a_GMK_EyepatchArea",
     0xF491C81A: "ma11a_GMK_FieldLock",
@@ -900,6 +907,51 @@ hashes = {
     0xFC8B2F17: "ma90a_GMK_SDropping",
     0x70EB4338: "ma90a_GMK_SE",
     0x56902927: "ma90a_GMK_TreasureBox",
+    # Challenge Battle maps:
+    0x79A3DBD5: "ma25a_01_GMK_EnemyPop",
+    0x7111418B: "ma25a_01_GMK_EnemyWave",
+    0xE5B21604: "ma25a_02_GMK_EnemyPop",
+    0x10F8D0C5: "ma25a_02_GMK_EnemyWave",
+    0x4C17AC5A: "ma25a_03_GMK_EnemyPop",
+    0xD71EE23A: "ma25a_03_GMK_EnemyWave",
+    0xE93ACC9B: "ma25a_04_GMK_EnemyPop",
+    0x8CA477A3: "ma25a_04_GMK_EnemyWave",
+    0xD481004F: "ma25a_05_GMK_EnemyPop",
+    0x6F011E16: "ma25a_05_GMK_EnemyWave",
+    0x2C98ED06: "ma25a_06_GMK_EnemyPop",
+    0x47004BF3: "ma25a_06_GMK_EnemyWave",
+    0x1B146EF2: "ma25a_07_GMK_EnemyPop",
+    0xC362FD50: "ma25a_07_GMK_EnemyWave",
+    0x6FB0A422: "ma25a_08_GMK_EnemyPop",
+    0xFBE38CAB: "ma25a_08_GMK_EnemyWave",
+    0x218DC90B: "ma25a_09_GMK_EnemyPop",
+    0x2B0C8032: "ma25a_09_GMK_EnemyWave",
+    0xF949B25D: "ma25a_10_GMK_EnemyPop",
+    0xF347333E: "ma25a_10_GMK_EnemyWave",
+    0x7EC25E74: "ma25a_11_GMK_EnemyPop",
+    0x41E244CC: "ma25a_11_GMK_EnemyWave",
+    0x76F8B3D3: "ma25a_11_GMK_Object",
+    0x5E5D3B27: "ma25a_12_GMK_EnemyPop",
+    0xB0149A19: "ma25a_12_GMK_EnemyWave",
+    0x2803634A: "ma25a_13_GMK_EnemyPop",
+    0x00FF29FE: "ma25a_13_GMK_EnemyWave",
+    0xF3E88429: "ma25a_14_GMK_EnemyPop",
+    0xDF13FDD8: "ma25a_14_GMK_EnemyWave",
+    0xB2D8DFF0: "ma25a_15_GMK_EnemyPop",
+    0x6EC7CF33: "ma25a_15_GMK_EnemyWave",
+    0x00C29463: "ma25a_16_GMK_EnemyPop",
+    0x1BE092D9: "ma25a_16_GMK_EnemyWave",
+    0xCCE52D77: "ma25a_16_GMK_FixedMob",
+    0xC0CB2D1F: "ma25a_17_GMK_EnemyPop",
+    0x4498CC52: "ma25a_17_GMK_EnemyWave",
+    0xF5D18580: "ma25a_18_GMK_EnemyPop",
+    0x5B9C0ADB: "ma25a_18_GMK_EnemyWave",
+    0x9D46DA33: "ma25a_GMK_BGM",
+    0x32221A92: "ma25a_GMK_FieldLock",
+    0xDABE94E8: "ma25a_GMK_FlowEvent",
+    0x91D710E5: "ma25a_GMK_Location",
+    0xE49CA79A: "ma25a_GMK_SE",
+    0x53A4C911: "ma25a_GMK_TreasureBox",
 
     # Event tables:
     0x71ABA395: "msg_ask110001",
@@ -2560,6 +2612,24 @@ hashes = {
     0xB06A450E: "msg_nq340661t",
     0xE46FBD94: "msg_nq340690t",
     0x8CBCEB5A: "msg_nq340691t",
+    0x276271D6: "msg_nq500100f",
+    0xB9B9FE93: "msg_nq500101",
+    0xBA9CA5F1: "msg_nq500102t",
+    0x2FEC53BE: "msg_nq500103t",
+    0xA66E07DF: "msg_nq500104t",
+    0x1B211B5A: "msg_nq500300f",
+    0x75C3E850: "msg_nq500301f",
+    0xB6EC1FA0: "msg_nq500302t",
+    0x83EB2A3C: "msg_nq500303f",
+    0xFCA7409B: "msg_nq500304t",
+    0xCF193654: "msg_nq500305t",
+    0xE72D1DCB: "msg_nq500306t",
+    0x49754FD2: "msg_nq500307t",
+    0xC3626226: "msg_nq500308t",
+    0x0DBF099A: "msg_nq500309t",
+    0xCD48241E: "msg_nq500310t",
+    0x9115E20A: "msg_nq500311t",
+    0xED59DADA: "msg_nq500312t",
     0xA46DC57B: "msg_nq990201t",
     0x0FD58D14: "msg_nq990202t",
     0xF6B36AA8: "msg_nq990203t",
@@ -4215,6 +4285,14 @@ hashes = {
     0xA3ADBC37: "msg_tq002604f",
     0xCED465D0: "msg_tq002605f",
     0x0D86EE94: "msg_tq002606t",
+    0x2F1EC6BA: "msg_tq002700",
+    0x21E63FED: "msg_tq002701f",
+    0x6FA21A8F: "msg_tq002702f",
+    0x89B094F3: "msg_tq002703f",
+    0x7B0AB5AB: "msg_tq002704f",
+    0x57954A3F: "msg_tq002705",
+    0x2780020A: "msg_tq002706f",
+    0xA95D3621: "msg_tq002707t",
     0x798AC35F: "msg_tq010800f",
     0x6E555D3E: "msg_tq010801f",
     0x2A286E3C: "msg_tq010802f",
@@ -4450,8 +4528,34 @@ hashes = {
     0xC60BD758: "msg_tq012613",
     0x9E928B8B: "msg_tq012614f",
     0x074D17D6: "msg_tq012615t",
+    0x5D8F6C80: "msg_tq012700f",
+    0xD3DAC099: "msg_tq012701f",
+    0x146FF974: "msg_tq012702f",
+    0x9D554324: "msg_tq012703f",
+    0x3209BC64: "msg_tq012704f",
+    0x354DA653: "msg_tq012705f",
+    0x4390A34E: "msg_tq012706f",
+    0xB8D071D4: "msg_tq012707",
+    0xDD5E79E6: "msg_tq012708",
+    0x6B4311F8: "msg_tq012709f",
+    0x28692EE3: "msg_tq012710t",
+    0x53CE9050: "msg_tq012711t",
+    0x21364686: "msg_tq012712t",
+    0x1C1A63C2: "msg_tq012713t",
+    0x67AF2FF9: "msg_tq012714t",
+    0xCF88C994: "msg_tq012715t",
+    0xEE467CA4: "msg_tq012716t",
+    0x69DD6CAC: "msg_tq012717t",
 
     # Other tables:
+    0xD00ADE37: "AMB_BasicLot",
+    0xC3802B6C: "AMB_BonusExpLot",
+    0xC36820B1: "AMB_ClassExpLot",
+    0xF58766B8: "AMB_CoinLot",
+    0x95351164: "AMB_CollectionLot",
+    0x1CAFF87D: "AMB_GoldCoinLot",
+    0xC810A4F3: "AMB_SpecialAmiibo",
+    0x7E6184E0: "AMB_TradValueLot",
     0xDB3F6A13: "BTL_Ai",
     0xB5B61435: "BTL_FA_Prm01",
     0xF350A3E5: "BTL_FA_Prm02",
@@ -4573,6 +4677,7 @@ hashes = {
     0x4CF1C296: "MNU_TextLink_Mstxt",
     0xE1E61948: "MNU_Text_IdList",
     0x686FDFDB: "MNU_filter",
+    0x44F0EA5A: "MNU_option_brightness",
     0x85C68AD1: "MNU_option_camera",
     0x54D69CFB: "MNU_option_display",
     0x09F8A812: "MNU_option_formation",
@@ -4876,6 +4981,7 @@ hashes = {
     0x64FCF627: "BeforeWeather",
     0xE9E2E301: "BehaviorID",
     0xD9D73B99: "BgmCondition",
+    0xF315D3C2: "BlackMist",
     0x40EB635C: "BlendMul",
     0xA57B7227: "BltMaxAng",
     0x36254CF7: "BoneCamera",
@@ -5020,6 +5126,7 @@ hashes = {
     0xA1A929DE: "Comment4",
     0xB58D6C13: "Comment5",
     0xC9D34FEF: "Comment6",
+    0x4B9E7598: "CommunicationSpot",
     0xF81E70F4: "CompBonus1",
     0x03C90541: "CompBonus2",
     0x3AF333D3: "CompBonus3",
@@ -5317,9 +5424,10 @@ hashes = {
     0x29210A2C: "Endf1",
     0x2665EB57: "Endf2",
     0x8AD2184D: "Endf3",
+    0x82C7C669: "Enemy",
     0xD3897F4C: "EnemyAiHead",
     0xAA60B6DF: "EnemyAiTail",
-    0x3BBE76C9: "EnemyDead", 
+    0x3BBE76C9: "EnemyDead",
     0x611E819D: "EnemyExp",
     0xAAEA8654: "EnemyFamily",
     0x9053E074: "EnemyGold",
@@ -5334,6 +5442,7 @@ hashes = {
     0x7318D357: "EnemyID02",
     0x3F1ED434: "EnemyID03",
     0x516AAE38: "EnemyInfo",
+    0x6974615F: "EnemyNoPopRate",
     0x6D94961B: "EnemyOffsetX",
     0x736D57B6: "EnemyOffsetY",
     0x76532DD6: "EnemyOffsetZ",
@@ -5391,6 +5500,7 @@ hashes = {
     0x51954738: "EquipType",
     0x5623FEE0: "EtherPatternFlag",
     0xEF0DD561: "EtherPoint",
+    0x88AE2F7A: "EtherSphere",
     0x98B5A07E: "Event",
     0x5104C2B6: "EventID",
     0xEE4909E8: "EventName",
@@ -5474,8 +5584,10 @@ hashes = {
     0xA8D0C912: "FlagMin",
     0x09446249: "FlagNoLimit",  # FIXME: unclear if correct
     0xD8391710: "FlagNoReward",
+    0x68E37709: "FlagNum",
     0x9D810ADA: "FlagPrt",  # FIXME: unclear if correct
     0x8FFC0AC6: "FlagSetArts",
+    0x9B7A34D1: "FlagStart",
     0xE5CC8125: "FlagType",
     0x33CAEB2F: "FldCond",
     0xFFA9A196: "FlgColiOff",
@@ -5516,9 +5628,11 @@ hashes = {
     0xB450FEFB: "Formation2",
     0x4AEFCDBD: "Formation3",
     0xFC0937EB: "Formation4",
+    0xE27F23C7: "FormationBriefing",
     0x41E48985: "FormationCooking",
     0x139A6A3B: "FormationCookingAction",
     0xF324975C: "FormationID",
+    0xF1D020CF: "FormationMeal",
     0x7332CD5E: "FormationTopWindow",
     0x5DD44D44: "FormationTraining",
     0x162DC154: "Frame",
@@ -5542,6 +5656,7 @@ hashes = {
     0xCE48890E: "GimmickID",
     0x475B17F1: "GimmickName",
     0x28D3A8B7: "GimmickType",
+    0x4567FED8: "GoalPoint",
     0x3948DC33: "Gold",
     0xA2EA4FA8: "GoldDivide",
     0xFF7B1688: "GoldDivideRev",
@@ -5653,6 +5768,7 @@ hashes = {
     0x746F48F7: "IconFlag",
     0x846CE59D: "IconIndex",
     0x6ECE0D42: "IconIndex2",
+    0x89335014: "IconLocator",
     0xFC719450: "IconNo",
     0x91274C4E: "IconOffset",
     0x17ABEC63: "IconType",
@@ -5694,6 +5810,7 @@ hashes = {
     0xAD0BA31D: "InsideAlpha",
     0x6BEEE09A: "InsideScale",
     0xBA4427A4: "Intensity",
+    0xB750C04A: "InterestPoint",
     0xD53F9B44: "Interval",
     0xEA13F14F: "IntervalAT",
     0x295060CA: "IntervalArts",
@@ -5872,6 +5989,8 @@ hashes = {
     0xF96161CE: "MapID",
     0xDB253205: "MapInfoId",
     0x8D5D1243: "MapJumpID",
+    0x3B810178: "MapJumpIn",
+    0x36A5860E: "MapJumpOut",
     0x4CB4073F: "MapPartsID",
     0xE9206287: "Marking1",
     0x7A10F206: "Marking2",
@@ -6002,6 +6121,7 @@ hashes = {
     0x89CE063B: "NameCondition",
     0x602870A8: "NameMsg",
     0xAFCE416E: "NamedFlag",
+    0xEF32E8B1: "NamedSpCond",
     0xC6D66AC7: "Navi",
     0xDB45AA0C: "NcNum",
     0x3499D0C9: "NcType",
@@ -6353,6 +6473,7 @@ hashes = {
     0x8970046A: "Probability4",
     0x163B426D: "ProbabilityIdle",
     0xEADDB4E4: "PushSeID",
+    0xE9021A8C: "Puzzle",
 
     0x4A7DF029: "QuestCategory",
     0xA672B4F4: "QuestFlag1",
@@ -6485,6 +6606,7 @@ hashes = {
     0x794B0B24: "Respect1",
     0xA5F48B16: "Respect2",
     0xFC649653: "RespectFlag",
+    0x453CEB2E: "RespectHud",
     0x97E7543E: "RespectPoint",
     0x1D2066C9: "ResultA",
     0x16570FBD: "ResultB",
@@ -6843,6 +6965,7 @@ hashes = {
     0xDAF856EF: "SummonData",
     0x3AD184FF: "SummonEnemyPop",
     0xB6117BD8: "SummonType",
+    0x91E53254: "SuppliesDropping",
     0xB06CD4E4: "Swim",
     0xCC8F678E: "SwimHeight",
     0x7FBFAF1A: "SwitchModel1",
@@ -6935,6 +7058,7 @@ hashes = {
     0x8C9FB525: "TalkID4",
     0xA9C1AADF: "TalkID5",
     0x76AEE21F: "TalkListID",
+    0x164AA674: "TalkPoint",
     0x1DB85A56: "TalkStartTime",
     0x30167069: "Talker",
     0x33BFB952: "Tank",
@@ -7126,6 +7250,7 @@ hashes = {
     0x3CEEE1F1: "Value18",
     0x1436F7D8: "Value19",
     0xF9AADF26: "Value20",
+    0x0DA651FA: "ValueMax",
     0xA3115C7A: "ValueOffset",
     0xB1BEA30C: "VanishEffectID",
     0x1BF4A556: "VanishParam1",
@@ -7246,6 +7371,7 @@ hashes = {
     0x5B6EAFC0: "affName",
     0x4C213412: "affType",
     0x12499476: "align_h",
+    0x30A4F4D8: "areamap",
     0x9E9E52F3: "arts01",
     0x62060484: "arts02",
     0x8517E9BC: "arts03",
@@ -7262,6 +7388,7 @@ hashes = {
     0x65DCA094: "bgmStart",
     0xBCEA9336: "blend",
     0x950ED819: "bone_name",
+    0xD5C70F2B: "bonus_exp_rate",
 
     0x42146B30: "cache",
     0x95D1518E: "cam_angle",
@@ -7278,6 +7405,8 @@ hashes = {
     0x574B5FBE: "category",
     0xE06B8B51: "category_type",
     0xC9299D94: "chapter",
+    0x0C6CCAA6: "character",
+    0x4185DC6B: "class_exp_rate",
     0x304AA2DE: "clockHour",
     0xEB14AC98: "clockMinute",
     0x1E25EA3C: "clockStop",
@@ -7406,6 +7535,7 @@ hashes = {
     0xF21B5BEF: "gainLow",
     0x34CC74A5: "getflag",
     0xF0666ADD: "gold",
+    0x5BE1976D: "gold_coin_rate",
     0x3CDE1626: "group",
 
     0xF591F3D9: "hair_change",
@@ -7553,6 +7683,7 @@ hashes = {
     0x4F74D178: "opFadeWait",
     0x6873A20E: "opt_1",
     0x8ED568B1: "opt_2",
+    0xC1400C90: "option",
     0xB3254010: "option_id",
     0xD3309DD9: "outsiderEnable",
     0xFFCB5A95: "outsiderOpt",
@@ -7629,6 +7760,7 @@ hashes = {
     0xAEFAEA7E: "push_type",  # FIXME: unclear if correct
 
     0x3F28C38D: "quads",
+    0xA15348EE: "quest",
 
     0x4B0658EA: "r_ofs_x",
     0xE7BDC674: "r_ofs_y",
@@ -7692,6 +7824,7 @@ hashes = {
     0x7B2C09DB: "starthour",  # FIXME: unclear if correct
     0x0AAFDDB0: "strength",
     0x554EE944: "style",
+    0x7CEA9974: "system",
 
     0x9EE99B1E: "talkattr",
     0xACF3531A: "talker",
@@ -7708,6 +7841,7 @@ hashes = {
     0xE4ED1C77: "title",
     0x58C4B2E6: "toneMap",
     0xD62E5B05: "top_id",
+    0xB99DD8F7: "trad_rate",
     0x79F23513: "type",
     0xC08A263F: "type1",
     0x2FB8DE0B: "type2",
@@ -7808,16 +7942,18 @@ hashes = {
 uint_hashes = {
     '8F29BCAF': ['LocationBdat', 'field_5177BA21'],
     'C5C5F70E': ['FormationTopWindow', 'FormationCooking', 'field_07F1CB46',
-                 'field_F1D020CF', 'field_E27F23C7', 'FormationCookingAction', 
+                 'field_F1D020CF', 'field_E27F23C7', 'FormationCookingAction',
                  'FormationTraining'],
-    'SYS_GimmickLocation': ['field_6C50B44E', 'Option1']
+    'SYS_GimmickLocation': ['field_6C50B44E', 'Option1'],
+    '4CECED20': ['field_6C50B44E', 'Option1']  # Same structure as SYS_GimmickLocation but with DLC content
 }
 
 # Sanity check on unhash table
-if False:
+# (enabled by default since it doesn't take very long to run)
+if True:
     for hash, word in hashes.items():
         if word is not None and murmur32(word) != hash:
-            raise Exception(f'murmur32({word}) != 0x{hash:8X} (should be 0x{murmur32(word):8X})')
+            raise Exception(f'murmur32({word}) != 0x{hash:08X} (should be 0x{murmur32(word):08X})')
 
 def unhash(hash, default=None):
     """Return the string corresponding to a hash, or the default if unknown."""
@@ -8014,7 +8150,7 @@ class BdatTable(object):
     def get(self, row, field, raw=False):
         """Return the content of the given cell.
 
-        [Parameters]
+        Parameters:
             row: Row index.
             field: Field index.
             raw: If True, return the original value of the cell (before
@@ -8031,7 +8167,7 @@ class BdatTable(object):
         """Set the content of the given cell to the given value and optional
         table link.
 
-        [Parameters]
+        Parameters:
             row: Row index.
             field: Field index.
             value: Value to set.
@@ -8054,8 +8190,8 @@ class BdatTable(object):
 
     def addref(self, row, ref_name, ref_row, ref_value):
         """Add a reference to the given row from the named table and row.
-        
-        [Parameters]
+
+        Parameters:
             row: Row in this table which is referenced.
             ref_name: Name of the referencing table.
             ref_row: ID of the referencing row in the referencing table.
@@ -8069,7 +8205,7 @@ class BdatTable(object):
     # Styling/scripting adapted from https://github.com/Thealexbarney/XbTool
     _HTML_HEADER = """<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja">
+<html xmlns="http://www.w3.org/1999/xhtml" {lang}>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta http-equiv="Content-Style-Type" content="text/css" />
@@ -8111,9 +8247,17 @@ class BdatTable(object):
 </html>
 """
 
-    def printHtml(self):
-        """Return a string containing this table in HTML format."""
+    def print(self, language=None):
+        """Return a string containing this table in HTML format.
+
+        Parameters:
+            language: ISO language code for HTML header, or None if not known.
+        """
         s = self._HTML_HEADER.replace('{title}', self.name)
+        if language is not None:
+            s = s.replace('{lang}', f'lang="{language}" xml:lang="{language}"')
+        else:
+            s = s.replace('{lang}', '')
         s += '    <tr id="header">\n'
         s += '      <th class="side dir-d ">ID</th>\n'
         s += '      <th>Referenced By</th>\n'
@@ -8161,26 +8305,6 @@ class BdatTable(object):
             s += '    </tr>\n'
         s += self._HTML_FOOTER
         return s
-	
-    def printJson(self):
-        outData = []
-        for i in range(len(self._rows)):
-            row = self._rows[i]
-            id = row[0]
-            rowData = {}
-            for j in range(1, len(self._fields)):
-                if self._fields[j].array_size is None:
-                    values = (row[j],)
-                else:
-                    values = row[j]
-                for value in values:
-                    valueToUse = value
-                    if isinstance(value, tuple):
-                        valueToUse = value[0]
-                    rowData[self._fields[j].name] = valueToUse
-            # end for
-            outData.append(rowData)
-        return json.dumps(outData)
 
     @staticmethod
     def _refkey(x):
@@ -8693,17 +8817,17 @@ row_name_fields = {
     'BB82DEE6': 'Name',
     'D9B88F26': 'Name',
     'gimmickLocation': 'LocationName',
-    '243E6271': 'LocationName',
-    '2F52EAA9': 'LocationName',
-    '48EB542B': 'LocationName',
-    '4C930865': 'LocationName',
-    '696784F9': 'LocationName',
-    '90C9B3BB': 'LocationName',
-    '9F336731': 'LocationName',
-    'A3C362AD': 'LocationName',
-    'C787DDCA': 'LocationName',
-    'CF4772C2': 'LocationName',
-    'DE1DB7BB': 'LocationName',
+    'ma01a_GMK_Location': 'LocationName',
+    'ma04a_GMK_Location': 'LocationName',
+    'ma07a_GMK_Location': 'LocationName',
+    'ma09a_GMK_Location': 'LocationName',
+    'ma11a_GMK_Location': 'LocationName',
+    'ma14a_GMK_Location': 'LocationName',
+    'ma15a_GMK_Location': 'LocationName',
+    'ma17a_GMK_Location': 'LocationName',
+    'ma20a_GMK_Location': 'LocationName',
+    'ma22a_GMK_Location': 'LocationName',
+    'ma90a_GMK_Location': 'LocationName',
 }
 
 # List of direct references from tables to text strings.
@@ -8733,6 +8857,7 @@ text_xrefs = {
                        'Caption': ('msg_colony_text', 'name')},
     'FLD_CookRecipe': {'Name': ('8B7D949B', 'name')},
     'FLD_EnemyData': {'MsgName': ('msg_enemy_name', 'name')},
+    'FLD_InfoList': {'Name': ('CA2198EC', 'name')},
     'FLD_MealRecipe': {'Name': ('0103F5B8', 'name')},
     'FLD_NpcList': {'field_7F0A3296': ('FLD_NpcResource', 'Name')},
     'FLD_NpcResource': {'Name': ('msg_npc_name', 'name'),
@@ -8742,7 +8867,7 @@ text_xrefs = {
     'FLD_PerkTemporary': {'Name1': ('msg_fld_perk_name', 'name'),
                           'Name2': ('msg_fld_perk_name', 'name'),
                           'Name3': ('msg_fld_perk_name', 'name'),
-                          'Caption1': ('msg_fld_perk_name', 'name'), 
+                          'Caption1': ('msg_fld_perk_name', 'name'),
                           'Caption2': ('msg_fld_perk_name', 'name'),
                           'Caption3': ('msg_fld_perk_name', 'name')},
     'FLD_RelationColony': {'Text1': ('msg_kizuna_name', 'name'),
@@ -8757,7 +8882,8 @@ text_xrefs = {
                         'Text5': ('msg_kizuna_name', 'name')},
     'FLD_UMonsterList': {'GroupName': ('msg_enemy_group_name', 'name')},
     'ITM_Accessory': {'Name': ('msg_item_accessory', 'name')},
-    'ITM_Collection': {'Name': ('msg_item_collection', 'name')},
+    'ITM_Collection': {'Name': ('msg_item_collection', 'name'),
+                       'Name2': ('msg_item_collection', 'name')},
     'ITM_Collepedia': {'Text': ('BEDB6533', 'name'),
                        'Text2': ('BEDB6533', 'name')},
     'ITM_Cylinder': {'Name': ('msg_item_cylinder', 'name')},
@@ -8785,19 +8911,26 @@ text_xrefs = {
     'MNU_PatchInfo': {'PatchNameText': ('msg_mnu_patch_info', 'name'),
                       'field_2AF7F370': ('msg_mnu_patch_info', 'name')},
     'MNU_ShopList': {'Name': ('msg_shop_name', 'name')},
+    'MNU_TipsList': {'Title': ('msg_mnu_tutorial_tips', 'name'),
+                     'Comment1': ('msg_mnu_tutorial_tips', 'name'),
+                     'Comment2': ('msg_mnu_tutorial_tips', 'name'),
+                     'Comment3': ('msg_mnu_tutorial_tips', 'name'),
+                     'Comment4': ('msg_mnu_tutorial_tips', 'name'),
+                     'Comment5': ('msg_mnu_tutorial_tips', 'name'),
+                     'Comment6': ('msg_mnu_tutorial_tips', 'name')},
     'MNU_game_option_category': {'name': ('msg_mnu_option', 'name'),
                                  'help': ('msg_mnu_option', 'name')},
-    '44F0EA5A': {'name': ('msg_mnu_option', 'name'),
-                 'help': ('msg_mnu_option', 'name'),
-                 'help1': ('msg_mnu_option', 'name'),
-                 'help2': ('msg_mnu_option', 'name'),
-                 'help3': ('msg_mnu_option', 'name'),
-                 'help4': ('msg_mnu_option', 'name'),
-                 'field_5925DC4C': ('msg_mnu_option', 'name'),
-                 'field_7D13B44A': ('msg_mnu_option', 'name'),
-                 'field_B6E3A0D7': ('msg_mnu_option', 'name'),
-                 'field_D8225635': ('msg_mnu_option', 'name'),
-                 'field_6FBE92E0': ('msg_mnu_option', 'name')},
+    'MNU_option_brightness': {'name': ('msg_mnu_option', 'name'),
+                              'help': ('msg_mnu_option', 'name'),
+                              'help1': ('msg_mnu_option', 'name'),
+                              'help2': ('msg_mnu_option', 'name'),
+                              'help3': ('msg_mnu_option', 'name'),
+                              'help4': ('msg_mnu_option', 'name'),
+                              'field_5925DC4C': ('msg_mnu_option', 'name'),
+                              'field_7D13B44A': ('msg_mnu_option', 'name'),
+                              'field_B6E3A0D7': ('msg_mnu_option', 'name'),
+                              'field_D8225635': ('msg_mnu_option', 'name'),
+                              'field_6FBE92E0': ('msg_mnu_option', 'name')},
     'MNU_option_camera': {'name': ('msg_mnu_option', 'name'),
                           'help': ('msg_mnu_option', 'name'),
                           'help1': ('msg_mnu_option', 'name'),
@@ -8902,6 +9035,18 @@ text_xrefs = {
     'ma17a_GMK_EnemyPop': {'GroupName': ('msg_enemy_group_name', 'name')},
     'ma22a_GMK_EnemyPop': {'GroupName': ('msg_enemy_group_name', 'name')},
     'ma90a_GMK_EnemyPop': {'GroupName': ('msg_enemy_group_name', 'name')},
+    'gimmickEvent': {'Name': ('msg_fld_searchpoint', 'name')},
+    'ma01a_GMK_Event': {'Name': ('msg_fld_searchpoint', 'name')},
+    'ma04a_GMK_Event': {'Name': ('msg_fld_searchpoint', 'name')},
+    'ma07a_GMK_Event': {'Name': ('msg_fld_searchpoint', 'name')},
+    'ma09a_GMK_Event': {'Name': ('msg_fld_searchpoint', 'name')},
+    'ma11a_GMK_Event': {'Name': ('msg_fld_searchpoint', 'name')},
+    'ma14a_GMK_Event': {'Name': ('msg_fld_searchpoint', 'name')},
+    'ma15a_GMK_Event': {'Name': ('msg_fld_searchpoint', 'name')},
+    'ma17a_GMK_Event': {'Name': ('msg_fld_searchpoint', 'name')},
+    'ma20a_GMK_Event': {'Name': ('msg_fld_searchpoint', 'name')},
+    'ma22a_GMK_Event': {'Name': ('msg_fld_searchpoint', 'name')},
+    'ma90a_GMK_Event': {'Name': ('msg_fld_searchpoint', 'name')},
     'gimmickLocation': {'LocationName': ('msg_location_name', 'name')},
     'ma01a_GMK_Location': {'LocationName': ('msg_location_name', 'name')},
     'ma04a_GMK_Location': {'LocationName': ('msg_location_name', 'name')},
@@ -8914,16 +9059,50 @@ text_xrefs = {
     'ma20a_GMK_Location': {'LocationName': ('msg_location_name', 'name')},
     'ma22a_GMK_Location': {'LocationName': ('msg_location_name', 'name')},
     'ma90a_GMK_Location': {'LocationName': ('msg_location_name', 'name')},
+    '39D667D1': {'UIName1': ('msg_mnu_char_ms', 'name'),
+                 'UIName2': ('msg_mnu_char_ms', 'name'),
+                 'UIName3': ('msg_mnu_char_ms', 'name'),
+                 'UIName4': ('msg_mnu_char_ms', 'name'),
+                 'UIName5': ('msg_mnu_char_ms', 'name'),
+                 'UIName6': ('msg_mnu_char_ms', 'name')},
     '5A744A5C': {'name': ('msg_mnu_mainmenu', 'name'),
                  'hint': ('msg_mnu_mainmenu', 'name')},
+    '70810224': {'Text1': ('msg_autotalk', 'name'),
+                 'Text2': ('msg_autotalk', 'name'),
+                 'Text3': ('msg_autotalk', 'name')},
+    '7138BADF': {'Text1': ('msg_autotalk', 'name'),
+                 'Text2': ('msg_autotalk', 'name'),
+                 'Text3': ('msg_autotalk', 'name')},
+    '7A6735C6': {'Text1': ('msg_autotalk', 'name'),
+                 'Text2': ('msg_autotalk', 'name'),
+                 'Text3': ('msg_autotalk', 'name')},
+    '7E6F5DCC': {'name': ('msg_mnu_mainmenu', 'name')},
+    '808F8A04': {'Text1': ('msg_autotalk', 'name'),
+                 'Text2': ('msg_autotalk', 'name'),
+                 'Text3': ('msg_autotalk', 'name')},
+    '95351164': {'SetName': ('msg_mnu_amiibo', 'name')},
+    '9AE9C010': {'Text1': ('msg_autotalk', 'name'),
+                 'Text2': ('msg_autotalk', 'name'),
+                 'Text3': ('msg_autotalk', 'name')},
+    'ABE85D5D': {'Text1': ('msg_autotalk', 'name'),
+                 'Text2': ('msg_autotalk', 'name'),
+                 'Text3': ('msg_autotalk', 'name')},
     'B30AE3F7': {'name': ('msg_mnu_mainmenu', 'name'),
                  'hint': ('msg_mnu_mainmenu', 'name')},
     'BB82DEE6': {'Name': ('F6E689C3', 'name')},
+    'C810A4F3': {'RewordName': ('msg_mnu_amiibo', 'name'),
+                 'RewordText': ('msg_mnu_amiibo', 'name')},
+    'D4A3534F': {'Text1': ('msg_autotalk', 'name'),
+                 'Text2': ('msg_autotalk', 'name'),
+                 'Text3': ('msg_autotalk', 'name')},
     'D9B88F26': {'Name': ('msg_btl_chainorder_name', 'name')},
     'DEC58736': {'name': ('msg_mnu_mainmenu', 'name'),
                  'hint': ('msg_mnu_mainmenu', 'name')},
     'E97C90CE': {'name': ('msg_mnu_mainmenu', 'name'),
                  'hint': ('msg_mnu_mainmenu', 'name')},
+    'F0A0A1B1': {'Text1': ('msg_autotalk', 'name'),
+                 'Text2': ('msg_autotalk', 'name'),
+                 'Text3': ('msg_autotalk', 'name')},
     'F936594B': {'SpotName': ('msg_comspot_name', 'name')},
 }
 
@@ -8933,6 +9112,7 @@ refset_condition = ('FLD_ConditionList', )
 refset_enemy = ('FLD_EnemyData', )
 refset_enhance = ('BTL_Enhance', )
 refset_event = (('EVT_listEv', 'EVT_listFev', 'EVT_listQst', 'EVT_listTlk'), )
+refset_event_name = (('EVT_listEv', 'EVT_listFev', 'EVT_listQst', 'EVT_listTlk'), None, 'event_name')
 refset_gimmick = ('SYS_GimmickLocation.GimmickID', )
 refset_gimmick_object = (None, None, 'gimmick_object')
 refset_item = (('ITM_Accessory', 'ITM_Collection', 'ITM_Collepedia', 'ITM_Cylinder', 'ITM_Gem', 'ITM_Info', 'ITM_Precious'), )
@@ -8959,6 +9139,8 @@ refset_talent = ('BTL_Talent', )
 #         in resolve_field_xrefs()).
 # A zero ID is always converted to an empty cell.
 field_xrefs = {
+    'ChainOrder': 'D9B88F26',
+
     'Colony': 'FLD_ColonyList',
     'ColonyID': 'FLD_ColonyList',
     'ColonyID1': 'FLD_ColonyList',
@@ -8966,6 +9148,26 @@ field_xrefs = {
     'ColonyID3': 'FLD_ColonyList',
 
     'AccessCondition': refset_condition,
+    'AddCondition1': refset_condition,
+    'AddCondition2': refset_condition,
+    'AddCondition3': refset_condition,
+    'AddCondition4': refset_condition,
+    'AddCondition5': refset_condition,
+    'AddCondition6': refset_condition,
+    'AddCondition7': refset_condition,
+    'AddCondition8': refset_condition,
+    'AddCondition9': refset_condition,
+    'AddCondition10': refset_condition,
+    'AddCondition11': refset_condition,
+    'AddCondition12': refset_condition,
+    'AddCondition13': refset_condition,
+    'AddCondition14': refset_condition,
+    'AddCondition15': refset_condition,
+    'AddCondition16': refset_condition,
+    'AddCondition17': refset_condition,
+    'AddCondition18': refset_condition,
+    'AddCondition19': refset_condition,
+    'AddCondition20': refset_condition,
     'ChangeStatusCondition': refset_condition,
     'Condition': refset_condition,  # Excluding FLD_ConditionList (special-cased below)
     'Condition1': refset_condition,
@@ -8985,6 +9187,7 @@ field_xrefs = {
     'Conditon8': refset_condition,
     'IgnoreCondition': refset_condition,
     'NameCondition': refset_condition,
+    'NamedSpCond': refset_condition,
     'PriceCondition': refset_condition,
 
     'CookRecipe': 'FLD_CookRecipe',
@@ -9145,6 +9348,10 @@ field_xrefs = {
     'QuestID': refset_quest,
 
     'Reaction': 'BTL_Reaction',
+
+    'AgnusReward': 'ITM_RewardDroppedSupplies',
+    'KevesReward': 'ITM_RewardDroppedSupplies',
+    'FirstReward': 'ITM_RewardDroppedSupplies',
 
     'DebScenarioFlag': 'SYS_ScenarioFlag',
     'ScenarioFlag': 'SYS_ScenarioFlag',
@@ -9310,6 +9517,12 @@ table_xrefs = {
                          'Talent30': refset_skill,
                          'Talent31': refset_skill},
     'BTL_Combo': {'PreCombo': 'BTL_Combo'},
+    'BTL_Element': {'ImpactEnhance': refset_enhance,
+                    'KeepEnhance': refset_enhance},
+    'BTL_EnFamily': {'field_6C2A5517': refset_item,
+                     'field_AB489C01': refset_item,
+                     'field_FD843EC5': refset_item,
+                     'field_76080402': refset_item},
     'BTL_Enemy': {'Resource': 'BTL_EnRsc',
                   'EnemyAiHead': 'BTL_EnemyAi',
                   'EnemyAiTail': 'BTL_EnemyAi',
@@ -9337,6 +9550,7 @@ table_xrefs = {
                   'EnhanceSlot1': refset_enhance,
                   'EnhanceSlot2': refset_enhance,
                   'RageStance': refset_stance},
+    'BTL_EnemyDrop_Material': {'EnFamily': 'BTL_EnFamily'},
     'BTL_SetUp': {'BulletID': 'BTL_Bullet',
                   'BulletEffID': 'BTL_BulletEffect',
                   'VanishParam1': (None, None, 'field_vanish')},
@@ -9388,8 +9602,16 @@ table_xrefs = {
                'TalentNPCSkillCond4': refset_condition,
                'TalentNPCSkillCond5': refset_condition,
                'TalentNPCSkillCond6': refset_condition,
-               'ChainOrder': 'D9B88F26',
                'HeroChainEff': refset_enhance},
+    'CHR_UroBody': {'Arts1': refset_arts_pc,
+                    'Arts2': refset_arts_pc,
+                    'Arts3': refset_arts_pc,
+                    'Arts4': refset_arts_pc,
+                    'Arts5': refset_arts_pc,
+                    'Arts6': refset_arts_pc,
+                    'TalentArts1': refset_arts_pc,
+                    'TalentArts2': refset_arts_pc,
+                    'TalentArts3': refset_arts_pc},
     'EVT_HeroEquip': {'pc': refset_pc},
     'EVT_HideList': {'hideObj01': refset_gimmick_object,
                      'hideObj02': refset_gimmick_object,
@@ -9408,11 +9630,15 @@ table_xrefs = {
                      'hideObj15': refset_gimmick_object,
                      'hideObj16': refset_gimmick_object},
     'EVT_listEv': {'linkID': refset_event,
-                   'linkCondition': 'FLD_ConditionList'},
+                   'linkCondition': 'FLD_ConditionList',
+                   'linkID2': refset_event,
+                   'linkCondition2': 'FLD_ConditionList'},
     'EVT_listFev': {'linkID': refset_event,
                     'linkCondition': 'FLD_ConditionList'},
     'EVT_listQst': {'linkID': refset_event,
-                    'linkCondition': 'FLD_ConditionList'},
+                    'linkCondition': 'FLD_ConditionList',
+                    'linkID2': refset_event,
+                    'linkCondition2': 'FLD_ConditionList'},
     'EVT_listTlk': {'linkID': refset_event,
                     'linkCondition': 'FLD_ConditionList'},
     'FLD_ColonyList': {'map': refset_map,
@@ -9422,6 +9648,7 @@ table_xrefs = {
                        'Reward4': 'FLD_PerkPermanent',
                        'Reward5': 'FLD_PerkPermanent'},
     'FLD_ConditionClassLv': {'ClassID': refset_talent},
+    'FLD_ConditionEnv': {'Weather': 'RSC_WeatherSet'},
     'FLD_ConditionQuest': {'QuestFlag1': (None, None, 'condition_quest'),
                            'QuestFlag2': (None, None, 'condition_quest'),
                            'NotQuestFlag1': (None, None, 'condition_quest'),
@@ -9435,7 +9662,8 @@ table_xrefs = {
                       'IdDropPrecious': refset_item,
                       'GetEnArts': refset_arts_pc,
                       'GetEnSkill': refset_skill},
-    'FLD_InfoList': {'PieceID1': refset_item,
+    'FLD_InfoList': {'EventName': refset_event_name,
+                     'PieceID1': refset_item,
                      'PieceID2': refset_item,
                      'PieceID3': refset_item,
                      'PieceID4': refset_item,
@@ -9456,6 +9684,20 @@ table_xrefs = {
                                'Text3': '621C6EF4',
                                'Text4': '621C6EF4',
                                'Text5': '621C6EF4'},
+    'FLD_InterestEventReaction': {'Character': 'CHR_PC',
+                                  'Text': '621C6EF4'},
+    'FLD_InterestEventTable': {'StartEvent1': 'FLD_InterestEventStart',
+                               'StartEvent2': 'FLD_InterestEventStart',
+                               'StartEvent3': 'FLD_InterestEventStart',
+                               'StartEvent4': 'FLD_InterestEventStart',
+                               'StartEvent5': 'FLD_InterestEventStart',
+                               'StartEvent6': 'FLD_InterestEventStart',
+                               'ReactionEvent1': 'FLD_InterestEventReaction',
+                               'ReactionEvent2': 'FLD_InterestEventReaction',
+                               'ReactionEvent3': 'FLD_InterestEventReaction',
+                               'ReactionEvent4': 'FLD_InterestEventReaction',
+                               'ReactionEvent5': 'FLD_InterestEventReaction',
+                               'ReactionEvent6': 'FLD_InterestEventReaction'},
     'FLD_KizunaChangeFlag': {'EventID': refset_event,
                              'NpcIconFlag': '2BBE255B',
                              'ColonyIconFlag': 'E1C78647',
@@ -9480,6 +9722,17 @@ table_xrefs = {
                         'TalkID3': 'FLD_NpcTalkResource',
                         'TalkID4': 'FLD_NpcTalkResource',
                         'TalkID5': 'FLD_NpcTalkResource'},
+    'FLD_NpcTalkResource': {'BaseEventName': refset_event_name,
+                            'EventName1': refset_event_name,
+                            'EventName2': refset_event_name,
+                            'EventName3': refset_event_name,
+                            'EventName4': refset_event_name,
+                            'EventName5': refset_event_name,
+                            'EventName6': refset_event_name,
+                            'EventName7': refset_event_name,
+                            'EventName8': refset_event_name,
+                            'EventName9': refset_event_name,
+                            'EventName10': refset_event_name},
     'FLD_RelationColony': {'field_6E741E84': 'FLD_ColonyList',
                            'field_32A30DD7': 'FLD_ColonyList'},
     'FLD_UMonsterList': {'Zone': refset_map},
@@ -9545,6 +9798,8 @@ table_xrefs = {
                  'StartPurpose': 'QST_Purpose',
                  'LinkQuest': 'QST_List'},
     'QST_Purpose': {'TaskID': 'QST_Task',
+                    'CallEventA': refset_event_name,
+                    'CallEventB': refset_event_name,
                     'NextPurposeA': 'QST_Purpose',
                     'NextPurposeB': 'QST_Purpose'},
     'QST_Task': {'TaskID1': (None, None, 'qst_task'),
@@ -9607,6 +9862,46 @@ table_xrefs = {
     'SYS_TutorialEnemyInfo': {'field_10FF2123': refset_enemy,
                               'field_1A391DEB': refset_enemy,
                               'field_032170A4': refset_enemy},
+    'SYS_WeatherRate': {'Weather1': 'RSC_WeatherSet',
+                        'Weather2': 'RSC_WeatherSet',
+                        'Weather3': 'RSC_WeatherSet',
+                        'Weather4': 'RSC_WeatherSet'},
+    'SYS_WeatherTable': {'TimeZone01': 'SYS_WeatherRate',
+                         'TimeZone02': 'SYS_WeatherRate',
+                         'TimeZone03': 'SYS_WeatherRate',
+                         'TimeZone04': 'SYS_WeatherRate',
+                         'TimeZone05': 'SYS_WeatherRate'},
+    'ma01a_GMK_Corpse': {'EventID': refset_event_name},
+    'ma01a_GMK_Event': {'EventID': refset_event_name},
+    'ma04a_GMK_Corpse': {'EventID': refset_event_name},
+    'ma04a_GMK_Event': {'EventID': refset_event_name},
+    'ma07a_GMK_Corpse': {'EventID': refset_event_name},
+    'ma07a_GMK_Event': {'EventID': refset_event_name},
+    'ma09a_GMK_Corpse': {'EventID': refset_event_name},
+    'ma09a_GMK_Event': {'EventID': refset_event_name},
+    'ma11a_GMK_Corpse': {'EventID': refset_event_name},
+    'ma11a_GMK_Event': {'EventID': refset_event_name},
+    'ma14a_GMK_Event': {'EventID': refset_event_name},
+    'ma15a_GMK_Event': {'EventID': refset_event_name},
+    'ma17a_GMK_Event': {'EventID': refset_event_name},
+    'ma20a_GMK_Event': {'EventID': refset_event_name},
+    'ma22a_GMK_Event': {'EventID': refset_event_name},
+    'ma90a_GMK_Event': {'EventID': refset_event_name},
+    'ma01a_GMK_TreasureBox': {'RewardID': 'ITM_RewardAssort'},
+    'ma04a_GMK_TreasureBox': {'RewardID': 'ITM_RewardAssort'},
+    'ma07a_GMK_TreasureBox': {'RewardID': 'ITM_RewardAssort'},
+    'ma09a_GMK_TreasureBox': {'RewardID': 'ITM_RewardAssort'},
+    'ma11a_GMK_TreasureBox': {'RewardID': 'ITM_RewardAssort'},
+    'ma14a_GMK_TreasureBox': {'RewardID': 'ITM_RewardAssort'},
+    'ma15a_GMK_TreasureBox': {'RewardID': 'ITM_RewardAssort'},
+    'ma17a_GMK_TreasureBox': {'RewardID': 'ITM_RewardAssort'},
+    'ma22a_GMK_TreasureBox': {'RewardID': 'ITM_RewardAssort'},
+    'ma90a_GMK_TreasureBox': {'RewardID': 'ITM_RewardAssort'},
+    'ma01a_GMK_Corpse': {'Reward': 'ITM_RewardGrieve'},
+    'ma04a_GMK_Corpse': {'Reward': 'ITM_RewardGrieve'},
+    'ma07a_GMK_Corpse': {'Reward': 'ITM_RewardGrieve'},
+    'ma09a_GMK_Corpse': {'Reward': 'ITM_RewardGrieve'},
+    'ma11a_GMK_Corpse': {'Reward': 'ITM_RewardGrieve'},
     '02E2BD0D': {'affType': '76D0D7D9',
                  'matchPop1': refset_gimmick,
                  'matchPop2': refset_gimmick,
@@ -9631,6 +9926,7 @@ table_xrefs = {
     '1623B3A0': {'ContentsID': 'MNU_DLCContentsInfo'},
     '1A109460': {'ItmGemID': refset_item},  # mapping from gem ID to item ID
     '268AE713': {'affType': '76D0D7D9'},
+    '296A9010': {'EventID': refset_event_name},
     '39D667D1': {'Talent': refset_talent},
     '4DA4962C': {'NPC': refset_npc},
     '55C603C7': {'affType': '76D0D7D9'},
@@ -9655,12 +9951,6 @@ table_xrefs = {
                  'Contents3': '7A6735C6',
                  'Contents4': '7A6735C6'},
     '6EC8096C': {'CookName': 'FLD_CookRecipe'},
-    '70810224': {'Text1': 'msg_autotalk',
-                 'Text2': 'msg_autotalk',
-                 'Text3': 'msg_autotalk'},
-    '7138BADF': {'Text1': 'msg_autotalk',
-                 'Text2': 'msg_autotalk',
-                 'Text3': 'msg_autotalk'},
     '72C56041': {'PC1': refset_pc,
                  'Object1': 'RSC_MapObjList',
                  'PC2': refset_pc,
@@ -9671,12 +9961,6 @@ table_xrefs = {
                  'Contents2': '808F8A04',
                  'Contents3': '808F8A04',
                  'Contents4': '808F8A04'},
-    '7A6735C6': {'Text1': 'msg_autotalk',
-                 'Text2': 'msg_autotalk',
-                 'Text3': 'msg_autotalk'},
-    '808F8A04': {'Text1': 'msg_autotalk',
-                 'Text2': 'msg_autotalk',
-                 'Text3': 'msg_autotalk'},
     '861D003A': {'RelationID1': 'FLD_RelationNpc',
                  'RelationID2': 'FLD_RelationNpc',
                  'RelationID3': 'FLD_RelationNpc',
@@ -9687,25 +9971,19 @@ table_xrefs = {
                  'RelationID8': 'FLD_RelationNpc',
                  'RelationID9': 'FLD_RelationNpc',
                  'RelationID10': 'FLD_RelationNpc'},
-    '9AE9C010': {'Text1': 'msg_autotalk',
-                 'Text2': 'msg_autotalk',
-                 'Text3': 'msg_autotalk'},
+    '95351164': {'RewordID': 'ITM_RewardAssort'},
+    '9ED5F02A': {'EventID': refset_event_name},
     'A24771FC': {'Contents1': '9AE9C010',
                  'Contents2': '9AE9C010',
                  'Contents3': '9AE9C010',
                  'Contents4': '9AE9C010'},
     'A6AAF689': {'ArtsID': refset_arts_pc},
-    'ABE85D5D': {'Text1': 'msg_autotalk',
-                 'Text2': 'msg_autotalk',
-                 'Text3': 'msg_autotalk'},
     'B971C420': {'Talent': refset_talent,
                  'ArtsID': (('BTL_Arts_PC', 'E29EF7E9'), )},
     'BF287371': {'affType': '76D0D7D9'},
     'C29E28FD': {'Object1': 'RSC_MapObjList'},
+    'CC55A8C8': {'setupName': refset_event_name},
     'D327B2BC': {'TaskID': 'QST_Task'},
-    'D4A3534F': {'Text1': 'msg_autotalk',
-                 'Text2': 'msg_autotalk',
-                 'Text3': 'msg_autotalk'},
     'D9B88F26': {'CompBonus1': refset_enhance,
                  'CompBonus2': refset_enhance,
                  'CompBonus3': refset_enhance,
@@ -9720,13 +9998,13 @@ table_xrefs = {
     'DA526616': {'VolID': '5CD15665'},
     'DF81B4D2': {'affType': '76D0D7D9'},
     'E44BEAA2': {'PC': refset_pc},
-    'F0A0A1B1': {'Text1': 'msg_autotalk',
-                 'Text2': 'msg_autotalk',
-                 'Text3': 'msg_autotalk'},
+    'F0D5C3B6': {'EventID': refset_event_name},
     'FAC1F258': {'RelationID1': 'FLD_RelationColony',
                  'RelationID2': 'FLD_RelationColony',
                  'RelationID3': 'FLD_RelationColony',
                  'RelationID4': 'FLD_RelationColony'},
+    'FD4384CB': {'EventID': refset_event_name},
+    'FEF315B6': {'EventID': refset_event_name},
 }
 
 def add_xref(table, row, field_idx, value, target_table, target_row):
@@ -9803,12 +10081,17 @@ def resolve_field_xrefs(tables, table, field_idx, target, add_link):
                         else:
                             test_table = None
                             test_row = None
+                            target_table = 'None'  # Suppress no-match warning
                     else:
                         raise Exception(f'Unhandled special case: {target[2]}')
                 elif name == 'SYS_GimmickLocation.GimmickID':
                     test_table = tables['SYS_GimmickLocation']
                     idx_GimmickID = test_table.field_index('GimmickID')
                     test_row = test_table.id_to_row(id, idx_GimmickID)
+                elif len(target) > 2 and target[2] == 'event_name':
+                    test_table = tables[name]
+                    hash = murmur32(id)
+                    test_row = test_table.id_to_row(f'<{hash:08X}>')
                 else:
                     test_table = tables[name]
                     test_row = test_table.id_to_row(id)
@@ -9820,7 +10103,9 @@ def resolve_field_xrefs(tables, table, field_idx, target, add_link):
                         raise ValueError(f'Duplicate ID {id} in table {target_table_name} (reference from {table.name}#{table.get(row, 0)})')
             if target_row is None:
                 # Suppress intentionally unmatching cases
-                if table.name == 'QST_Purpose' and table.field(field_idx).name.startswith('NextPurpose') and (id == 30000 or id == 30001):
+                if target_table == 'None':
+                    pass
+                elif table.name == 'QST_Purpose' and table.field(field_idx).name.startswith('NextPurpose') and (id == 30000 or id == 30001):
                     pass
                 elif table.name == 'QST_TaskTalk' and table.field(field_idx).name == 'TargetID' and re.match(r'^[0-9]+$', id):
                     pass
@@ -9859,6 +10144,13 @@ def resolve_field_xrefs(tables, table, field_idx, target, add_link):
                     param2 = table.get(row, idx_param2)
                     if type <= 7:
                         value += f' ({param1})'
+                    elif type == 12:
+                        t_EnemyData = tables['FLD_EnemyData']
+                        f_MsgName = t_EnemyData.field_index('MsgName')
+                        enemy_row = t_EnemyData.id_to_row(param1)
+                        enemy_name = (t_EnemyData.get(enemy_row, f_MsgName)
+                                      if enemy_row else str(param1))
+                        value += f' ({enemy_name}, {param2})'
                     elif type != 255:
                         value += f' ({param2})'
                 elif target[2] == 'scn_category':
@@ -9873,6 +10165,8 @@ def resolve_field_xrefs(tables, table, field_idx, target, add_link):
                         target_table = tables['msg_player_name']
                         target_row -= 7
                         value = target_table.get(target_row, target_field)
+                elif target[2] == 'event_name':
+                    value = table.get(row, field_idx)
                 elif target[2] in ('condition_quest', 'qst_task',
                                    'gimmick_object', 'field_vanish'):
                     pass  # No additional logic
@@ -9888,20 +10182,24 @@ def resolve_field_xrefs(tables, table, field_idx, target, add_link):
 def resolve_xrefs(tables):
     """Resolve all cross-references in the given list of tables."""
 
+    # Quick hack to deal with recursive text refs.
+    recursive_text_tables = ('FLD_NpcList',  # must be after FLD_NpcResource
+                             'BTL_Achievement',  # must be after FLD_EnemyData
+                             )
     for table_name, fields in text_xrefs.items():
-        if table_name == 'FLD_NpcList':
-            continue  # force after FLD_NpcResource
         if not table_name in tables:
-          continue  # force skip missing tables
+            continue  # skip missing tables
+        if table_name in recursive_text_tables:
+            continue  # postpone until after this loop
         table = tables[table_name]
         for field, target in fields.items():
             resolve_field_xrefs(tables, table, table.field_index(field),
                                 target, False)
-
-    for field, target in text_xrefs['FLD_NpcList'].items():
-        resolve_field_xrefs(tables, tables['FLD_NpcList'],
-                            tables['FLD_NpcList'].field_index(field), target,
-                            False)
+    for table_name in recursive_text_tables:
+        for field, target in text_xrefs[table_name].items():
+            resolve_field_xrefs(tables, tables[table_name],
+                                tables[table_name].field_index(field), target,
+                                False)
 
     for name, table in tables.items():
         if name == 'BTL_Achievement':  # Special case for value-dependent refs
@@ -9910,10 +10208,10 @@ def resolve_xrefs(tables):
             for row in range(table.num_rows):
                 type = table.get(row, idx_type)
                 param1 = table.get(row, idx_param1)
-                if type in (9,12):
-                    target_table = tables['FLD_EnemyData']
-                elif type in (10,11):
+                if type in (9,10,11):
                     target_table = tables['BTL_Arts_PC']
+                elif type == 12:
+                    target_table = tables['FLD_EnemyData']
                 elif type >= 13 and type <= 17:
                     target_table = tables['BTL_Skill_PC']
                 else:
@@ -10002,35 +10300,52 @@ def main(argv):
                         help=('Output status messages during parsing.\n'
                               'Use multiple times for more verbosity.'))
     parser.add_argument('-o', '--outdir', metavar='OUTDIR', required=True,
-                        help='Path of output directory for resulting files.')
-    parser.add_argument('-f', '--format', metavar='FORMAT', required=False,
-                        help='Output format. Possible values: json, html. Default: html')					
-    parser.add_argument('files', metavar='FILE', nargs='+',
-                        help='Paths of BDAT files to read.')
+                        help='Path of output directory for table HTML files.')
+    parser.add_argument('bdatdir',
+                        help='Path of Xenoblade 3 "bdat" directory.')
+    parser.add_argument('language',
+                        help='Language code for text files, one of: cn fr gb ge it jp kr sp tw')
     args = parser.parse_args()
     verbose = args.verbose if args.verbose is not None else 0
 
+    if not os.path.exists(args.bdatdir):
+        print(f'BDAT directory {args.bdatdir} does not exist', file=sys.stderr)
+        sys.exit(1)
+    if not os.path.exists(os.path.join(args.bdatdir, 'sys.bdat')):
+        print(f'{args.bdatdir} does not look like a BDAT directory',
+              file=sys.stderr)
+        sys.exit(1)
+    if not os.path.exists(os.path.join(args.bdatdir, args.language)):
+        print(f'Language directory not found: {args.language}',
+              file=sys.stderr)
+        sys.exit(1)
+
     tables = {}
-    for file in args.files:
+    files = (glob.glob(os.path.join(args.bdatdir, '*.bdat'))
+             + glob.glob(os.path.join(args.bdatdir, args.language, '*/*.bdat'))
+             + glob.glob(os.path.join(args.bdatdir, args.language, '*/*/*.bdat')))
+    for file in files:
         bdat = Bdat(file, verbose)
         for table in bdat.tables():
             tables[table.name] = table
 
-    if 'BTL_LvRev' in tables:  # XC3 only
-        resolve_labels(tables)
-        resolve_xrefs(tables)
+    resolve_labels(tables)  # XC3 specific
+    resolve_xrefs(tables)
 
+    langcodes = {'cn': 'zh-Hans',
+                 'fr': 'fr',
+                 'gb': 'en',
+                 'ge': 'de',
+                 'it': 'it',
+                 'jp': 'ja',
+                 'kr': 'ko',
+                 'sp': 'es',
+                 'tw': 'zh-Hant'}
     if not os.path.exists(args.outdir):
         os.mkdir(args.outdir)
     for name, table in tables.items():
-        fname = re.sub('[^ -.0-~]', '_', name)
-        s = ""
-        if args.format != None and args.format.lower() == 'json':
-            fname += '.json'
-            s = table.printJson()
-        else:
-            fname += '.html'
-            s = table.printHtml()
+        fname = re.sub('[^ -.0-~]', '_', name) + '.html'
+        s = table.print(langcodes.get(args.language))
         with open(os.path.join(args.outdir, fname), 'wb') as f:
             f.write(s.encode('utf-8'))
 # end def
