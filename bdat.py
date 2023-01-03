@@ -16,6 +16,7 @@ import os
 import re
 import struct
 import sys
+import json
 
 
 ########################################################################
@@ -8247,7 +8248,7 @@ class BdatTable(object):
 </html>
 """
 
-    def print(self, language=None):
+    def printHtml(self, language=None):
         """Return a string containing this table in HTML format.
 
         Parameters:
@@ -8305,6 +8306,26 @@ class BdatTable(object):
             s += '    </tr>\n'
         s += self._HTML_FOOTER
         return s
+
+    def printJson(self):
+        outData = []
+        for i in range(len(self._rows)):
+            row = self._rows[i]
+            id = row[0]
+            rowData = {}
+            for j in range(1, len(self._fields)):
+                if self._fields[j].array_size is None:
+                    values = (row[j],)
+                else:
+                    values = row[j]
+                for value in values:
+                    valueToUse = value
+                    if isinstance(value, tuple):
+                        valueToUse = value[0]
+                    rowData[self._fields[j].name] = valueToUse
+            # end for
+            outData.append(rowData)
+        return json.dumps(outData)
 
     @staticmethod
     def _refkey(x):
@@ -10314,7 +10335,9 @@ def main(argv):
                         help=('Output status messages during parsing.\n'
                               'Use multiple times for more verbosity.'))
     parser.add_argument('-o', '--outdir', metavar='OUTDIR', required=True,
-                        help='Path of output directory for table HTML files.')
+                        help='Path of output directory for resulting files.')
+    parser.add_argument('-f', '--format', metavar='FORMAT', required=False,
+                        help='Output format. Possible values: json, html. Default: html')
     parser.add_argument('bdatdir',
                         help='Path of Xenoblade 3 "bdat" directory.')
     parser.add_argument('language',
@@ -10358,8 +10381,14 @@ def main(argv):
     if not os.path.exists(args.outdir):
         os.mkdir(args.outdir)
     for name, table in tables.items():
-        fname = re.sub('[^ -.0-~]', '_', name) + '.html'
-        s = table.print(langcodes.get(args.language))
+        fname = re.sub('[^ -.0-~]', '_', name)
+        s = ""
+        if args.format != None and args.format.lower() == 'json':
+            fname += '.json'
+            s = table.printJson()
+        else:
+            fname += '.html'
+            s = table.printHtml(langcodes.get(args.language))
         with open(os.path.join(args.outdir, fname), 'wb') as f:
             f.write(s.encode('utf-8'))
 # end def
