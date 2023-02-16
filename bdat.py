@@ -81,6 +81,9 @@ map_names = [e for l in [
     # Challenge battle maps
     [f"ma25a_{i:02}" for i in range(1, 18 + 1)], # one for each challenge
     
+    # Challenge gauntlet maps
+    [f"ma25a_{i:02}" for i in range(50, 50 + 10 + 1)], # one for each challenge
+    
     # Debug/cutscene/unused/unknown maps
     ["gmk_test", "ma40a", "ma0101", "ma90a",
     "ma04a_demo", "ma09a_demo", "ma15a_demo",
@@ -10246,15 +10249,24 @@ def unhash(hash, default=None):
 ########################################################################
 # Miscellaneous data tables
 
-# UINT fields that should be parsed as HSTRINGs
+# UINT fields that should be parsed as HSTRINGs (dict of table: [fields])
 uint_hashes = {
+    'SYS_GimmickLocation': ['field_6C50B44E', 'Option1'],
+    '4CECED20': ['field_6C50B44E', 'Option1'],  # Same structure as SYS_GimmickLocation but with DLC content
     '8F29BCAF': ['LocationBdat', 'field_5177BA21'],
     'C5C5F70E': ['FormationTopWindow', 'FormationCooking', 'field_07F1CB46',
                  'field_F1D020CF', 'field_E27F23C7', 'FormationCookingAction',
                  'FormationTraining'],
-    'SYS_GimmickLocation': ['field_6C50B44E', 'Option1'],
-    '4CECED20': ['field_6C50B44E', 'Option1']  # Same structure as SYS_GimmickLocation but with DLC content
 }
+
+# Integer fields that should be printed in hexadecimal (set of fields,
+# applied to all tables)
+hex_fields = set([
+    # Event text table fields
+    'talkattr',
+    'field_2B51649C',
+    'field_C1A03E98',
+])
 
 # Alphabet used to bruteforce event message labels
 # Note: As of the time of writing this code it doesn't appear that labels
@@ -10601,6 +10613,8 @@ class BdatTable(object):
                     else:
                         if isinstance(value, tuple):
                             value = value[1]
+                        if self._fields[i].name in hex_fields:
+                            value = f'0x{value:X}'
                         value_str = self._print_value(value, self._fields[i])
                     s += f'      <td>{value_str}</td>\n'
             # end for
@@ -12610,12 +12624,18 @@ def resolve_xrefs(tables):
                         type = table.get(row, type_idx)
                         cond = table.get(row, field_idx)
                         assert type > 0
+                        # TODO: add missing DLC3 condition table IDs
                         typename = ('List', 'Scenario', 'Quest', 'Env',
                                     'Flag', 'Item', 'PT', 'MapGimmick',
-                                    'UMonster', 'Tutorial', 'PcLv', 'ClassLv')[type-1]
+                                    'UMonster', 'Tutorial', 'PcLv', 'ClassLv', None)[type-1]
+                        if typename is None:
+                            continue
                         target_table = tables[f'FLD_Condition{typename}']
+                        id = target_table.id_to_row(cond)
+                        if id is None:
+                            continue
                         add_xref(table, row, field_idx, None,
-                                 target_table, target_table.id_to_row(cond))
+                                 target_table, id)
                 else:
                     resolve_field_xrefs(tables, table, field_idx, target, True)
         hash_re = re.compile(r'<([0-9A-F]{8})>$')
