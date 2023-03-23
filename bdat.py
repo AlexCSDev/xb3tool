@@ -11399,10 +11399,20 @@ def resolve_labels(tables):
                 else:
                     objnames[hash] = name
                     gmknames[f'<{hash:08X}>'] = name
+                    hashes[hash] = name
 
     # Sort table list for sensible warning output order.
     for table in sorted(tables.values(), key=lambda t: t.name):
         assert table.field(1).is_id()
+        for row in range(table.num_rows):
+            value = table.get(row, 1)
+            m = hash_matcher.match(value)
+            if not m:
+                hash = murmur32(value)
+                #print(f'Non hashed value: {hash:08X} for {value}')
+                if hash not in hashes:
+                    print(f'Added hash for {hash:08X} for {value}')
+                    hashes[hash] = value
         if table.name.startswith('msg_cq') or table.name.startswith('msg_ev') or table.name.startswith('msg_tq') or table.name.startswith('msg_nq') or table.name.startswith('msg_sq') or table.name.startswith('msg_tlk'):
             prefix = f'{table.name[4:]}_'
             alt_prefix = None
@@ -11434,6 +11444,7 @@ def resolve_labels(tables):
                     hash_str = f'<{murmur32(label):08X}>'
                     row = labels.get(hash_str)
                     if row is not None:
+                        hashes[murmur32(label)] = label
                         table.set(row, 1, label)
                         del labels[hash_str]
                         detected_letter = letter
@@ -11476,6 +11487,7 @@ def resolve_labels(tables):
                         print(f'Warning: gimmick name {name} hash {hash:08X} collides with existing name {hashes[hash]}', file=sys.stderr)
                     else:
                         gmknames[hashstr] = name
+                        hashes[hash] = name
                 id += 1
 
     # SYS_GimmickLocation.GimmickID comes last because we need the dict
@@ -13189,7 +13201,14 @@ def main(argv):
 
     resolve_labels(tables)  # XC3 specific
     resolve_xrefs(tables)
+    if not os.path.exists(args.outdir):
+        os.mkdir(args.outdir)	
+    with open(os.path.join(args.outdir, "hashes.txt"), 'wb') as f:
+        for row in hashes:
+            if hashes[row] is not None:
+                f.write(("%s,%s\n"%(f'{row:08X}',hashes[row])).encode('utf-8'))
 
+    return
     langcodes = {'cn': 'zh-Hans',
                  'fr': 'fr',
                  'gb': 'en',
