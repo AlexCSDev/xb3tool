@@ -76,13 +76,13 @@ def murmur32(s):
 # Gimmick hashes are compiled on-the-fly
 map_names = [e for l in [
     # Regular maps
-    [f"ma{i:02}a" for i in range(1, 80 + 1)], # not all numbers are used though
+    [f"ma{i+1:02}a" for i in range(80)], # not all numbers are used though
 
     # Challenge battle maps
-    [f"ma25a_{i:02}" for i in range(1, 18 + 1)], # one for each challenge
+    [f"ma25a_{i+1:02}" for i in range(19)], # one for each challenge
 
     # Challenge gauntlet maps
-    [f"ma25a_{i:02}" for i in range(50, 50 + 10 + 1)], # one for each challenge
+    [f"ma25a_{i+50:02}" for i in range(10)], # one for each challenge
 
     # Debug/cutscene/unused/unknown maps
     ["gmk_test", "ma40a", "ma0101", "ma90a",
@@ -93,6 +93,7 @@ map_names = [e for l in [
 ] for e in l]
 gimmick_types = [
     "Affordance",
+    "AreaBattle",
     "BGM",
     "BlackMist",
     "Collection",
@@ -104,6 +105,7 @@ gimmick_types = [
     "ElevatorSw",
     "EnemyAff",
     "EnemyDead",
+    "EnemyFogPop",
     "EnemyPop",
     "EnemyWave",
     "EtherPoint",
@@ -118,6 +120,8 @@ gimmick_types = [
     "Grave",
     "IconLocator",
     "Interest",
+    "JumpPortal",
+    "KizunaEvent",
     "Location",
     "MapJumpList",
     "Mob",
@@ -129,6 +133,7 @@ gimmick_types = [
     "SE",
     "Schedule",
     "TreasureBox",
+    "WalkEvent",
     "Weather",
 ]
 
@@ -175,6 +180,7 @@ hashes = {
     0x41CBF846: "gimmickPuzzle",
     0x5E93DEC1: "gimmickBlackMist",
     0x9BDB275E: "gimmickGas",
+    0x3510A3F8: "gimmickJumpPortal",
     0x05112AA4: None,  # Has fields: affType
     0x95F00CDF: None,  # Has fields: Condition, affType
     0xF0A0A1B1: None,  # Has Fields: {TargetMob,Text,DispTime}1-3
@@ -437,10 +443,10 @@ hashes = {
     0xE1C78647: None,  # Has fields: {ColonyID,value}1-3, Comment
     0x861D003A: None,  # Has fields: {RelationID,value}1-10, Comment
     0xFAC1F258: None,  # Has fields: {RelationID,value}1-4, Comment
-    0xC80D5841: "FLD_AffCollection",  # FIXME: unclear if correct
+    0xC80D5841: "FLD_AffCollection",
     0xCB74AC0D: "SYS_GimmickLocation",
     0x35454DAE: "SYS_PreciousIDGimmick",
-    0x8F29BCAF: None,  # Has fields: GimmickID
+    0x8F29BCAF: None,  # Has fields: GimmickID, LocationBdat
     0x15DE3DDF: None,  # Ferronis hulk startup costs
     0x6EDF0096: None,  # (Possibly related to 2500 Ether Cylinder quest?) Has fields: Cylinder, ItemCountMin, ItemCountMax, Item
     0x7729B35C: None,  # Has fields: Condition, Item{Id,Rate}1-10
@@ -478,6 +484,7 @@ hashes = {
     0xF0F61B4E: "SYS_FootPrintOffset",
     0x06955984: "SYS_EffConvert",
     0x5AC778BE: "SYS_EffMaterial",
+    0x226C552C: "SYS_EnemyWave1Less",
     0xEE61112B: "FLD_LookAt",  # FIXME: unclear if correct
     0xFB616D5F: "SYS_CharacterDirection",
     0x6009A5C3: "SYS_CommonDirection",
@@ -536,13 +543,13 @@ hashes = {
     0xAFD8D84D: "SYS_FlowEventFade",
     0xB93870C8: "SYS_TutorialMessage",
     0x2177D111: "MNU_VoiceList",
-    0xE15A6DE7: None,  # Has fields: RewardA1-2, RewardB1-2
+    0xE15A6DE7: "FLD_WarReward",
     0xA8FEE5F0: "MNU_UroSkillList",
     0xAFD83F1B: "MNU_Attachment",
     0x8CA278B0: "SYS_LoadingTips",
     0x08EF7F06: "MNU_formation_list",
     0x74385681: "MNU_HeroDictionary",
-    0xC810A4F3: None,  # Has fields: NumberingID, OpenFlag, LotID, RewordName, RewordText
+    0xC810A4F3: "AMB_SpecialAmiibo",
     0x2FE3444A: "BTL_AutoSetAccessory",
     0xFA253EBF: "BTL_AutoSetArts",
     0x139348CC: "BTL_AutoSetGem",
@@ -559,26 +566,6 @@ hashes = {
     0xCED21F4E: "MNU_PatchInfo",
     0xB150F956: "MNU_PatchDetailA",
     0xF8B54C2C: "MNU_PatchDetailB",
-
-    # Challenge gauntlet tables ("SU"rvival)
-    0x6FF3F9DB: "BTL_ChSU_List",
-    0x26B3AA38: "BTL_ChSU_Emblem",
-    0x628C37CD: "BTL_ChSU_RateEvent",
-    0x37CA6FBA: "BTL_ChSU_RateShop",
-    0xB913050A: "BTL_ChSU_RateGate",
-    0x8D16A002: "BTL_ChSU_EnemyTable",
-    0xD027C230: None, # gauntlet shop list
-    0xA2626871: None, # gauntlet whimsy (gate/portal) list
-    0x28AAFFB2: None, # gauntlet event list
-    0x27ED3222: "BTL_ChSU_ShopItem",
-    0x5F2A841C: "msg_btl_ChSU_gate_message",
-    0x471783F9: "msg_btl_ChSU_event_caption",
-    0x8FB8F268: "msg_btl_ChSU_shop_caption",
-    0x81D88860: "msg_btl_ChSU_gate_caption",
-    0xB85EEAE1: "msg_btl_ChSU_gate_name",
-    0xECE07266: "msg_btl_ChSU_emblem_name",
-    0xC20EDDF5: None, # emblem caption list
-
     0x19C1C36F: "msg_autotalk",
     0xC89242D1: "msg_autotalk_enemy",
     0x825EDC88: "msg_btl_achievement",
@@ -701,6 +688,186 @@ hashes = {
     0x981E9686: None,
     0xBF147F74: None,
 
+    # Other tables:
+    0xD00ADE37: "AMB_BasicLot",
+    0xC3802B6C: "AMB_BonusExpLot",
+    0xC36820B1: "AMB_ClassExpLot",
+    0xF58766B8: "AMB_CoinLot",
+    0x95351164: "AMB_CollectionLot",
+    0x1CAFF87D: "AMB_GoldCoinLot",
+    0x7E6184E0: "AMB_TradValueLot",
+    0xDB3F6A13: "BTL_Ai",
+    0xB5B61435: "BTL_FA_Prm01",
+    0xF350A3E5: "BTL_FA_Prm02",
+    0xC93F0967: "BTL_FA_Prm03",
+    0x903C4F6B: "BTL_FA_Prm04",
+    0xA6D481B1: "BTL_FA_Prm05",
+    0x4A7F0ABE: "BTL_FA_Prm06",
+    0xB25E81A9: "BTL_FA_Prm07",
+    0xCE4989DD: "BTL_FA_Prm08",
+    0x39E57974: "BTL_FA_Prm09",
+    0x7E3D9C71: "BTL_FA_Prm10",
+    0xB40B5F04: "BTL_FA_Prm11",
+    0x5D9F1225: "BTL_FA_Prm12",
+    0xFC178762: "BTL_FA_Prm13",
+    0xACABE7A5: "BTL_FA_Prm14",
+    0x9917A283: "BTL_FA_Prm15",
+    0xB7A3CAD7: "BTL_FA_Prm16",
+    0x00D58307: "BTL_FA_Prm17",
+    0x9C3EBC4A: "BTL_FA_Prm18",
+    0x37C1077E: "BTL_FA_Prm19",
+    0xE9008F12: "BTL_FA_Prm20",
+    0x11F3AE13: "BTL_FA_Prm21",
+    0x3350571B: "BTL_FA_Prm22",
+    0xFA1E142D: "BTL_FA_Prm23",
+    0x823474FB: "BTL_FA_Prm24",
+    0x0C2B40C0: "BTL_FA_Prm25",
+    0xB8770FA6: "BTL_FA_Prm26",
+    0x1CEFCA4A: "BTL_FA_Prm27",
+    0x3E1EF073: "BTL_FA_Prm28",
+    0x07F3243D: "BTL_FA_Prm29",
+    0xC7993641: "BTL_SystemBalance",
+    0x1BE05692: "BTL_TL_PrmRev01",
+    0x84073E32: "BTL_TL_PrmRev02",
+    0xCE66DFE9: "BTL_TL_PrmRev03",
+    0x23CF7909: "BTL_TL_PrmRev04",
+    0x46C05B6E: "BTL_TL_PrmRev05",
+    0xCD5509A5: "BTL_TL_PrmRev06",
+    0x934AA80D: "BTL_TL_PrmRev07",
+    0xBF4EA1B8: "BTL_TL_PrmRev08",
+    0xBB5036F7: "BTL_TL_PrmRev09",
+    0x9449008E: "BTL_TL_PrmRev10",
+    0xE10FBA8D: "BTL_TL_PrmRev11",
+    0xDBA9FA90: "BTL_TL_PrmRev12",
+    0x32AE7B9A: "BTL_TL_PrmRev13",
+    0x0FD802C5: "BTL_TL_PrmRev14",
+    0x6E8E2F9C: "BTL_TL_PrmRev15",
+    0x0D38ED98: "BTL_TL_PrmRev16",
+    0x1CA60603: "BTL_TL_PrmRev17",
+    0xA1FA5E91: "BTL_TL_PrmRev18",
+    0xD5230761: "BTL_TL_PrmRev19",
+    0x681F1E1D: "BTL_TL_PrmRev20",
+    0x521BEF78: "BTL_TL_PrmRev21",
+    0x93FA1C52: "BTL_TL_PrmRev22",
+    0x487D1AD0: "BTL_TL_PrmRev23",
+    0x8E0066B2: "BTL_TL_PrmRev24",
+    0x86453FF9: "BTL_TL_PrmRev25",
+    0x568D44E5: "BTL_TL_PrmRev26",
+    0x2C8C5004: "BTL_TL_PrmRev27",
+    0x55F60607: "BTL_TL_PrmRev28",
+    0xD0FE369E: "BTL_TL_PrmRev29",
+    0xCE6B3ED3: "BTL_TL_PrmRev30",
+    0xA7EAC207: "BTL_TL_PrmRev31",
+    0x62C9918F: "BTL_TL_PrmRev32",
+    0x310AE49E: "BTL_WpnParam01",
+    0x71FCA5C7: "BTL_WpnParam02",
+    0xE00E4C3C: "BTL_WpnParam03",
+    0xCDEAE542: "BTL_WpnParam04",
+    0x7CB63A6B: "BTL_WpnParam05",
+    0xEC1897D5: "BTL_WpnParam06",
+    0x08751178: "BTL_WpnParam07",
+    0x899DC858: "BTL_WpnParam08",
+    0xFBCE40A6: "BTL_WpnParam09",
+    0x8D701581: "BTL_WpnParam10",
+    0xDBC706B7: "BTL_WpnParam11",
+    0xEDC29038: "BTL_WpnParam12",
+    0x57023D16: "BTL_WpnParam13",
+    0xFB089424: "BTL_WpnParam14",
+    0xEAA794AC: "BTL_WpnParam15",
+    0x3C1FA698: "BTL_WpnParam16",
+    0xF05F5D8C: "BTL_WpnParam17",
+    0x902E7B65: "BTL_WpnParam18",
+    0xDCEDF3EF: "BTL_WpnParam19",
+    0x08D37B00: "BTL_WpnParam20",
+    0xF9008831: "BTL_WpnParam21",
+    0xF226719F: "BTL_WpnParam22",
+    0xBA9BC5A5: "BTL_WpnParam23",
+    0x2A8109F3: "BTL_WpnParam24",
+    0x2FD46401: "BTL_WpnParam25",
+    0xCEE25938: "BTL_WpnParam26",
+    0x47AD0EB4: "BTL_WpnParam27",
+    0xF4E47BBA: "BTL_WpnParamS1",
+    0x08AE1617: "BTL_WpnParamS2",
+    0xAFC80603: "BTL_WpnParamU1",
+    0xE27CBB9E: "BTL_WpnParamU2",
+    0xA436E304: "BTL_WpnParamU3",
+    0x0EE98229: "BTL_WpnParamU4",
+    0xC82B9EDC: "BTL_WpnParamU5",
+    0x1C97E25E: "BTL_WpnParamU6",
+    0x79EC47C7: "FLD_EnTribe",  # FIXME: unclear if correct
+    0x541B26AD: "FLD_RelationArrow",
+    0x36C6913C: "ITM_RewardCollectionList",
+    0xE97C90CE: None,  # "Characters" menu definition table
+    0xF8207CBA: "MNU_FacePatternList",
+    0xD90FF31C: "MNU_FontSet01",
+    0x06079AEA: "MNU_FontSet01_cn",
+    0x0CFF6E6B: "MNU_FontSet01_kr",
+    0x8543AF98: "MNU_FontSet01_tw",
+    0x2CB06FE9: "MNU_Layer",
+    0x5645DB7F: "MNU_ResFont",
+    0x56E714AA: "MNU_ResFontStyle",
+    0x2DD45C21: "MNU_ResImage",
+    0xE92E9F68: "MNU_ResLayout",
+    0xAB68D046: "MNU_ResMSProj",
+    0xF8103211: "MNU_ResourceCategory",
+    0x2B760A8C: "MNU_ResourceType",
+    0x4CF1C296: "MNU_TextLink_Mstxt",
+    0xE1E61948: "MNU_Text_IdList",
+    0x686FDFDB: "MNU_filter",
+    0x44F0EA5A: "MNU_option_brightness",
+    0x85C68AD1: "MNU_option_camera",
+    0x54D69CFB: "MNU_option_display",
+    0x09F8A812: "MNU_option_formation",
+    0xED440CCA: "MNU_option_game",
+    0x241FE03A: "MNU_option_message",
+    0x12110072: "MNU_option_notice",
+    0x9CFC5B3B: "MNU_option_sound",
+    0xD4D03C1E: "MNU_sort",
+
+    # DLC data tables: (*_dlc04, *_DLC04 are automatically hashed)
+    0x26B3AA38: "BTL_ChSU_Emblem",
+    0x8D16A002: "BTL_ChSU_EnemyTable",
+    0xE57ED1AD: "BTL_ChSU_GameEff",
+    0x6FF3F9DB: "BTL_ChSU_List",
+    0x24FB69A7: "BTL_ChSU_Map",
+    0xF37D8A02: "BTL_ChSU_MapBattleLock",
+    0x628C37CD: "BTL_ChSU_RateEvent",
+    0xB913050A: "BTL_ChSU_RateGate",
+    0x37CA6FBA: "BTL_ChSU_RateShop",
+    0xE355D6C3: "BTL_ChSU_Reward",
+    0x28AAFFB2: "BTL_ChSU_SettingEvent",
+    0xA2626871: "BTL_ChSU_SettingGate",
+    0xD027C230: "BTL_ChSU_SettingShop",
+    0x27ED3222: "BTL_ChSU_ShopItem",
+    0xEC953A47: "BTL_ChSU_ShopPrice",
+    0x9D907E07: "BTL_ChTA_List",
+    0x0DBCD5D6: "BTL_ChTA_Reward",
+    0xF89EF606: "BTL_HyperCombo",
+    0xD4DECEDF: "BTL_Pair",
+    0xD1C136A1: None,  # DLC4 event table
+    0x3027DA48: None,  # DLC4 field craft list
+    0x22A64BEC: "FLD_CraftTerminal",
+    0x77F197BC: "FLD_EtherSlide",
+    0x2AD6BE88: "FLD_KizunaEventVoice",
+    0x987BF889: "FLD_MapAchievement",
+    0xA24FAA23: "FLD_MapAchievementSearch",
+    0x947C9B0C: None,  # DLC4 collepedia list
+    0xB4158056: None,  # DLC4 enemypedia list
+    0xDFE3D998: "MNU_LocationOffset",
+    0x5C40B458: "MNU_WeaponCraft",
+    0xDF563EF6: None,  # Has fields: GimmickID, LocationBdat (seems to be DLC4 version of 8F29BCAF)
+    0x4CECED20: "SYS_GimmickLocation_dlc02",  # DLC2 only
+    0x65CFAA3C: "SYS_GimmickLocation_dlc03",  # DLC3 only
+    0x5F2A841C: "msg_btl_ChSU_gate_message",
+    0x471783F9: "msg_btl_ChSU_event_caption",
+    0x8FB8F268: "msg_btl_ChSU_shop_caption",
+    0x81D88860: "msg_btl_ChSU_gate_caption",
+    0xB85EEAE1: "msg_btl_ChSU_gate_name",
+    0xECE07266: "msg_btl_ChSU_emblem_name",
+    0xF3D268C3: "msg_extra_accessory",
+    0xB3881515: "msg_mnu_dlc_collepedia",
+    0xC20EDDF5: None, # emblem caption list
+
     # Event tables:
     0x71ABA395: "msg_ask110001",
     0xA0850A64: "msg_ask110003",
@@ -775,6 +942,14 @@ hashes = {
     0xCA678F60: "msg_ask710018",
     0x060C366F: "msg_ask810001",
     0x85A0B4AC: "msg_ask810006",
+    0x1908DE65: "msg_cq001101f",
+    0xAA71947A: "msg_cq001102f",
+    0x2A7C39E1: "msg_cq001103f",
+    0xFB6E893D: "msg_cq001104f",
+    0x7E4B95A9: "msg_cq001105",
+    0x7646DF44: "msg_cq001106f",
+    0x0FF51215: "msg_cq001108f",
+    0x9108EDE4: "msg_cq001109f",
     0xC44342D4: "msg_cq010100",
     0xEF1AEBBF: "msg_cq010150",
     0xD5579B37: "msg_cq010200",
@@ -895,8 +1070,6 @@ hashes = {
     0x2C081997: "msg_cq062400",
     0xB517D869: "msg_cq062500",
     0xDC35A166: "msg_cq062600",
-    0xEEB0F4B1: "msg_mv021801",
-    0xE7269FB2: "msg_mv062602",
     0x047B9609: "msg_ev01005100",
     0x0B6D4AE2: "msg_ev01010100",
     0xC6CCF7B0: "msg_ev01020100",
@@ -945,9 +1118,6 @@ hashes = {
     0x03CF9AC5: "msg_ev01320100",
     0x15E3D24F: "msg_ev01330100",
     0x9326625A: "msg_ev01340100",
-    0x7D98B10C: "msg_mv01100110",
-    0x891A9204: "msg_mv01290110",
-    0x4CC0803B: "msg_mv01310140",
     0xE2ABD893: "msg_ev02010100",
     0xF638F262: "msg_ev02015100",
     0x9D7BA61A: "msg_ev02020100",
@@ -1039,9 +1209,6 @@ hashes = {
     0x47E355F6: "msg_ev03360100",
     0x6286689C: "msg_ev03370100",
     0xF56BB867: "msg_ev03380100",
-    0x0F62A47D: "msg_ev10020100",
-    0x5BD29F76: "msg_ev10020200",
-    0x8D6EFAB1: "msg_mv03285130",
     0x6E27422A: "msg_ev04010100",
     0xF9AC29AB: "msg_ev04020100",
     0xB36D0727: "msg_ev04030100",
@@ -1102,7 +1269,6 @@ hashes = {
     0x037F6432: "msg_ev04405100",
     0x1BF6477B: "msg_ev04410100",
     0x05AD88EF: "msg_ev04430100",
-    0x6332E7D4: "msg_mv04220110",
     0xD5B985E2: "msg_ev05010100",
     0xCDE67F21: "msg_ev05020100",
     0xD0808B75: "msg_ev05030100",
@@ -1181,8 +1347,6 @@ hashes = {
     0x5DEFC805: "msg_ev05510100",
     0xD49C222B: "msg_ev05520100",
     0x0DCE12A5: "msg_ev05530100",
-    0xC97626A5: "msg_ev10020300",
-    0xE89569E9: "msg_ev_featuredsong",
     0x44F84047: "msg_ev06010100",
     0xB32D1C6F: "msg_ev06020100",
     0x65A20641: "msg_ev06030100",
@@ -1246,7 +1410,6 @@ hashes = {
     0xC6051B52: "msg_ev06290130",
     0xD1761714: "msg_ev06300100",
     0x62F0A5E2: "msg_ev06310100",
-    0xAFB44F51: "msg_ev10020400",
     0xF4A753DB: "msg_ev07010100",
     0x8BC9D35F: "msg_ev07020100",
     0x642DFB5F: "msg_ev07030100",
@@ -1341,10 +1504,146 @@ hashes = {
     0x9BA4E3F6: "msg_ev07555100",
     0x4CBBF64D: "msg_ev07560100",
     0xBB46C267: "msg_ev07570100",
-    0x97EB86F4: "msg_ev_endthemesong",
     0x0E586C24: "msg_ev10010100",
+    0x0F62A47D: "msg_ev10020100",
+    0x5BD29F76: "msg_ev10020200",
+    0xC97626A5: "msg_ev10020300",
+    0xAFB44F51: "msg_ev10020400",
     0x3806257D: "msg_ev10030100",
+    0xF345584A: "msg_ev11010100",
+    0x655785C6: "msg_ev11020100",
+    0x959ABED2: "msg_ev11030100",
+    0xB79A72F1: "msg_ev11050100",
+    0xA4CCD476: "msg_ev11060100",
+    0xBBE3C473: "msg_ev11070100",
+    0x60FF5684: "msg_ev11080100",
+    0x94D5A8FA: "msg_ev11085100",
+    0xF1DB7140: "msg_ev11090100",
+    0xCCC1174A: "msg_ev11100100",
+    0xD6F2B416: "msg_ev11110100",
+    0xC1632E43: "msg_ev11120100",
+    0x9E8D4894: "msg_ev11130100",
+    0x01A80987: "msg_ev11135100",
+    0x0A01C409: "msg_ev11140100",
+    0x3E1E0499: "msg_ev11150100",
+    0x0BDC1C32: "msg_ev11160100",
+    0xE184621C: "msg_ev11170100",
+    0x62D9015E: "msg_ev11180100",
+    0x5FFC5653: "msg_ev11190100",
+    0x7D67D31C: "msg_ev12005100",
+    0xD09AEC00: "msg_ev12007100",
+    0x303A58FB: "msg_ev12010100",
+    0xBDE7A15A: "msg_ev12020100",
+    0xF43CE695: "msg_ev12030100",
+    0x0F3C9C18: "msg_ev12050100",
+    0xC74681FA: "msg_ev12060100",
+    0x1E35AC32: "msg_ev12070100",
+    0x084B88CF: "msg_ev12080100",
+    0x6F6B3B5E: "msg_ev12090100",
+    0x67C64B79: "msg_ev12100100",
+    0x381E0854: "msg_ev12110100",
+    0xFCFA5B8C: "msg_ev12115100",
+    0xD072E209: "msg_ev12120100",
+    0x44463A76: "msg_ev12130100",
+    0xA071DD30: "msg_ev12150100",
+    0xD51FF919: "msg_ev12160100",
+    0xE3727E78: "msg_ev12170100",
+    0xCDBC74F7: "msg_ev12180100",
+    0x95E519A4: "msg_ev12190100",
+    0x107E40D0: "msg_ev12200100",
+    0x83BC7750: "msg_ev13005100",
+    0x841A61FC: "msg_ev13010100",
+    0x680E5CFC: "msg_ev13020100",
+    0x471A717A: "msg_ev13020110",
+    0xFEED3521: "msg_ev13030100",
+    0x0E65A584: "msg_ev13040100",
+    0xD4E9C7DA: "msg_ev13050100",
+    0xA11AD763: "msg_ev13060100",
+    0x35FB4855: "msg_ev13070100",
+    0x0201E605: "msg_ev13075100",
+    0xE41A10CC: "msg_ev13075110",
+    0x4167EA83: "msg_ev13080100",
+    0xD29DDE2E: "msg_ev13085100",
+    0xD328F712: "msg_ev13085110",
+    0x2A8A223A: "msg_ev13090100",
+    0x8990D94F: "msg_ev13100100",
+    0xC126698E: "msg_ev13110100",
+    0x21DC45E8: "msg_ev13130100",
+    0x075C3E86: "msg_ev13135100",
+    0x76CE3DA0: "msg_ev13140100",
+    0x4B239DAB: "msg_ev13145100",
+    0xFEC34C6F: "msg_ev13150100",
+    0x950D4790: "msg_ev13160100",
+    0x2FB750DF: "msg_ev13170100",
+    0x474E6CB5: "msg_ev13180100",
+    0x16A24251: "msg_ev13180110",
+    0x2B58180E: "msg_ev13180130",
+    0x0D8782BD: "msg_ev13190100",
+    0xA751BCC7: "msg_ev14020100",
+    0x2A6A878F: "msg_ev14030100",
+    0x9C939974: "msg_ev14040100",
+    0x2DF8E8ED: "msg_ev14050100",
+    0x8966941A: "msg_ev14060100",
+    0x5D35CB62: "msg_ev14070100",
+    0xB998EB5A: "msg_ev14080100",
+    0x52CFF7A5: "msg_ev14090100",
+    0x343FBF78: "msg_ev14110100",
+    0xB1A3756D: "msg_ev14120100",
+    0xAF67BF8F: "msg_ev14130100",
+    0xA093D7F3: "msg_ev14140100",
+    0x7D5D56D9: "msg_ev14160100",
+    0x5F724D2F: "msg_ev14180100",
+    0x82068CC8: "msg_ev14185100",
+    0xB34B3155: "msg_ev14190100",
+    0x31946D7B: "msg_ev14200100",
+    0x6D15CB12: "msg_ev14210100",
+    0x83A8C488: "msg_ev14220100",
+    0x0E3F7827: "msg_ev14230100",
+    0x12FDEB92: "msg_ev14240100",
+    0x1EBEE2A6: "msg_ev14250100",
+    0x0A0DD406: "msg_ev14260100",
+    0xE1EBADAE: "msg_ev14270100",
+    0x8E729FC4: "msg_ev14290100",
+    0x9A2674F7: "msg_ev15020100",
+    0x15009D55: "msg_ev15030100",
+    0xAADF0102: "msg_ev15035100",
+    0x1EE8CF0A: "msg_ev15040100",
+    0x499A327F: "msg_ev15050100",
+    0x8CB23135: "msg_ev15055100",
+    0x5EBF8A98: "msg_ev15060100",
+    0x6D3CBB7F: "msg_ev15065100",
+    0xDA13A5C3: "msg_ev15070100",
+    0xD2DF59E1: "msg_ev15070105",
+    0x8BB702A8: "msg_ev15070110",
+    0x9E4E186A: "msg_ev15090100",
+    0xF1B970ED: "msg_ev15100100",
+    0x47A2107B: "msg_ev15100110",
+    0x360155F5: "msg_ev15120100",
+    0x3FBAACB1: "msg_ev15130100",
+    0xAF591CB8: "msg_ev15130120",
     0x5F48165F: "msg_ev30100000",
+    0x1D16996D: "msg_ev40000001",
+    0x1E9C85E6: "msg_ev40000002",
+    0xC72DFBF1: "msg_ev40000003",
+    0x007B428E: "msg_ev40000004",
+    0xE44DDA43: "msg_ev40000005",
+    0x30DFF271: "msg_ev40000006",
+    0xD04BED33: "msg_ev40000007",
+    0xFAEAADAD: "msg_ev40000008",
+    0xFE94D0C2: "msg_ev40000009",
+    0xEC26E4D1: "msg_ev40000010",
+    0x54E1E22A: "msg_ev40000011",
+    0x2355871A: "msg_ev40000012",
+    0x1D9DB3B8: "msg_ev40000013",
+    0x8F5049BE: "msg_ev40000014",
+    0x315DEE90: "msg_ev40000015",
+    0x627157A0: "msg_ev40000016",
+    0xEDA796D2: "msg_ev40000017",
+    0x2A1F82E4: "msg_ev40000018",
+    0xF6BC39CA: "msg_ev40000019",
+    0xCBF3B0A9: "msg_ev40000020",
+    0x97EB86F4: "msg_ev_endthemesong",
+    0xE89569E9: "msg_ev_featuredsong",
     0x80900B1E: "msg_fev01095005",
     0xC6B0605F: "msg_fev01095007",
     0x0424E94E: "msg_fev01095010",
@@ -1410,6 +1709,30 @@ hashes = {
     0xA7FE09ED: "msg_fev07120020",
     0x8B54C932: "msg_fev07253100",
     0x8732D86E: "msg_fev07330010",
+    0xD964C8CE: "msg_fev11035100",
+    0xD247AAB9: "msg_fev12020110",
+    0xF8119BE7: "msg_fev12020120",
+    0x2CDB8FB0: "msg_fev12040110",
+    0xCDCBBEC9: "msg_fev13030110",
+    0x074502B8: "msg_fev13070110",
+    0x6F271BDA: "msg_fev13080110",
+    0x891608B4: "msg_fev13080111",
+    0x194CDBD4: "msg_fev13080112",
+    0x48DC35D0: "msg_fev13080120",
+    0x7CCCB6D3: "msg_fev13085120",
+    0xD94665B4: "msg_fev13085130",
+    0xBB4C3EE7: "msg_fev13100110",
+    0x32C5186D: "msg_fev14140110",
+    0x34328F63: "msg_fev14140120",
+    0xB89000A5: "msg_fev14140130",
+    0xCEBE4307: "msg_fev14160110",
+    0x7D98B10C: "msg_mv01100110",
+    0x891A9204: "msg_mv01290110",
+    0x4CC0803B: "msg_mv01310140",
+    0xEEB0F4B1: "msg_mv021801",
+    0x8D6EFAB1: "msg_mv03285130",
+    0x6332E7D4: "msg_mv04220110",
+    0xE7269FB2: "msg_mv062602",
     0x8763F9A7: "msg_nq000100t",
     0xF0EDEC6D: "msg_nq000101t",
     0x8D8C5024: "msg_nq000102t",
@@ -2383,6 +2706,142 @@ hashes = {
     0xCD48241E: "msg_nq500310t",
     0x9115E20A: "msg_nq500311t",
     0xED59DADA: "msg_nq500312t",
+    0xB6FA7CC2: "msg_nq600100t",
+    0x474A1F6A: "msg_nq600101t",
+    0x7D93488A: "msg_nq600102f",
+    0x3875FDCA: "msg_nq600103f",
+    0xA5EFC377: "msg_nq600104f",
+    0x41310ABB: "msg_nq600105f",
+    0x825A84D3: "msg_nq600106t",
+    0x09187630: "msg_nq600107t",
+    0xCD9C5889: "msg_nq600200f",
+    0xF0ED9D3F: "msg_nq600201t",
+    0xF0ED9D3F: "msg_nq600201t",
+    0x516376A3: "msg_nq600202f",
+    0x424F88ED: "msg_nq600204f",
+    0x218BFB77: "msg_nq600206t",
+    0x218BFB77: "msg_nq600206t",
+    0x6EE2CFDE: "msg_nq600300f",
+    0x0E0EBD86: "msg_nq600301t",
+    0x838EBB4C: "msg_nq600302t",
+    0x315A9311: "msg_nq600303t",
+    0x0B7D759F: "msg_nq600304f",
+    0x86E08828: "msg_nq600305t",
+    0x16AAFD96: "msg_nq600400f",
+    0x00C8AA05: "msg_nq600401f",
+    0xD5568ADE: "msg_nq600402f",
+    0xA5A1E3C0: "msg_nq600403f",
+    0x6D4C8160: "msg_nq600404f",
+    0x91081A1A: "msg_nq600500f",
+    0x5CA66C68: "msg_nq600501t",
+    0x5CA66C68: "msg_nq600501t",
+    0x5CA66C68: "msg_nq600501t",
+    0xB6A6D3E5: "msg_nq600504f",
+    0xC11D4942: "msg_nq600505t",
+    0x6B16541F: "msg_nq600600f",
+    0xD06620B0: "msg_nq600601t",
+    0xD93D900F: "msg_nq600602t",
+    0xCC80E732: "msg_nq600603t",
+    0x389E6222: "msg_nq600604f",
+    0x60EE3750: "msg_nq600605f",
+    0x1B3E8E19: "msg_nq600606t",
+    0xDCDABD8C: "msg_nq600800f",
+    0x3E39B830: "msg_nq600801f",
+    0xDD8D7E20: "msg_nq600802f",
+    0x298FDB75: "msg_nq610200f",
+    0xDA12B492: "msg_nq610201t",
+    0x5DC67A39: "msg_nq610202f",
+    0x5E542B94: "msg_nq610400f",
+    0x4917979C: "msg_nq610401f",
+    0xA2E966B8: "msg_nq610402f",
+    0x36AF9C6F: "msg_nq610500f",
+    0x9E93AB1A: "msg_nq610501t",
+    0x2347B44E: "msg_nq610502f",
+    0x78C475E3: "msg_nq610503f",
+    0xCB182D4B: "msg_nq610504t",
+    0x8D0D4426: "msg_nq610700f",
+    0xF6CA8F66: "msg_nq610701f",
+    0x20FA3721: "msg_nq610702f",
+    0x0C70CF6F: "msg_nq610703f",
+    0x35999833: "msg_nq610800f",
+    0x354335BA: "msg_nq610801f",
+    0xA35652F0: "msg_nq610802f",
+    0x05A0F75B: "msg_nq610803f",
+    0x8940BE40: "msg_nq610804f",
+    0x51E75426: "msg_nq610805t",
+    0x2BEAA8ED: "msg_nq610900f",
+    0xAB82E01B: "msg_nq610901t",
+    0x4E28E521: "msg_nq610902f",
+    0xF9F2675D: "msg_nq610903f",
+    0x52303C40: "msg_nq610904f",
+    0x2B80B839: "msg_nq610905f",
+    0x5316B72F: "msg_nq610906f",
+    0x776F7964: "msg_nq610907f",
+    0x469D4BDD: "msg_nq611000f",
+    0x9FF8F6AF: "msg_nq611001f",
+    0xF28133D0: "msg_nq611002f",
+    0x11F5418A: "msg_nq611003f",
+    0xA3EA651F: "msg_nq611100f",
+    0xF6250240: "msg_nq611101f",
+    0x3C012EBD: "msg_nq611102f",
+    0x9C495FF4: "msg_nq611103f",
+    0x3CBEEDD6: "msg_nq611104t",
+    0xDFDF21AD: "msg_nq611105t",
+    0x084F9C05: "msg_nq611200f",
+    0x876F43B6: "msg_nq611201f",
+    0xB5938F08: "msg_nq611202f",
+    0xB5938F08: "msg_nq611202f",
+    0x1E2A1FD7: "msg_nq611203t",
+    0x76987AF9: "msg_nq611300f",
+    0x3C8520AD: "msg_nq611301t",
+    0x5927E8AA: "msg_nq611302t",
+    0xAF272F76: "msg_nq611303f",
+    0xD7F7B0FB: "msg_nq611304t",
+    0x6CC73B2B: "msg_nq611400f",
+    0xC1E564FC: "msg_nq611401f",
+    0x9E055C2E: "msg_nq611402f",
+    0xC03D0F2E: "msg_nq611403f",
+    0x84E62CFC: "msg_nq611404f",
+    0xCB351D3E: "msg_nq611405f",
+    0x4225E4F1: "msg_nq611406t",
+    0xCB4DC261: "msg_nq611407t",
+    0x6050496D: "msg_nq611500f",
+    0x3EFC90C3: "msg_nq611501f",
+    0x468059B8: "msg_nq611502f",
+    0x2F5A99ED: "msg_nq611503f",
+    0x708D15F0: "msg_nq611504f",
+    0xF2EAD6F7: "msg_nq611505f",
+    0x72FF8B81: "msg_nq611507f",
+    0x8181AA1E: "msg_nq611600t",
+    0x659C7763: "msg_nq611601f",
+    0x1C73546D: "msg_nq620100t",
+    0x237010AC: "msg_nq620400t",
+    0xAFFC66C6: "msg_nq620700t",
+    0x7506F4AD: "msg_nq700200f",
+    0x1496E8FA: "msg_nq700300f",
+    0xDF751E8C: "msg_nq700400f",
+    0x7ACA6F31: "msg_nq700500f",
+    0xF9240350: "msg_nq700600f",
+    0x7A840C69: "msg_nq700700f",
+    0xA2F32B34: "msg_nq700800f",
+    0xAF7446B1: "msg_nq700900f",
+    0xA834950F: "msg_nq701000f",
+    0x155E25ED: "msg_nq701200f",
+    0x7AC36E0A: "msg_nq701300f",
+    0xD8F173E6: "msg_nq701400f",
+    0x27F79266: "msg_nq710200t",
+    0x3D5D9E4F: "msg_nq710201f",
+    0x717A7868: "msg_nq710202t",
+    0xE2544C3D: "msg_nq710400f",
+    0xCC5378B7: "msg_nq710500t",
+    0xEFBA32FE: "msg_nq710501t",
+    0x13EA2D71: "msg_nq710502t",
+    0x045FF410: "msg_nq711000t",
+    0xD37095F6: "msg_nq711001f",
+    0x86E52E88: "msg_nq711002t",
+    0x130DBEE1: "msg_nq711100t",
+    0x1E243D0C: "msg_nq711101f",
+    0xB1BBFA40: "msg_nq711102t",
     0xA46DC57B: "msg_nq990201t",
     0x0FD58D14: "msg_nq990202t",
     0xF6B36AA8: "msg_nq990203t",
@@ -2553,6 +3012,31 @@ hashes = {
     0xF26D7B09: "msg_sq001234f",
     0xE52E92A9: "msg_sq001300f",
     0xF225751A: "msg_sq001301f",
+    0x228D7DFB: "msg_sq010100f",
+    0xECA19CCB: "msg_sq010101f",
+    0x02C9E27D: "msg_sq010102f",
+    0x25A2117E: "msg_sq010103f",
+    0xC0556304: "msg_sq010104t",
+    0xEEAC95BB: "msg_sq010200f",
+    0xAAED5729: "msg_sq010201f",
+    0x1B7D056C: "msg_sq010202f",
+    0xA321A0E6: "msg_sq010203t",
+    0x42D2112E: "msg_sq010204f",
+    0xD31DAB55: "msg_sq010205f",
+    0x1502306F: "msg_sq010206f",
+    0xE26164C4: "msg_sq010207f",
+    0xDCA86F5A: "msg_sq010208f",
+    0xC4BE322D: "msg_sq010209t",
+    0x16A38C21: "msg_sq010210t",
+    0xCEF25BDC: "msg_sq010211f",
+    0xC98DC64F: "msg_sq010212t",
+    0xC98DC64F: "msg_sq010212t",
+    0xC98DC64F: "msg_sq010212t",
+    0xC98DC64F: "msg_sq010212t",
+    0xDD55E0E9: "msg_sq010300f",
+    0xF1308BE1: "msg_sq010301f",
+    0x304BBC9C: "msg_sq010302f",
+    0x288A9F9C: "msg_sq010303f",
     0xE3BE15B3: "msg_tlk010101",
     0xFEC439B6: "msg_tlk010111",
     0xC8ED5E29: "msg_tlk010112",
@@ -3386,6 +3870,9 @@ hashes = {
     0xAF82B530: "msg_tlk430102",
     0xDFF9682A: "msg_tlk430103",
     0x3B6587EE: "msg_tlk431001",
+    0x2FE183E8: "msg_tlk44000100",
+    0x9665EA6D: "msg_tlk44000210",
+    0x1B82DAA0: "msg_tlk44000310",
     0xBF4D58AD: "msg_tlk510101",
     0xB2AFCC71: "msg_tlk510102",
     0xE409DCF5: "msg_tlk510103",
@@ -3809,6 +4296,188 @@ hashes = {
     0x233E5E25: "msg_tlk718001",
     0xDB9AFBF3: "msg_tlk718101",
     0x0FDFC4B7: "msg_tlk718201",
+    0x27CB9980: "msg_tlk830100",
+    0x7287E411: "msg_tlk830101",
+    0x65A5D430: "msg_tlk830102",
+    0xAADB7040: "msg_tlk830103",
+    0xEDFCD6AC: "msg_tlk830104",
+    0x9AD2FBAD: "msg_tlk830200",
+    0x849043AE: "msg_tlk830201",
+    0x2A02722D: "msg_tlk830202",
+    0x5F194F69: "msg_tlk830203",
+    0x5728A7BD: "msg_tlk830204",
+    0x655A3557: "msg_tlk830300",
+    0xFBF94E0C: "msg_tlk830301",
+    0x21E9BE1D: "msg_tlk830302",
+    0x2DF49C1C: "msg_tlk830303",
+    0x52EAF7C9: "msg_tlk830400",
+    0x32BA1426: "msg_tlk830401",
+    0x171AF2F6: "msg_tlk830402",
+    0x7259B009: "msg_tlk830403",
+    0x8E3ABD45: "msg_tlk830500",
+    0x2B4434E3: "msg_tlk830501",
+    0x8F84B2D3: "msg_tlk830502",
+    0x58EF4454: "msg_tlk830503",
+    0x540CC191: "msg_tlk830504",
+    0x0D12F856: "msg_tlk830600",
+    0xA4E0C773: "msg_tlk830601",
+    0x3C199B8A: "msg_tlk830602",
+    0x43445DC8: "msg_tlk830603",
+    0x3D1B44DF: "msg_tlk830604",
+    0x7B732FB0: "msg_tlk830605",
+    0x29D6CAAE: "msg_tlk830700",
+    0xA6B5828D: "msg_tlk830702",
+    0x8162B9E4: "msg_tlk830703",
+    0xF77D5DD5: "msg_tlk830704",
+    0x59511269: "msg_tlk830705",
+    0xD3BF3FCC: "msg_tlk830800",
+    0x2B3BAC9A: "msg_tlk830801",
+    0xD5F6161D: "msg_tlk830802",
+    0x94D00B9D: "msg_tlk830803",
+    0x5D1FABCB: "msg_tlk830804",
+    0x86C6EA14: "msg_tlk830900",
+    0xDC4DE8F0: "msg_tlk830901",
+    0x0102A8E2: "msg_tlk830902",
+    0xA7ED187E: "msg_tlk830903",
+    0xD66F2285: "msg_tlk830904",
+    0xE826DE88: "msg_tlk831000",
+    0xB06E60E7: "msg_tlk831001",
+    0x198C83AC: "msg_tlk831002",
+    0xB645F89A: "msg_tlk831003",
+    0xFBBCAEA3: "msg_tlk831004",
+    0x59D45164: "msg_tlk831100",
+    0x02DC1792: "msg_tlk831101",
+    0x40B52055: "msg_tlk831102",
+    0x39388774: "msg_tlk831103",
+    0x17690C00: "msg_tlk831104",
+    0x724ECF00: "msg_tlk831105",
+    0x9B56E46E: "msg_tlk831200",
+    0xB885F99D: "msg_tlk831201",
+    0xC394D2AE: "msg_tlk831202",
+    0x7B7BD15A: "msg_tlk831203",
+    0xAA442060: "msg_tlk831204",
+    0x018AA0BE: "msg_tlk831400",
+    0x573AE03A: "msg_tlk831401",
+    0x321ABA97: "msg_tlk831402",
+    0x8EB5B462: "msg_tlk831403",
+    0x3DFCA573: "msg_tlk831404",
+    0x0FE50BFA: "msg_tlk831500",
+    0x7A98A330: "msg_tlk831502",
+    0xA7A60DDD: "msg_tlk831503",
+    0x20AB051A: "msg_tlk831504",
+    0xB3836F0A: "msg_tlk831505",
+    0x1A4E9A87: "msg_tlk831506",
+    0x71207480: "msg_tlk831507",
+    0xF8BB6081: "msg_tlk831600",
+    0x4068E478: "msg_tlk831601",
+    0x0AFED5AF: "msg_tlk831602",
+    0xD80C87DD: "msg_tlk831603",
+    0x5146BC2C: "msg_tlk831604",
+    0x9915149B: "msg_tlk831700",
+    0x65EC6FCB: "msg_tlk831701",
+    0xCB3B6894: "msg_tlk831702",
+    0x6F778D8D: "msg_tlk831703",
+    0xEFD4A4A5: "msg_tlk831704",
+    0xD35D25B8: "msg_tlk831800",
+    0x20B14944: "msg_tlk831801",
+    0x24D50E71: "msg_tlk831802",
+    0xC7831C14: "msg_tlk831803",
+    0x67C6B897: "msg_tlk831804",
+    0xDE27527F: "msg_tlk831900",
+    0xAFCC0067: "msg_tlk831901",
+    0xF7476B84: "msg_tlk831902",
+    0xC71ACD55: "msg_tlk831903",
+    0x7F20945C: "msg_tlk831904",
+    0x697B92FC: "msg_tlk832000",
+    0x55CCC89A: "msg_tlk832001",
+    0x39B1412A: "msg_tlk832002",
+    0x70AF4C6F: "msg_tlk832003",
+    0xA29E4426: "msg_tlk832004",
+    0x1DD9091D: "msg_tlk832005",
+    0x2895B360: "msg_tlk832200",
+    0xA262E537: "msg_tlk832201",
+    0x274FEA73: "msg_tlk832300",
+    0x9138EF7F: "msg_tlk832301",
+    0x4868F14D: "msg_tlk832302",
+    0x563450BA: "msg_tlk832303",
+    0x4C1404C9: "msg_tlk832304",
+    0x392FA977: "msg_tlk832305",
+    0xEA37BF62: "msg_tlk832306",
+    0x9519B75D: "msg_tlk832307",
+    0x0B194EB2: "msg_tlk832308",
+    0x6DBB40F5: "msg_tlk832401",
+    0x98C6864A: "msg_tlk832402",
+    0xF9442C9B: "msg_tlk832403",
+    0x0FEBFB2F: "msg_tlk832404",
+    0x6E4CEE7D: "msg_tlk832405",
+    0x4218C738: "msg_tlk832501",
+    0x624CB89D: "msg_tlk832502",
+    0x0AE18C2F: "msg_tlk832503",
+    0xC47CBF3D: "msg_tlk832504",
+    0x5CCFB741: "msg_tlk832505",
+    0xE8046C3E: "msg_tlk832601",
+    0xEA095AFA: "msg_tlk832602",
+    0x76A41B3A: "msg_tlk832603",
+    0x88E0BBF5: "msg_tlk832604",
+    0xD5E0A58E: "msg_tlk832605",
+    0x21ABC2C1: "msg_tlk832700",
+    0x5300EB98: "msg_tlk832701",
+    0x7C13DB97: "msg_tlk832702",
+    0xEC279AA9: "msg_tlk835200",
+    0xE6086D6F: "msg_tlk835201",
+    0x78EDFA79: "msg_tlk835202",
+    0x5B5A9570: "msg_tlk835203",
+    0x73EA2B4E: "msg_tlk835204",
+    0xCA12108C: "msg_tlk835300",
+    0xAB697E30: "msg_tlk835301",
+    0x419EDED1: "msg_tlk835302",
+    0xBACB678F: "msg_tlk835303",
+    0x035B77C6: "msg_tlk835304",
+    0x12A40D44: "msg_tlk835305",
+    0x31C3BFAB: "msg_tlk835400",
+    0x513D9C69: "msg_tlk835401",
+    0x9F138DFC: "msg_tlk835402",
+    0xB18AA0A8: "msg_tlk835403",
+    0x994CABFE: "msg_tlk835404",
+    0xDF612FF3: "msg_tlk835500",
+    0x2028618B: "msg_tlk835501",
+    0x5F8B9A32: "msg_tlk835502",
+    0x204CF457: "msg_tlk835503",
+    0xF87B7096: "msg_tlk835504",
+    0xE9E02152: "msg_tlk835505",
+    0x2502093C: "msg_tlk835600",
+    0x2871FDE3: "msg_tlk835601",
+    0xBC058561: "msg_tlk835602",
+    0x50FB359F: "msg_tlk835603",
+    0x80465AC3: "msg_tlk835604",
+    0xFE792A48: "msg_tlk835605",
+    0xDA4F08B2: "msg_tlk835700",
+    0x4B726FAF: "msg_tlk835701",
+    0xD3A059F8: "msg_tlk835702",
+    0x10D59836: "msg_tlk835703",
+    0x2935220F: "msg_tlk835704",
+    0x6238ED9A: "msg_tlk835800",
+    0x81FDB670: "msg_tlk835801",
+    0xFA443070: "msg_tlk835802",
+    0xE936EACD: "msg_tlk835803",
+    0x13D06214: "msg_tlk835804",
+    0x18666E0B: "msg_tlk835805",
+    0x14C31C79: "msg_tlk835900",
+    0x5FD70DC2: "msg_tlk835901",
+    0xB63B6EBA: "msg_tlk835902",
+    0x099F6203: "msg_tlk835903",
+    0x7EE4BE30: "msg_tlk835904",
+    0x3DD2197A: "msg_tlk835905",
+    0xBA72E651: "msg_tlk836000",
+    0x40D9203B: "msg_tlk836001",
+    0xCC49642B: "msg_tlk836002",
+    0x327FF98D: "msg_tlk836003",
+    0x376C76A7: "msg_tlk836004",
+    0x1BE880DA: "msg_tlk836200",
+    0x9A09F294: "msg_tlk836201",
+    0xE624AB0B: "msg_tlk836202",
+    0x0F4CFF2E: "msg_tlk836203",
+    0x2B7BC832: "msg_tlk836204",
     0x51E48E27: "msg_tq000700f",
     0xDC392045: "msg_tq000701f",
     0xB334524E: "msg_tq000702",
@@ -4318,154 +4987,6 @@ hashes = {
     0x72C0887A: "msg_tq012809t",
     0xEB3DBE39: "msg_tq012810t",
 
-    # Other tables:
-    0xD00ADE37: "AMB_BasicLot",
-    0xC3802B6C: "AMB_BonusExpLot",
-    0xC36820B1: "AMB_ClassExpLot",
-    0xF58766B8: "AMB_CoinLot",
-    0x95351164: "AMB_CollectionLot",
-    0x1CAFF87D: "AMB_GoldCoinLot",
-    0xC810A4F3: "AMB_SpecialAmiibo",
-    0x7E6184E0: "AMB_TradValueLot",
-    0xDB3F6A13: "BTL_Ai",
-    0xB5B61435: "BTL_FA_Prm01",
-    0xF350A3E5: "BTL_FA_Prm02",
-    0xC93F0967: "BTL_FA_Prm03",
-    0x903C4F6B: "BTL_FA_Prm04",
-    0xA6D481B1: "BTL_FA_Prm05",
-    0x4A7F0ABE: "BTL_FA_Prm06",
-    0xB25E81A9: "BTL_FA_Prm07",
-    0xCE4989DD: "BTL_FA_Prm08",
-    0x39E57974: "BTL_FA_Prm09",
-    0x7E3D9C71: "BTL_FA_Prm10",
-    0xB40B5F04: "BTL_FA_Prm11",
-    0x5D9F1225: "BTL_FA_Prm12",
-    0xFC178762: "BTL_FA_Prm13",
-    0xACABE7A5: "BTL_FA_Prm14",
-    0x9917A283: "BTL_FA_Prm15",
-    0xB7A3CAD7: "BTL_FA_Prm16",
-    0x00D58307: "BTL_FA_Prm17",
-    0x9C3EBC4A: "BTL_FA_Prm18",
-    0x37C1077E: "BTL_FA_Prm19",
-    0xE9008F12: "BTL_FA_Prm20",
-    0x11F3AE13: "BTL_FA_Prm21",
-    0x3350571B: "BTL_FA_Prm22",
-    0xFA1E142D: "BTL_FA_Prm23",
-    0x823474FB: "BTL_FA_Prm24",
-    0x0C2B40C0: "BTL_FA_Prm25",
-    0xB8770FA6: "BTL_FA_Prm26",
-    0x1CEFCA4A: "BTL_FA_Prm27",
-    0x3E1EF073: "BTL_FA_Prm28",
-    0x07F3243D: "BTL_FA_Prm29",
-    0xC7993641: "BTL_SystemBalance",
-    0x1BE05692: "BTL_TL_PrmRev01",
-    0x84073E32: "BTL_TL_PrmRev02",
-    0xCE66DFE9: "BTL_TL_PrmRev03",
-    0x23CF7909: "BTL_TL_PrmRev04",
-    0x46C05B6E: "BTL_TL_PrmRev05",
-    0xCD5509A5: "BTL_TL_PrmRev06",
-    0x934AA80D: "BTL_TL_PrmRev07",
-    0xBF4EA1B8: "BTL_TL_PrmRev08",
-    0xBB5036F7: "BTL_TL_PrmRev09",
-    0x9449008E: "BTL_TL_PrmRev10",
-    0xE10FBA8D: "BTL_TL_PrmRev11",
-    0xDBA9FA90: "BTL_TL_PrmRev12",
-    0x32AE7B9A: "BTL_TL_PrmRev13",
-    0x0FD802C5: "BTL_TL_PrmRev14",
-    0x6E8E2F9C: "BTL_TL_PrmRev15",
-    0x0D38ED98: "BTL_TL_PrmRev16",
-    0x1CA60603: "BTL_TL_PrmRev17",
-    0xA1FA5E91: "BTL_TL_PrmRev18",
-    0xD5230761: "BTL_TL_PrmRev19",
-    0x681F1E1D: "BTL_TL_PrmRev20",
-    0x521BEF78: "BTL_TL_PrmRev21",
-    0x93FA1C52: "BTL_TL_PrmRev22",
-    0x487D1AD0: "BTL_TL_PrmRev23",
-    0x8E0066B2: "BTL_TL_PrmRev24",
-    0x86453FF9: "BTL_TL_PrmRev25",
-    0x568D44E5: "BTL_TL_PrmRev26",
-    0x2C8C5004: "BTL_TL_PrmRev27",
-    0x55F60607: "BTL_TL_PrmRev28",
-    0xD0FE369E: "BTL_TL_PrmRev29",
-    0xCE6B3ED3: "BTL_TL_PrmRev30",
-    0xA7EAC207: "BTL_TL_PrmRev31",
-    0x62C9918F: "BTL_TL_PrmRev32",
-    0x310AE49E: "BTL_WpnParam01",
-    0x71FCA5C7: "BTL_WpnParam02",
-    0xE00E4C3C: "BTL_WpnParam03",
-    0xCDEAE542: "BTL_WpnParam04",
-    0x7CB63A6B: "BTL_WpnParam05",
-    0xEC1897D5: "BTL_WpnParam06",
-    0x08751178: "BTL_WpnParam07",
-    0x899DC858: "BTL_WpnParam08",
-    0xFBCE40A6: "BTL_WpnParam09",
-    0x8D701581: "BTL_WpnParam10",
-    0xDBC706B7: "BTL_WpnParam11",
-    0xEDC29038: "BTL_WpnParam12",
-    0x57023D16: "BTL_WpnParam13",
-    0xFB089424: "BTL_WpnParam14",
-    0xEAA794AC: "BTL_WpnParam15",
-    0x3C1FA698: "BTL_WpnParam16",
-    0xF05F5D8C: "BTL_WpnParam17",
-    0x902E7B65: "BTL_WpnParam18",
-    0xDCEDF3EF: "BTL_WpnParam19",
-    0x08D37B00: "BTL_WpnParam20",
-    0xF9008831: "BTL_WpnParam21",
-    0xF226719F: "BTL_WpnParam22",
-    0xBA9BC5A5: "BTL_WpnParam23",
-    0x2A8109F3: "BTL_WpnParam24",
-    0x2FD46401: "BTL_WpnParam25",
-    0xCEE25938: "BTL_WpnParam26",
-    0x47AD0EB4: "BTL_WpnParam27",
-    0xF4E47BBA: "BTL_WpnParamS1",
-    0x08AE1617: "BTL_WpnParamS2",
-    0xAFC80603: "BTL_WpnParamU1",
-    0xE27CBB9E: "BTL_WpnParamU2",
-    0xA436E304: "BTL_WpnParamU3",
-    0x0EE98229: "BTL_WpnParamU4",
-    0xC82B9EDC: "BTL_WpnParamU5",
-    0x1C97E25E: "BTL_WpnParamU6",
-    0xD1C136A1: None,  # Empty event table
-    0x79EC47C7: "FLD_EnTribe",  # FIXME: unclear if correct
-    0x541B26AD: "FLD_RelationArrow",
-    0x36C6913C: "ITM_RewardCollectionList",
-    0xE97C90CE: None,  # "Characters" menu definition table
-    0xF8207CBA: "MNU_FacePatternList",
-    0xD90FF31C: "MNU_FontSet01",
-    0x06079AEA: "MNU_FontSet01_cn",
-    0x0CFF6E6B: "MNU_FontSet01_kr",
-    0x8543AF98: "MNU_FontSet01_tw",
-    0xE97C90CE: None,  # Unknown menu definition table
-    0x2CB06FE9: "MNU_Layer",
-    0x5645DB7F: "MNU_ResFont",
-    0x56E714AA: "MNU_ResFontStyle",
-    0x2DD45C21: "MNU_ResImage",
-    0xE92E9F68: "MNU_ResLayout",
-    0xAB68D046: "MNU_ResMSProj",
-    0xF8103211: "MNU_ResourceCategory",
-    0x2B760A8C: "MNU_ResourceType",
-    0xE97C90CE: None,  # "System" menu definition table
-    0x4CF1C296: "MNU_TextLink_Mstxt",
-    0xE1E61948: "MNU_Text_IdList",
-    0x686FDFDB: "MNU_filter",
-    0x44F0EA5A: "MNU_option_brightness",
-    0x85C68AD1: "MNU_option_camera",
-    0x54D69CFB: "MNU_option_display",
-    0x09F8A812: "MNU_option_formation",
-    0xED440CCA: "MNU_option_game",
-    0x241FE03A: "MNU_option_message",
-    0x12110072: "MNU_option_notice",
-    0x9CFC5B3B: "MNU_option_sound",
-    0xD4D03C1E: "MNU_sort",
-	
-    # Brute forced DLC table names:
-    0x3E1DD0F4: "BTL_EnemyDrop_Material_dlc04",
-    0x5EBC721E: "BTL_EnemyDrop_Normal_dlc04",
-    0x4CECED20: "SYS_GimmickLocation_dlc02",
-    0x65CFAA3C: "SYS_GimmickLocation_dlc03",
-    0xCD94C662: "SYS_GimmickLocation_dlc04",
-    0x29D844F1: "MNU_EventTheater_scn_DLC04",
-
     0x9416AC93: "1",
     0x0129E217: "2",
     0x0FC7A1B4: "3",
@@ -4569,6 +5090,11 @@ hashes = {
     0xD62FA1AE: "AddValue8",
     0x87E9119B: "AdditiveInterTime",
     0x275A212B: "Affordance",
+    0x38451F86: "AffordanceType1",
+    0xB951CEE8: "AffordanceType2",
+    0x6C1E0B9A: "AffordanceType3",
+    0xF63ECF6B: "AffordanceType4",
+    0xDF614889: "AffordanceType5",
     0xDACD2796: "After",
     0x57B5DD7C: "Age",
     0xC206D2B1: "AgilityBase",
@@ -4731,6 +5257,7 @@ hashes = {
     0x530C9455: "AuraAwakeLev",
     0xD8B07410: "AutoAttack1",
     0x8DC7FEE3: "AutoAttack2",
+    0xFAF18D6F: "AutoSave",
     0x039647DD: "AutoSet1",
     0x8BAD6AC6: "AutoSet2",
     0x894CA6BB: "AutoSet3",
@@ -4738,6 +5265,7 @@ hashes = {
     0xEBFCC1AC: "AutoSlot1",
     0xE5575DCE: "AutoSlot2",
     0x24CC0315: "AutoStart",
+    0x3C249491: "AvailableNum",
     0x12C8988F: "AvoidRev",
 
     0xCCA66A8A: "B",
@@ -4759,14 +5287,17 @@ hashes = {
     0x3D016DDA: "BaseTalkID",
     0xD622A439: "BaseTime",
     0x96802080: "BattleCategory",
+    0x198BD8EE: "BattleLock",
     0x210044ED: "BattleLockID",
     0x977F1E8D: "BattleRockID",
+    0xB6472E03: "BattleType",
     0x30499B89: "BdatNum",
     0x27DD2297: "Before",
     0x64FCF627: "BeforeWeather",
     0xE9E2E301: "BehaviorID",
     0xD9D73B99: "BgmCondition",
     0xF315D3C2: "BlackMist",
+    0x70644D77: "BlackMistVolume",
     0x40EB635C: "BlendMul",
     0xA57B7227: "BltMaxAng",
     0x36254CF7: "BoneCamera",
@@ -4785,12 +5316,15 @@ hashes = {
     0x1C25ECF7: "Branch3",
     0xDE966711: "Branch4",
     0x003CCC2F: "BranchID",
+    0x651DEE3A: "BriefingFlag",
+    0x853465F4: "Buff",
     0x59F6B911: "Bullet",
     0xDB0231EC: "BulletAngle",
     0xE97DCA60: "BulletEffID",
     0x3576BE77: "BulletID",
     0xF5124EA5: "BulletNum",
     0xAC95B9B7: "BulletScale",
+    0xFEDE66CE: "BuyScore",
 
     0x855B9573: "COMMAND",
     0xAD39AD18: "CVName",
@@ -4836,10 +5370,20 @@ hashes = {
     0xA49EBFA0: "ChainOrder",
     0xE36A122F: "ChainRate",
     0x5781C0FE: "ChainUp",
+    0xB37AAA05: "ChallengeTask1",
+    0x34C7585C: "ChallengeTask2",
+    0x0D28EE5E: "ChallengeTask3",
+    0x68D11243: "ChallengeTask4",
+    0x79C9C9C5: "ChallengeType1",
+    0xE7309FBE: "ChallengeType2",
+    0x46BBB901: "ChallengeType3",
+    0x84124ADD: "ChallengeType4",
     0x57CF2FBE: "Change",
     0x3420D05D: "ChangeCollepediaID1",
     0x5D9683E7: "ChangeCollepediaID2",
     0xE48341CC: "ChangeCollepediaID3",
+    0x81623F96: "ChangeCondition",
+    0x3EB3E425: "ChangeEvent",
     0xEA271ECB: "ChangeFile",
     0x2C592F34: "ChangeFlagName1",
     0xFCC9CCEE: "ChangeFlagName2",
@@ -4871,10 +5415,14 @@ hashes = {
     0xF8DF4196: "CheckFlag8",
     0xC6719F12: "CheckView",  # FIXME: unclear if correct
     0xC5CFF8E4: "ChestHeight",
+    0x932AA1F2: "Chr1",
+    0x6BDDC9E8: "Chr2",
     0xA31D2886: "ChrID",
     0x753413DC: "ChrSize",
     0xDF7C29E2: "ChrType",
     0xCD123CC1: "ClassID",
+    0x1F6EBF8A: "ClockHour",
+    0xBDF1460A: "ClockMinute",
     0xAFBC9389: "CloseEffect",
     0x216442BB: "CloseSeID",
     0x65FB6DB2: "CodeFamily",
@@ -4905,6 +5453,7 @@ hashes = {
     0xFB976DA4: "ComSpotGmk",
     0xDA375209: "ComSpotLocation",
     0x38910441: "Combo1",
+    0xA8228B0E: "Combo2",
     0x57A87F30: "ComboStage",
     0x7CC7F79F: "Command",
     0x890BD622: "Comment",
@@ -4936,6 +5485,7 @@ hashes = {
     0xE2D5DA44: "Condition4",
     0x167E711F: "Condition5",
     0xF0D6BD4D: "Condition6",
+    0x1AA0943B: "ConditionCap",
     0x7652ED89: "ConditionNoTarget",
     0x9F758CA5: "ConditionParam",
     0x914E9457: "ConditionType",
@@ -4964,6 +5514,7 @@ hashes = {
     0x9E7D98E8: "CoolDown",
     0xB2FA4A49: "CoreNum",
     0x04864592: "Corpse",
+    0x0A571EE5: "CostumeChr",
     0x8871B197: "Count",
     0x0EC9D148: "Count1",
     0x54C14948: "Count2",
@@ -4974,6 +5525,7 @@ hashes = {
     0x3CA49555: "Count7",
     0x095451A3: "CountOff",
     0x40E42769: "Craft",
+    0xC8459A0F: "Craft2",
     0x9A42201E: "CraftBuff",
     0xA7F0D30A: "CriRate",
     0xB485E71B: "CriRate2",
@@ -5015,6 +5567,7 @@ hashes = {
     0x236744DE: "Debug_name",
     0xD7D372C2: "DecidedReward",  # FIXME: what is this a link to?
     0xD4AF7D5E: "Decimal",
+    0x96D57BC1: "DecreaseInterval",
     0xA928A956: "Deduct",
     0xC2D519F1: "DefAcce1",
     0x121730FC: "DefAcce2",
@@ -5025,6 +5578,7 @@ hashes = {
     0x6590AB76: "DefHate",
     0xF3139111: "DefLv",
     0x2E11014E: "DefLvType",
+    0x6102FA17: "DefPair",
     0x02C1C5DC: "DefRev",
     0xE5C59521: "DefTalent",
     0xD34675FE: "DefTalentLv",
@@ -5077,12 +5631,27 @@ hashes = {
     0x899C03E4: "DirtHigh",
     0x8F57F173: "DirtLevel",  # FIXME: unclear if correct
     0x005A2321: "DirtLow",
+    0x1A66F743: "DisableAccess",
     0xAC8AC074: "DispHeight",
     0x7DC02962: "DispRadius",
     0x756058B1: "DispTime1",
     0x4F19F286: "DispTime2",
     0x22F544BA: "DispTime3",
     0xE1232743: "DispType",
+    0x84BFF2B2: "DispType1",
+    0x4C8FBB11: "DispType2",
+    0xD5DB55A8: "DispType3",
+    0x4A28223A: "DispType4",
+    0xDBF4108A: "DispType5",
+    0x7E046185: "DispType6",
+    0x6F87E6AA: "DispType7",
+    0xF4EA3170: "DispType8",
+    0xF3E1DE8A: "DispType9",
+    0xC8CBA843: "DispType10",
+    0x9C600792: "DispType11",
+    0xF18A46D2: "DispType12",
+    0x79984AB5: "DispType13",
+    0xA7DDB1AE: "DispType14",
     0xE7D06056: "Distance",
     0x2804B3C6: "Dmg",
     0xFC0726EF: "DmgMgn1",
@@ -5148,6 +5717,7 @@ hashes = {
     0x746716AC: "EffPack3",
     0xFFA47A48: "EffScale",
     0x237F7E36: "EffStandLoop",
+    0x2BBD9FBE: "EffTime",
     0xBB08DA4F: "EffType",
     0xE9B268D6: "EffValType",
     0xECFF4F2A: "Effect",
@@ -5206,6 +5776,8 @@ hashes = {
     0xEB40457F: "Elite5",
     0xF34BD15B: "Elite6",
     0xE855DE0C: "EliteScale",
+    0x1BA40551: "EmblemEff1",
+    0x667B05EC: "EmblemEff2",
     0xA8997FE0: "EmitterMax",
     0xF695DA9B: "EmitterMin",
     0xC401CF1F: "EnArtsAchieve",
@@ -5215,10 +5787,12 @@ hashes = {
     0x4CA550A7: "EnSize",
     0x1F1D8024: "EnSkillAchieve",
     0x6029A27F: "EndAlpha",
+    0xAF9617ED: "EndCat",
     0x5F2088FA: "EndCheck",
     0xF1F54917: "EndCheckType",
     0x5FE42B8B: "EndDelayFrame",
     0xFFC9E289: "EndDirectionID",
+    0xA6E3B8B7: "EndFlag",
     0x5D7ACE60: "EndFlag1",
     0xAF9F666F: "EndFlag2",
     0xB45F241C: "EndFlag3",
@@ -5245,6 +5819,7 @@ hashes = {
     0xB6B45326: "Enemy8",
     0xD3897F4C: "EnemyAiHead",
     0xAA60B6DF: "EnemyAiTail",
+    0x4317C81D: "EnemyArea",
     0x3BBE76C9: "EnemyDead",
     0x611E819D: "EnemyExp",
     0xAAEA8654: "EnemyFamily",
@@ -5323,6 +5898,7 @@ hashes = {
     0x51954738: "EquipType",
     0x5623FEE0: "EtherPatternFlag",
     0xEF0DD561: "EtherPoint",
+    0x8ED88423: "EtherPrice",
     0x88AE2F7A: "EtherSphere",
     0x98B5A07E: "Event",
     0x5104C2B6: "EventID",
@@ -5405,6 +5981,7 @@ hashes = {
     0x972A5125: "FlagID",
     0xDA6D358F: "FlagMax",
     0xA8D0C912: "FlagMin",
+    0x4A9281DE: "FlagName",
     0x09446249: "FlagNoLimit",  # FIXME: unclear if correct
     0xD8391710: "FlagNoReward",
     0x68E37709: "FlagNum",
@@ -5474,11 +6051,13 @@ hashes = {
     0xB450FEFB: "Formation2",
     0x4AEFCDBD: "Formation3",
     0xFC0937EB: "Formation4",
+    0x307B9767: "FormationAccessory",
     0xE27F23C7: "FormationBriefing",
     0x41E48985: "FormationCooking",
     0x139A6A3B: "FormationCookingAction",
     0xF324975C: "FormationID",
     0xF1D020CF: "FormationMeal",
+    0xDC8188E3: "FormationTerminal",
     0x7332CD5E: "FormationTopWindow",
     0x5DD44D44: "FormationTraining",
     0x162DC154: "Frame",
@@ -5496,6 +6075,7 @@ hashes = {
     0xB381A9C7: "Gender",
     0x42284E7E: "GetEnArts",
     0xB49D11C4: "GetEnSkill",
+    0xE4DCCC16: "GetNum",
     0xA7C9DF3F: "GetNumber",  # FIXME: unclear if correct
     0x7EC6903F: "GetRatio",
     0xECEA2C59: "Gimmick",
@@ -5546,8 +6126,10 @@ hashes = {
     0x2B0F682A: "HealerProb1",
     0xB76A556E: "HealerProb2",
     0xA1E2BF1B: "HealerProb3",
+    0x797D6D0A: "HeatRate",
     0xD6A42E29: "HeroChainEff",
     0xA9F6CEEB: "HeroFlagNo",
+    0x754C8DCA: "HeroPrice",
     0x48935BCE: "HiddenItem",
     0x9AFDCD9C: "Hide",
     0x4D189057: "HideTaskUI1",
@@ -5596,6 +6178,8 @@ hashes = {
     0x13F00AFE: "HitRevLow",
     0xE5CA9551: "HitSE",
     0x77058C3D: "Hitf",
+    0x2B98E8A9: "HitonowaChallenge",
+    0xA8958DCD: "HitonowaFlag",
     0x8EF3F61A: "HpMaxBase",
     0xF6F16AA5: "HpMaxLv1",
     0x3396A06A: "HpMaxLv99",
@@ -5605,6 +6189,7 @@ hashes = {
     0x5130AF24: "HpMaxRevBonus",
     0xAE6E5368: "HudIcon",
     0x3A2F2CF7: "HueOffset",
+    0x0611BF84: "HyperCombo",
 
     0xDBEA0DF4: "ID",
     0x20E8CF56: "IK",
@@ -5672,6 +6257,7 @@ hashes = {
     0xD53F9B44: "Interval",
     0xEA13F14F: "IntervalAT",
     0x295060CA: "IntervalArts",
+    0x48358CBE: "IntervalLimit",
     0x86D9BFC0: "IntervalMax",
     0x9F838917: "IntervalMin",
     0xFA83D055: "InvertKnee",
@@ -5756,7 +6342,10 @@ hashes = {
     0xD4C96118: "ItmGemID",
 
     0xA492DCCC: "Job",
+    0xD3CCF870: "Jump",
+    0x1136C98A: "JumpPortal",
 
+    0x77D7C7CA: "KP",
     0x210B556E: "KeepEnhance",
     0xC253A756: "Keepf",
     0xC4B89BE5: "KevesRate",
@@ -5772,9 +6361,12 @@ hashes = {
     0x67174E6E: "KeyShift1",
     0x9C2CAE21: "KeyShift2",
     0x54C1395A: "KillEffType",
+    0xC403588F: "KizunaEvent",
     0x46009BBD: "KizunaFlag",
+    0x22E36993: "KizunaPoint",
     0xD20CEFB1: "Knee",
 
+    0xEE26BE40: "Label",
     0xCBC5A6F6: "LandingDamage",
     0x67201E11: "LandingHeight",
     0xB205900A: "LaunchSeID",
@@ -5795,6 +6387,7 @@ hashes = {
     0xBB0A1111: "Level4",
     0x92771993: "Level5",
     0xCDC1A2C4: "LevelExp",
+    0x85F293A9: "LevelExp2",
     0x097B63F4: "LevelHero",
     0x0355C603: "Life",
     0xA0541F59: "LifeFireNum",
@@ -5815,6 +6408,7 @@ hashes = {
     0xE9EE0483: "LinkQuest",
     0xBD1B2F64: "LinkQuestTask",
     0x1E08C2CD: "LinkQuestTaskID",
+    0x6E744561: "ListNum",
     0xE4BC35A9: "Localize",
     0x78693E2C: "Localize1",
     0x86A5B309: "Localize2",
@@ -5847,10 +6441,16 @@ hashes = {
     0x83CFBB4A: "LvMin",
 
     0x1B6CE343: "Main",
+    0x2F3811E3: "MakeRecipe1",
+    0x7042839F: "MakeRecipe2",
+    0xCB5BFDAE: "MakeRecipe3",
+    0xD8410407: "MakeRecipe4",
+    0x0EFEE977: "MakeRecipe5",
     0x441C30DF: "Map",
     0xAD11E3B6: "MapGimmickID",
     0xF96161CE: "MapID",
     0xDB253205: "MapInfoId",
+    0xBFF03A95: "MapJump",
     0x8D5D1243: "MapJumpID",
     0x3B810178: "MapJumpIn",
     0x36A5860E: "MapJumpOut",
@@ -5882,6 +6482,7 @@ hashes = {
     0x009B610D: "MaxDelay",
     0xDF998797: "MaxHeight",
     0x2C1A0BDB: "MaxLength",
+    0xD94A52F4: "MaxLevel",
     0x84192CF4: "MaxNumber",
     0xD6C0304D: "MaxPlacementDown",
     0x6A3874F2: "MaxPlacementUp",
@@ -6026,6 +6627,8 @@ hashes = {
     0x342465D2: "NeedExpLv19",
     0xDA84697E: "NeedExpLv20",
     0xD9A8D205: "NeedGold",
+    0xF91B3DC9: "NeedPoint",
+    0x493FB6C2: "NeedPow",
     0x3BDD1BFD: "NeedRecipe",
     0x6E37CB43: "NeedSp",
     0x56518D61: "NeedTalentPoint1",
@@ -6038,6 +6641,7 @@ hashes = {
     0x12D18C6A: "NextPurposeA",
     0xBAFEA17B: "NextPurposeB",
     0x76A96FE2: "Nickname",
+    0xA9D54362: "NoBind",
     0x681466DD: "NoCG",
     0x9C074FCE: "NoClear",
     0x442F728B: "NoCollision",
@@ -6046,11 +6650,13 @@ hashes = {
     0x80F89F24: "NoUro",
     0xF93D37D3: "NoahTalentArts",
     0x390B012D: "Normal",
+    0xFB8C1490: "NormalArts",
     0x6DC57ACC: "NormalDropNumMax",
     0x59557DAA: "NormalDropNumMin",
     0xB0E5FFB2: "NormalDropProb",
     0x4A86AE4A: "Not1",
     0xD0DB2BA8: "Not2",
+    0x94EA2DB7: "NotAffordance",
     0x854BAEB4: "NotDebugFlag1",
     0x48390386: "NotDebugFlag2",
     0xBFEBD82F: "NotEconomy",  # FIXME: unclear if correct
@@ -6104,6 +6710,7 @@ hashes = {
     0x33799B7A: "NpType19",
     0x2DD20E10: "NpType20",
     0xE204F82C: "Npc",
+    0x484F0929: "NpcGimmick",
     0x26BDAEE5: "NpcID",
     0x2AD36178: "NpcID1",
     0x716D1B5F: "NpcID2",
@@ -6112,6 +6719,8 @@ hashes = {
     0x42DFEFDB: "NpcID5",
     0xFAF75E90: "NpcID6",
     0xF6970859: "NpcIconFlag",
+    0xA91C2464: "NpcQuestRoute",
+    0xB9E6627D: "NpcQuestRoutePoint",
     0x43473909: "Num01",
     0x7F13A069: "Num02",
     0xBD587404: "Num03",
@@ -6177,8 +6786,12 @@ hashes = {
     0x87510350: "OpenEffect",
     0xA5E65964: "OpenFlag",
     0x0982F22A: "OpenSeID",
+    0x60A0D1EF: "OpeningBuff",
     0x3A3E8378: "Option1",  # FIXME: unclear if correct
+    0x2C94504D: "OptionText",
     0xF57AF32D: "OrderCondition",
+    0xDDB9C6C6: "OrderCondition2",
+    0x0085193A: "OrderConditionText",
     0x247A535E: "OrderIcon",
     0x712324D3: "OtherRole",
     0xD2D55B46: "OutsideAlpha",
@@ -6212,6 +6825,11 @@ hashes = {
     0x9DD04BBC: "PageTitle4",
     0xB65F62BA: "PageTitle5",
     0x099C840E: "PageTitle6",
+    0xBC9509DC: "Pair1",
+    0xD5220A15: "Pair2",
+    0xEE18FF6F: "Pair3",
+    0xD0BF9035: "PairOrder",
+    0x1CF46E4C: "PairSkill",
     0x2ACACD3D: "Param",
     0x24E572E6: "Param1",
     0x351C2922: "Param2",
@@ -6266,7 +6884,12 @@ hashes = {
     0x30A7B425: "ParamMax",
     0x2C7B902E: "ParamMemo",
     0x6CCFF6C0: "ParamMin",
+    0x85F89446: "ParamRev2",
+    0x91EC200D: "ParamRev3",
+    0xCD0F6F5F: "ParamRev4",
+    0x5DA9D98C: "ParamRev5",
     0xA7E25CD6: "ParamStart",
+    0x98BE13C8: "ParamType",
     0x94FBFB5B: "PartsEye",
     0x81E7B2B8: "PartsGate",
     0x391C36E9: "PartsGear",
@@ -6296,6 +6919,24 @@ hashes = {
     0xB857CB65: "PieceID5",
     0x82F1EBE5: "PieceValue",
     0xD1D96BA9: "Place",
+    0x8EFEB4E3: "Place01",
+    0xFB552E8E: "Place02",
+    0xD6425A8A: "Place03",
+    0xBD613541: "Place04",
+    0x0B4AC5EB: "Place05",
+    0xEF35C2B0: "Place06",
+    0x8721CC55: "Place07",
+    0x07EF0175: "Place08",
+    0x99F517C1: "Place09",
+    0x2B7C7EF4: "Place10",
+    0xF002D806: "Place11",
+    0x89964775: "Place12",
+    0x9A7FFAA5: "Place13",
+    0xD9FE66DC: "Place14",
+    0xB390E962: "Place15",
+    0x3A2DEAE0: "Place16",
+    0x4A1210D1: "Place17",
+    0x4D21F089: "Place18",
     0xCA2E0979: "Placement",
     0xA15199E1: "PlacementDownDeltaDown",
     0xB152B624: "PlacementDownDeltaUp",
@@ -6326,6 +6967,8 @@ hashes = {
     0x0029952D: "PosX",
     0x3709AF30: "PosY",
     0xCFBEAF5A: "PosZ",
+    0xE6FB14EF: "Position",
+    0x232B2159: "PowAugment",
     0x0C6C8102: "PowEtherLv1",
     0x1E67A8E2: "PowEtherLv99",
     0x3443EA53: "PowHealBase",
@@ -6338,6 +6981,8 @@ hashes = {
     0x65494738: "PreCombo",
     0x02A046A1: "PreCondition",
     0x6C9CED98: "Precious",
+    0x967C5B17: "PreloadPriority",
+    0xEB5806FC: "Preset",
     0x4D215119: "PresetID",
     0x00D526DC: "PreviewIndex",  # FIXME: unclear if correct
     0x439CC54E: "Price",
@@ -6351,6 +6996,12 @@ hashes = {
     0x8DB43AC8: "Prob2",
     0xBCA4AF61: "Prob3",
     0x0FBC07B2: "Prob4",
+    0x4F8A7BEA: "ProbLot0",
+    0xD0D706EC: "ProbLot1",
+    0x137470B1: "ProbLot2",
+    0x37D3CC6D: "ProbLot3",
+    0x5AA16434: "ProbLot4",
+    0xA2CD12B8: "ProbLot5",
     0x17276C8D: "Probability01",
     0xAE0EBFAC: "Probability02",
     0x27DC69B6: "Probability03",
@@ -6361,6 +7012,7 @@ hashes = {
     0x014F5C52: "Probability3",
     0x8970046A: "Probability4",
     0x163B426D: "ProbabilityIdle",
+    0x221B0596: "PurposeIcon",
     0xEADDB4E4: "PushSeID",
     0xE9021A8C: "Puzzle",
 
@@ -6398,6 +7050,8 @@ hashes = {
     0x5D6EE2D9: "RageParam",
     0xC57E7929: "RageStance",
     0xCA154062: "RandHero",
+    0xEC6E0A2F: "RandMax",
+    0x7AADF2BD: "RandMin",
     0x96ACFC82: "RandPC",
     0xA05D13AD: "RandPos",
     0x9242072F: "RandRot",
@@ -6406,6 +7060,10 @@ hashes = {
     0x97B51BED: "Range",
     0xDF726F13: "RangeRev",
     0xA48A19BE: "RangeType",
+    0x0E3A812D: "Rank",
+    0x7B397BED: "Rank01",
+    0x6236EF68: "Rank02",
+    0x1E361F03: "Rank03",
     0x2647E765: "Rarity",
     0x25D2502B: "Rate1",
     0x2A9695E2: "Rate2",
@@ -6416,6 +7074,7 @@ hashes = {
     0x5E22C6F1: "Rate7",
     0x0FF11E94: "Rate8",
     0x66748AAD: "RateEmblem",
+    0x372B8FCA: "RateEther",
     0x0001FF0C: "RateEvent01",
     0xF110AC41: "RateEvent02",
     0xCE6F43D7: "RateEvent03",
@@ -6452,6 +7111,10 @@ hashes = {
     0x981606DE: "RateGate20",
     0x4079A680: "RateGate21",
     0x37B8672C: "RateHero",
+    0xB7A9F71F: "RateMap01",
+    0xF0F60DE8: "RateMap02",
+    0xFDE7A16B: "RateMap03",
+    0xB7CF5BC1: "RateMap04",
     0x0D5374EF: "RateShop01",
     0x44275401: "RateShop02",
     0xA4D4708F: "RateShop03",
@@ -6469,7 +7132,6 @@ hashes = {
     0xB6D4FFEA: "RateShop15",
     0xA2529D2B: "RateShop16",
     0x4C7A929F: "RateShop17",
-    0x372B8FCA: None, # Nopwatch rate (D027C230)
     0xA0EA3CD6: "ReAct01",
     0x1EA17DCD: "ReAct02",
     0xA102460E: "ReAct03",
@@ -6499,6 +7161,11 @@ hashes = {
     0x9D6EC3C4: "ReactionEvent4",
     0x843028AD: "ReactionEvent5",
     0xA04C1F8B: "ReactionEvent6",
+    0xFD65D91B: "ReactionVoice1",
+    0x1AACDA7B: "ReactionVoice2",
+    0x5DA14DBC: "ReactionVoice3",
+    0x99CC63E6: "ReactionVoice4",
+    0xAA850BCB: "ReactionVoice5",
     0x7B2199A5: "RecOffLv",
     0xF8CC7B2F: "Recast1",
     0x43E51C2D: "Recast2",
@@ -6544,6 +7211,7 @@ hashes = {
     0x8279E4BB: "ReplyGroup",
     0xEA2EC478: "ReplyID",
     0x44241270: "ReplyType",
+    0xE4C7BC4A: "ReqNum",
     0xCDF14FB3: "ResetFlag",
     0x2CC8A5FB: "ResistCombo",
     0x1CBA1EDE: "ResistReaction",
@@ -6593,8 +7261,10 @@ hashes = {
     0xDF864D6D: "RewardA2",
     0x0A2D9DD6: "RewardB1",
     0x61E891F2: "RewardB2",
+    0x250E24F9: "RewardCrystal",
     0xCE058792: "RewardDisp",
     0x6D90D1A3: "RewardID",
+    0x4618D122: "RewardNum",
     0x58FB2440: "RewardNum1",
     0x6E002632: "RewardNum2",
     0x9E428159: "RewardNum3",
@@ -6615,6 +7285,9 @@ hashes = {
     0x47D6E659: "RewardNum18",
     0xB475D1C7: "RewardNum19",
     0x41F45B76: "RewardNum20",
+    0x4A0E288B: "RewardRate1",
+    0xD27575D0: "RewardRate2",
+    0x517741C2: "RewardRate3",
     0x81F47B72: "RewardSetA",
     0xFA8499A0: "RewardSetB",
     0x685DB2EB: "RewardTypeA",
@@ -6740,6 +7413,8 @@ hashes = {
     0xCEFBB4DD: "ScenarioFlag",
     0x85A5428D: "ScenarioMax",
     0x859DC111: "ScenarioMin",
+    0xB3A7B4CA: "Score",
+    0xBC50DD28: "ScoreRate",
     0x7877BAA8: "Script",
     0x6BB6B20E: "Se",
     0xC95EE551: "SeAnimationEnd",
@@ -6825,11 +7500,14 @@ hashes = {
     0x11E468E0: "SlowRate1",
     0xD5CEE2CF: "SlowRate2",
     0xF0D7266F: "SlowRate3",
+    0x352B0A3E: "SlowStartf",
     0x58122AA1: "Slowf",
     0x47F627BD: "Snow",
     0x4BFCB6D7: "SoldierCategory1",
     0x0EDC9174: "SoldierCategory2",
+    0xECF0A2A1: "SoldierRemove",
     0x9999D173: "Soil",
+    0x80A47A5D: "Sort",
     0xE642E3E3: "SortCategory",
     0x632C239C: "SortID",
     0x3ACA445C: "SortNo",
@@ -6853,6 +7531,7 @@ hashes = {
     0xA7CD2D9C: "SpdFirst",
     0x7BE896BE: "SpdLast",
     0x96DD913C: "Special",
+    0x1FE1DF0B: "SpecialSetting",
     0x233C57C0: "SpeedNum",
     0x66D79648: "SpeedType",
     0x94EDD353: "Spine",
@@ -6915,8 +7594,10 @@ hashes = {
     0x17EE0B02: "StepOffset3",
     0x3302CEDB: "StepOffset4",
     0x7FEB0F45: "Still",
+    0x21279785: "StopCondition",
     0xB1297C59: "StopDelayTime",  # FIXME: unclear if correct
     0xAED00E22: "StopSeID",
+    0x706289BD: "StopText",
     0x453701E7: "StopUnMount",
     0xF2FA453F: "StoryID",
     0x866B049F: "StoryRsc",
@@ -6931,6 +7612,7 @@ hashes = {
     0x8298330C: "SubTitleText",
     0x7379AC7F: "SubType",
     0x9D381CE4: "Subtitling",
+    0x06D9C12E: "SumMax",
     0xA3A34068: "Summary",
     0xDAF856EF: "SummonData",
     0x3AD184FF: "SummonEnemyPop",
@@ -6951,6 +7633,7 @@ hashes = {
     0x376F334F: "TP_Min",
     0x20180905: "TP_Max",
     0x168F9AFE: "TableID",
+    0x851776FF: "TagName",
     0xFC21A92C: "Talent",
     0xD326AFD0: "Talent01",
     0x7E87EF71: "Talent02",
@@ -7061,6 +7744,7 @@ hashes = {
     0x6E0433EC: "TargetID6",
     0x807D07E6: "TargetID7",
     0x6AE942F6: "TargetID8",
+    0xD1D19574: "TargetItem",
     0xF7F757F6: "TargetMob1",
     0x1A42CC6C: "TargetMob2",
     0xA7E9EDCA: "TargetMob3",
@@ -7068,6 +7752,7 @@ hashes = {
     0x7E346A4A: "TargetParam2",
     0xB880AA39: "TargetRole1",
     0x0ED477D5: "TargetRole2",
+    0x16756BF9: "TaskCondition",
     0xEB9CBDA8: "TaskFlag1",
     0xB1D5132A: "TaskFlag2",
     0xC9196709: "TaskFlag3",
@@ -7086,6 +7771,7 @@ hashes = {
     0x0F13EFD8: "TaskType3",
     0x6F1531D7: "TaskType4",
     0x26A5DA94: "TensionUp",
+    0xDF288A2D: "TerminalFlag",
     0xD0569933: "Text",
     0x116DDB79: "Text1",
     0x7944C3C4: "Text2",
@@ -7101,6 +7787,15 @@ hashes = {
     0xC26F9BA0: "Time5",
     0xB3FC2791: "TimeMax",
     0xC71B9C7B: "TimeMin",
+    0xD35AF099: "TimeRank01",
+    0x60215F72: "TimeRank02",
+    0xF6886D2E: "TimeRank03",
+    0xFEFDFAB8: "TimeRank11",
+    0x7E186842: "TimeRank12",
+    0x3FE066A4: "TimeRank13",
+    0x2BDB59F2: "TimeRank21",
+    0x9F344F6C: "TimeRank22",
+    0xDFD52F58: "TimeRank23",
     0xA05A9E6A: "TimeRev",
     0x87AC63D7: "TimeStop",
     0xB628287F: "TimeZone",
@@ -7192,25 +7887,31 @@ hashes = {
     0x32FC4F37: "Ultimate",
     0xFA8A1282: "Unique",
     0xB7A36E4D: "UniqueDirection",
+    0x8A24565F: "UniqueDirection2",
     0xC4EFD428: "UniqueDirectionL",
     0x506DA4A5: "UniqueDirectionR",
     0x9146D0A4: "UnitText",
+    0xF3688B66: "Untiuroboros",
     0x836D60B7: "UpSeID",
     0x60C02D92: "UpSpeed",
     0x7471D714: "UpdateCheck",
     0x1419B3CF: "UpdateText",
+    0x7BE86748: "UroArts",
     0x91F2B0B9: "UroBody",
     0xEB9A43BB: "UroBodyID",
     0xED24DD29: "UroCondition",
     0x0B61396C: "UroID",
     0xD7FED66D: "UroLimitedReaction",  # FIXME: unclear if correct
     0x9D246ED5: "UroPartner",
+    0x717E0A65: "UroPower",
     0x5670FDDD: "UroProb1",
     0xF1D17644: "UroProb2",
     0x497CAEFC: "UroProb3",
+    0x0F132653: "UseChain",
     0x0C35E68D: "UseChr",
     0x5E97EC7D: "UseHP",
     0x33ADAA44: "UseIkLanding",
+    0xF29BECE8: "UseInterlink",
     0xA0AB85B5: "UseTalent",
     0x5DBC6429: "UseUro",
 
@@ -7281,11 +7982,14 @@ hashes = {
     0x478F97FE: "WaitEnd",
     0x4F12D691: "WaitTime",
     0x14561F4A: "Waitf",
+    0xF5E05E39: "WakeupCondition",
     0x08C0C3DD: "WakeupQuest",
     0x73A88931: "Walk",
     0xE69906B7: "WarmupFrame",
     0x6E3B810E: "WarningFlag",
+    0xA1E4E1E6: "WarningValue",
     0xD21B65B6: "Water",
+    0x9268614A: "Wave",
     0xF4CB3858: "WaveFreq",
     0xD8A3A4C9: "WaveRandom",
     0x51F76591: "WaveRate",
@@ -7337,6 +8041,7 @@ hashes = {
     0x9875A3C5: "Wiremesh",
     0xEB213538: "Wood",
     0xA4068AA7: "WpnParam",
+    0x14598569: "WpnRank",
     0x83E79816: "WpnType",
 
     0x2814D70C: "X",
@@ -10485,21 +11190,6 @@ hashes = {
     0x142305F6: "AreaBgm_Test/ControlPoint-3"
 }
 
-# Sanity check on unhash table
-# (enabled by default since it doesn't take very long to run)
-if True:
-    for hash, word in hashes.items():
-        if word is not None and murmur32(word) != hash:
-            raise Exception(f'murmur32({word}) != 0x{hash:08X} (should be 0x{murmur32(word):08X})')
-
-# Compile gimmick hashes
-for map in map_names:
-    for gmk_type in gimmick_types:
-        table_name = f"{map}_GMK_{gmk_type}"
-        hashes[murmur32(table_name)] = table_name
-if __name__ == "__main__":
-    print("Compiled gimmick hashes.")
-
 def unhash(hash, default=None):
     """Return the string corresponding to a hash, or the default if unknown."""
     value = hashes.get(hash, default)
@@ -10512,12 +11202,12 @@ def unhash(hash, default=None):
 # UINT fields that should be parsed as HSTRINGs (dict of table: [fields])
 uint_hashes = {
     'SYS_GimmickLocation': ['field_6C50B44E', 'Option1'],
-    'SYS_GimmickLocation_dlc02': ['field_6C50B44E', 'Option1'],
-    'SYS_GimmickLocation_dlc03': ['field_6C50B44E', 'Option1'],
+    'SYS_GimmickLocation_dlc04': ['field_6C50B44E', 'Option1'],
     '8F29BCAF': ['LocationBdat', 'field_5177BA21'],
     'C5C5F70E': ['FormationTopWindow', 'FormationCooking', 'field_07F1CB46',
                  'field_F1D020CF', 'field_E27F23C7', 'FormationCookingAction',
                  'FormationTraining'],
+    'DF563EF6': ['LocationBdat', 'field_5177BA21']
 }
 
 # Integer fields that should be printed in hexadecimal (set of fields,
@@ -10706,6 +11396,8 @@ class BdatTable(object):
         If id is out of range (when numeric) or not found (when a hash),
         None is returned.
         """
+        if self.num_rows == 0:
+            return None
         if field_index is None:
             if isinstance(id, int):
                 row_index = id - self._rows[0][0]
@@ -10784,11 +11476,11 @@ class BdatTable(object):
     # Styling/scripting adapted from https://github.com/Thealexbarney/XbTool
     _HTML_HEADER = """<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" {lang}>
+<html xmlns="http://www.w3.org/1999/xhtml" {LANG}>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta http-equiv="Content-Style-Type" content="text/css" />
-  <title>{title}</title>
+  <title>{TITLE}</title>
   <style type="text/css">
     table, th, td {border: 1px solid #000000; border-collapse: collapse;}
     table {border-width: 3px;}
@@ -10814,11 +11506,50 @@ class BdatTable(object):
     }
     window.addEventListener("hashchange", offsetAnchor);
     window.setTimeout(offsetAnchor, 1);
+
+    // Sort a table.  Also updates column header sort indicators.
+    // table: <table> element of table to sort
+    // column: column index (zero-based)
+    // dataType: 0 = int, 1 = float, 2 = string
+    // dir: >0 to sort ascending, <0 to sort descending
+    function sortTable(table, column, numericType, dir) {
+      for (var c = 0; c < table.rows[0].cells.length; c++) {
+        var th = table.rows[0].cells[c];
+        th.classList.remove("dir-u");
+        th.classList.remove("dir-d");
+        if (c == column) {
+          th.classList.add(dir>0 ? "dir-u" : "dir-d");
+        }
+      }
+      var cmp;
+      if (numericType == 0) {
+        cmp = function(a, b) {a = parseInt(a.cells[column].innerHTML);
+                              b = parseInt(b.cells[column].innerHTML);
+                              return a<b ? -dir : a>b ? dir : 0};
+      } else if (numericType == 1) {
+        cmp = function(a, b) {a = parseFloat(a.cells[column].innerHTML);
+                              b = parseFloat(b.cells[column].innerHTML);
+                              return a<b ? -dir : a>b ? dir : 0};
+      } else {
+        var strcmp = {STR_COMPARE};
+        cmp = function(a, b) {return dir * strcmp(a.cells[column].innerHTML,
+                                                  b.cells[column].innerHTML);}
+      }
+      var rows = Array.prototype.slice.call(table.querySelectorAll("tr"), 1);
+      rows.sort(cmp);
+      rows.forEach(function(tr){table.appendChild(tr);});
+    }
+
+    // Wrapper for use as column header click handler.
+    function sortColumn(th, column, dataType) {
+      sortTable(th.parentElement.parentElement, column,
+                dataType, th.classList.contains("dir-u") ? -1 : 1);
+    }
   </script>
 </head>
 <body>
   <table class="sortable">
-    <h2>{title}</h2>
+    <h2>{TITLE}</h2>
 """
 
     _HTML_FOOTER = """  </table>
@@ -10832,17 +11563,37 @@ class BdatTable(object):
         Parameters:
             language: ISO language code for HTML header, or None if not known.
         """
-        s = self._HTML_HEADER.replace('{title}', self.name)
+        s = self._HTML_HEADER.replace('{TITLE}', self.name)
         if language is not None:
-            s = s.replace('{lang}', f'lang="{language}" xml:lang="{language}"')
+            s = s.replace('{LANG}', f'lang="{language}" xml:lang="{language}"')
+            s = s.replace('{STR_COMPARE}',
+                          f'Intl.Collator("{language}").compare;')
         else:
-            s = s.replace('{lang}', '')
+            s = s.replace('{LANG}', '')
+            s = s.replace('{STR_COMPARE}',
+                          'function(a,b) {return a<b ? -1 : a>b ? 1 : 0;}')
         s += '    <tr id="header">\n'
-        s += '      <th class="side dir-d ">ID</th>\n'
+        s += '      <th class="side dir-u" onclick="sortColumn(this, 0, 0)">ID</th>\n'
         s += '      <th>Referenced By</th>\n'
-        for f in self._fields[1:]:
-            colspan = '' if f.array_size is None else f' colspan="{f.array_size}"'
-            s += f'      <th{colspan}>{f.name}</th>\n'
+        col_index = 2
+        for field in self._fields[1:]:
+            if field.array_size is None:
+                if field.value_type in (BdatValueType.STRING,
+                                        BdatValueType.HSTRING,
+                                        BdatValueType.UNK_11,
+                                        BdatValueType.UNK_12,
+                                        BdatValueType.UNK_13):
+                    numeric_type = 2
+                elif field.value_type in (BdatValueType.FLOAT32,
+                                          BdatValueType.PERCENT):
+                    numeric_type = 1
+                else:
+                    numeric_type = 0
+                s += f'      <th onclick="sortColumn(this, {col_index}, {numeric_type})">{field.name}</th>\n'
+                col_index += 1
+            else:
+                s += f'      <th colspan="{field.array_size}">{field.name}</th>\n'
+                col_index += field.array_size
         s += '    </tr>\n'
         for i in range(len(self._rows)):
             row = self._rows[i]
@@ -11374,7 +12125,7 @@ def parse_unhashed_table(type, table):
         # Column hashes
         string_ptr = 0
     else:
-        raise Exception(f"Unknown unhashed table type {type}")
+        raise Exception(f'Unknown unhashed table type {type}')
     return [b.decode('utf-8') for b in table[string_ptr:].split(b'\0') if b]
 
 
@@ -11424,7 +12175,7 @@ def resolve_labels(tables):
                         id = 0
                     else:
                         print(f'Warning: failed to match some row labels in {table.name}',
-                          file=sys.stderr)
+                              file=sys.stderr)
                         break
                 detected_letter = ''
                 for letter in bruteforce_alphabet:
@@ -11478,8 +12229,7 @@ def resolve_labels(tables):
 
     # SYS_GimmickLocation.GimmickID comes last because we need the dict
     # of gimmick IDs from per-map tables.
-    gmk_loc_tables = [tables['SYS_GimmickLocation'], tables.get('SYS_GimmickLocation_dlc02'),
-                      tables.get('SYS_GimmickLocation_dlc03'), tables.get('SYS_GimmickLocation_dlc04')]
+    gmk_loc_tables = [tables.get('SYS_GimmickLocation'), tables.get('SYS_GimmickLocation_dlc04')]
     for gmkloc in gmk_loc_tables:
         if not gmkloc:
             continue
@@ -11536,6 +12286,7 @@ row_name_fields = {
     'QST_RequestItemSet': 'Name',
     'QST_Task': 'TaskLog1',
     'SYS_GimmickLocation': 'GimmickID',
+    'SYS_GimmickLocation_dlc04': 'GimmickID',
     'SYS_MapList': 'Name',
     'SYS_TutorialMessage': 'Title',
     'SYS_TutorialSummary': 'Title',
@@ -11544,17 +12295,6 @@ row_name_fields = {
     'BB82DEE6': 'Name',
     'D9B88F26': 'Name',
     'gimmickLocation': 'LocationName',
-    'ma01a_GMK_Location': 'LocationName',
-    'ma04a_GMK_Location': 'LocationName',
-    'ma07a_GMK_Location': 'LocationName',
-    'ma09a_GMK_Location': 'LocationName',
-    'ma11a_GMK_Location': 'LocationName',
-    'ma14a_GMK_Location': 'LocationName',
-    'ma15a_GMK_Location': 'LocationName',
-    'ma17a_GMK_Location': 'LocationName',
-    'ma20a_GMK_Location': 'LocationName',
-    'ma22a_GMK_Location': 'LocationName',
-    'ma90a_GMK_Location': 'LocationName',
     'BTL_ChSU_Emblem': 'Name',
 }
 
@@ -11562,15 +12302,37 @@ row_name_fields = {
 # Value format: {'source_field_name': ('target_table', 'target_field_name' [, 'special_rule'])}
 # A source (ID) value of zero is converted to an empty cell.
 text_xrefs = {
+    'AMB_CollectionLot': {'SetName': ('msg_mnu_amiibo', 'name')},
+    'AMB_SpecialAmiibo': {'RewordName': ('msg_mnu_amiibo', 'name'),
+                          'RewordText': ('msg_mnu_amiibo', 'name')},
     'BTL_Achievement': {'Caption': ('msg_btl_achievement', 'name', 'achievement')},
     'BTL_Arts_En': {'Name': ('msg_btl_arts_en_name', 'name')},
     'BTL_Arts_PC': {'Name': ('msg_btl_arts_name', 'name'),
                     'Caption': ('msg_btl_arts_caption', 'name')},
     'BTL_BuffDeBuff': {'Name': ('msg_btl_buffdebuff_name', 'name'),
                        'Caption': ('msg_btl_buffdebuff_caption', 'name')},
+    'BTL_ChSU_Emblem': {'Name': ('msg_btl_ChSU_emblem_name', 'name'),
+                        'Caption': ('C20EDDF5', 'name')},
+    'BTL_ChSU_List': {'Name': ('192F6292', 'name'),
+                      'Caption1': ('18D9E310', 'name'),
+                      'Caption2': ('2BA64A98', 'name'),
+                      'Caption3': ('2BA64A98', 'name'),
+                      'OrderConditionText': ('EE23CB30', 'name')},
+    'BTL_ChSU_SettingEvent': {'Caption': ('msg_btl_ChSU_event_caption', 'name')},
+    'BTL_ChSU_SettingGate': {'Name': ('msg_btl_ChSU_gate_name', 'name'),
+                             'Caption': ('msg_btl_ChSU_gate_caption', 'name')},
+    'BTL_ChSU_SettingShop': {'Caption': ('msg_btl_ChSU_shop_caption', 'name')},
+    'BTL_ChTA_List': {'Name': ('192F6292', 'name'),
+                      'Caption1': ('18D9E310', 'name'),
+                      'Caption2': ('2BA64A98', 'name'),
+                      'Caption3': ('2BA64A98', 'name'),
+                      'OrderConditionText': ('EE23CB30', 'name')},
     'BTL_Combo': {'Name': ('msg_btl_combo_name', 'name')},
     'BTL_Enhance': {'Caption': ('msg_btl_enhance_cap', 'name', 'enhance')},
     'BTL_EnhanceEff': {'Name': ('msg_btl_enhance_name', 'name')},
+    'BTL_HyperCombo': {'Name': ('3B9EDF2E', 'name'),
+                       'Caption': ('6F7982E8', 'name'),
+                       'Caption2': ('6F7982E8', 'name')},
     'BTL_Reaction': {'Name': ('msg_btl_combo_name', 'name')},
     'BTL_SetUp': {'Name': ('msg_btl_buffdebuff_name', 'name')},
     'BTL_Skill_PC': {'Name': ('msg_btl_skill_name', 'name')},
@@ -11584,6 +12346,8 @@ text_xrefs = {
     'FLD_ColonyList': {'Name': ('msg_colony_name', 'name'),
                        'Caption': ('msg_colony_text', 'name')},
     'FLD_CookRecipe': {'Name': ('8B7D949B', 'name')},
+    'FLD_CraftTerminal': {'Name': ('41AAA47D', 'name'),
+                          'Caption': ('41AAA47D', 'name')},
     'FLD_EnemyData': {'MsgName': ('msg_enemy_name', 'name')},
     'FLD_InfoList': {'Name': ('CA2198EC', 'name')},
     'FLD_MealRecipe': {'Name': ('0103F5B8', 'name')},
@@ -11612,13 +12376,15 @@ text_xrefs = {
     'ITM_Accessory': {'Name': ('msg_item_accessory', 'name')},
     'ITM_Collection': {'Name': ('msg_item_collection', 'name'),
                        'Name2': ('msg_item_collection', 'name')},
-    'ITM_Collepedia': {'Text': ('BEDB6533', 'name'),
+    'ITM_Collepedia': {'Name': ('BEDB6533', 'name'),
+                       'Text': ('BEDB6533', 'name'),
                        'Text2': ('BEDB6533', 'name')},
     'ITM_Cylinder': {'Name': ('msg_item_cylinder', 'name')},
     'ITM_Exchange': {'Name': ('msg_item_exchange', 'name')},
     'ITM_Extra': {'Name': ('msg_item_extra', 'name'),
                   'Name2': ('msg_item_extra', 'name')},
-    'ITM_Gem': {'Name': ('msg_item_gem', 'name')},
+    'ITM_Gem': {'Name': ('msg_item_gem', 'name'),
+                'Name_dlc04': ('msg_item_gem', 'name')},
     'ITM_Info': {'Name': ('CA2198EC', 'name')},
     'ITM_Precious': {'Name': ('msg_item_precious', 'name'),
                      'Caption': ('msg_item_precious', 'name'),
@@ -11646,6 +12412,7 @@ text_xrefs = {
                      'Comment4': ('msg_mnu_tutorial_tips', 'name'),
                      'Comment5': ('msg_mnu_tutorial_tips', 'name'),
                      'Comment6': ('msg_mnu_tutorial_tips', 'name')},
+    'MNU_WeaponCraft': {'WeaponName': ('msg_btl_weapon_type', 'name')},
     'MNU_game_option_category': {'name': ('msg_mnu_option', 'name'),
                                  'help': ('msg_mnu_option', 'name')},
     'MNU_option_brightness': {'name': ('msg_mnu_option', 'name'),
@@ -11753,41 +12520,7 @@ text_xrefs = {
     'SYS_TutorialSummary': {'Title': ('msg_mnu_tutorial_tips', 'name')},
     'SYS_TutorialTask': {'Title': ('msg_mnu_tutorial_tips', 'name')},
     'SYS_TutorialTelop': {'Title': ('msg_mnu_tutorial_tips', 'name')},
-    'gimmickEnemyPop': {'GroupName': ('msg_enemy_group_name', 'name')},
-    'ma01a_GMK_EnemyPop': {'GroupName': ('msg_enemy_group_name', 'name')},
-    'ma04a_GMK_EnemyPop': {'GroupName': ('msg_enemy_group_name', 'name')},
-    'ma07a_GMK_EnemyPop': {'GroupName': ('msg_enemy_group_name', 'name')},
-    'ma09a_GMK_EnemyPop': {'GroupName': ('msg_enemy_group_name', 'name')},
-    'ma11a_GMK_EnemyPop': {'GroupName': ('msg_enemy_group_name', 'name')},
-    'ma14a_GMK_EnemyPop': {'GroupName': ('msg_enemy_group_name', 'name')},
-    'ma15a_GMK_EnemyPop': {'GroupName': ('msg_enemy_group_name', 'name')},
-    'ma17a_GMK_EnemyPop': {'GroupName': ('msg_enemy_group_name', 'name')},
-    'ma22a_GMK_EnemyPop': {'GroupName': ('msg_enemy_group_name', 'name')},
-    'ma90a_GMK_EnemyPop': {'GroupName': ('msg_enemy_group_name', 'name')},
-    'gimmickEvent': {'Name': ('msg_fld_searchpoint', 'name')},
-    'ma01a_GMK_Event': {'Name': ('msg_fld_searchpoint', 'name')},
-    'ma04a_GMK_Event': {'Name': ('msg_fld_searchpoint', 'name')},
-    'ma07a_GMK_Event': {'Name': ('msg_fld_searchpoint', 'name')},
-    'ma09a_GMK_Event': {'Name': ('msg_fld_searchpoint', 'name')},
-    'ma11a_GMK_Event': {'Name': ('msg_fld_searchpoint', 'name')},
-    'ma14a_GMK_Event': {'Name': ('msg_fld_searchpoint', 'name')},
-    'ma15a_GMK_Event': {'Name': ('msg_fld_searchpoint', 'name')},
-    'ma17a_GMK_Event': {'Name': ('msg_fld_searchpoint', 'name')},
-    'ma20a_GMK_Event': {'Name': ('msg_fld_searchpoint', 'name')},
-    'ma22a_GMK_Event': {'Name': ('msg_fld_searchpoint', 'name')},
-    'ma90a_GMK_Event': {'Name': ('msg_fld_searchpoint', 'name')},
     'gimmickLocation': {'LocationName': ('msg_location_name', 'name')},
-    'ma01a_GMK_Location': {'LocationName': ('msg_location_name', 'name')},
-    'ma04a_GMK_Location': {'LocationName': ('msg_location_name', 'name')},
-    'ma07a_GMK_Location': {'LocationName': ('msg_location_name', 'name')},
-    'ma09a_GMK_Location': {'LocationName': ('msg_location_name', 'name')},
-    'ma11a_GMK_Location': {'LocationName': ('msg_location_name', 'name')},
-    'ma14a_GMK_Location': {'LocationName': ('msg_location_name', 'name')},
-    'ma15a_GMK_Location': {'LocationName': ('msg_location_name', 'name')},
-    'ma17a_GMK_Location': {'LocationName': ('msg_location_name', 'name')},
-    'ma20a_GMK_Location': {'LocationName': ('msg_location_name', 'name')},
-    'ma22a_GMK_Location': {'LocationName': ('msg_location_name', 'name')},
-    'ma90a_GMK_Location': {'LocationName': ('msg_location_name', 'name')},
     '39D667D1': {'UIName1': ('msg_mnu_char_ms', 'name'),
                  'UIName2': ('msg_mnu_char_ms', 'name'),
                  'UIName3': ('msg_mnu_char_ms', 'name'),
@@ -11809,7 +12542,7 @@ text_xrefs = {
     '808F8A04': {'Text1': ('msg_autotalk', 'name'),
                  'Text2': ('msg_autotalk', 'name'),
                  'Text3': ('msg_autotalk', 'name')},
-    '95351164': {'SetName': ('msg_mnu_amiibo', 'name')},
+    '947C9B0C': {'Category': ('msg_mnu_dlc_collepedia', 'name')},
     '9AE9C010': {'Text1': ('msg_autotalk', 'name'),
                  'Text2': ('msg_autotalk', 'name'),
                  'Text3': ('msg_autotalk', 'name')},
@@ -11819,8 +12552,6 @@ text_xrefs = {
     'B30AE3F7': {'name': ('msg_mnu_mainmenu', 'name'),
                  'hint': ('msg_mnu_mainmenu', 'name')},
     'BB82DEE6': {'Name': ('F6E689C3', 'name')},
-    'C810A4F3': {'RewordName': ('msg_mnu_amiibo', 'name'),
-                 'RewordText': ('msg_mnu_amiibo', 'name')},
     'D4A3534F': {'Text1': ('msg_autotalk', 'name'),
                  'Text2': ('msg_autotalk', 'name'),
                  'Text3': ('msg_autotalk', 'name')},
@@ -11833,13 +12564,12 @@ text_xrefs = {
                  'Text2': ('msg_autotalk', 'name'),
                  'Text3': ('msg_autotalk', 'name')},
     'F936594B': {'SpotName': ('msg_comspot_name', 'name')},
-    '9D907E07': {'Name': ('192F6292', 'name'), 'Caption1': ('18D9E310', 'name'),
-                 'Caption2': ('2BA64A98', 'name'), 'Caption3': ('2BA64A98', 'name'),
-                 'field_0085193A': ('EE23CB30', 'name')},
-    'D027C230': {'Caption': ('msg_btl_ChSU_shop_caption', 'name')},
-    'A2626871': {'Name': ('msg_btl_ChSU_gate_name', 'name'), 'Caption': ('msg_btl_ChSU_gate_caption', 'name')},
-    '28AAFFB2': {'Caption': ('msg_btl_ChSU_event_caption', 'name')},
-    'BTL_ChSU_Emblem': {'Name': ('msg_btl_ChSU_emblem_name', 'name')},
+}
+
+# Additional text_xrefs which are applied to all gimmick tables.
+gimmick_text_xrefs = {
+    'EnemyPop': {'GroupName': ('msg_enemy_group_name', 'name')},
+    'Event': {'Name': ('msg_fld_searchpoint', 'name')},
 }
 
 refset_arts_en = ('BTL_Arts_En', )
@@ -11847,9 +12577,9 @@ refset_arts_pc = ('BTL_Arts_PC', )
 refset_condition = ('FLD_ConditionList', )
 refset_enemy = ('FLD_EnemyData', )
 refset_enhance = ('BTL_Enhance', )
-refset_event = (('EVT_listEv', 'EVT_listFev', 'EVT_listQst', 'EVT_listTlk'), )
-refset_event_name = (('EVT_listEv', 'EVT_listFev', 'EVT_listQst', 'EVT_listTlk'), None, 'event_name')
-refset_gimmick = ('SYS_GimmickLocation.GimmickID',)
+refset_event = (('EVT_listEv', 'EVT_listFev', 'EVT_listQst', 'EVT_listTlk', 'D1C136A1'), )
+refset_event_name = (('EVT_listEv', 'EVT_listFev', 'EVT_listQst', 'EVT_listTlk', 'D1C136A1'), None, 'event_name')
+refset_gimmick = (('SYS_GimmickLocation.GimmickID', 'SYS_GimmickLocation_dlc04.GimmickID'),)
 refset_gimmick_object = (None, None, 'gimmick_object')
 refset_item = (('ITM_Accessory', 'ITM_Collection', 'ITM_Collepedia', 'ITM_Cylinder', 'ITM_Gem', 'ITM_Info', 'ITM_Precious'), )
 refset_map = (('SYS_MapList'), )
@@ -11876,6 +12606,12 @@ refset_talent = ('BTL_Talent', )
 # A zero ID is always converted to an empty cell.
 field_xrefs = {
     'ChainOrder': 'D9B88F26',
+
+    'Debuff': 'BTL_BuffDeBuff',
+    'Debuff1': 'BTL_BuffDeBuff',
+    'Debuff2': 'BTL_BuffDeBuff',
+    'Debuff3': 'BTL_BuffDeBuff',
+    'Debuff4': 'BTL_BuffDeBuff',
 
     'Colony': 'FLD_ColonyList',
     'ColonyID': 'FLD_ColonyList',
@@ -11923,10 +12659,6 @@ field_xrefs = {
     'Conditon6': refset_condition,
     'Conditon7': refset_condition,
     'Conditon8': refset_condition,
-    'Debuff1': 'BTL_BuffDeBuff',
-    'Debuff2': 'BTL_BuffDeBuff',
-    'Debuff3': 'BTL_BuffDeBuff',
-    'Debuff4': 'BTL_BuffDeBuff',
     'IgnoreCondition': refset_condition,
     'NameCondition': refset_condition,
     'NamedSpCond': refset_condition,
@@ -11968,6 +12700,7 @@ field_xrefs = {
     'Enhance4': refset_enhance,
     'Enhance5': refset_enhance,
     'EnhanceID': refset_enhance,
+    'Enhance_dlc04': refset_enhance,
 
     'EnhanceEffect': 'BTL_EnhanceEff',
 
@@ -12044,6 +12777,7 @@ field_xrefs = {
     'NpType19': refset_item,
     'NpType20': refset_item,
     'OrderCondition': refset_condition,
+    'OrderCondition2': refset_condition,
     'SetItem1': refset_item,
     'SetItem2': refset_item,
     'SetItem3': refset_item,
@@ -12075,6 +12809,7 @@ field_xrefs = {
     'ShopItem19': refset_item,
     'ShopItem20': refset_item,
 
+    'MapJump': 'SYS_MapJumpList',
     'MapJumpID': 'SYS_MapJumpList',
 
     'CurrentMap': refset_map,
@@ -12091,6 +12826,7 @@ field_xrefs = {
     'NpcID5': refset_npc,
     'NpcID6': refset_npc,
 
+    'CostumeChr': refset_pc,
     'PCID1': refset_pc,
     'PCID2': refset_pc,
     'PCID3': refset_pc,
@@ -12136,10 +12872,15 @@ field_xrefs = {
     'field_223EFE81': 'BTL_ChSU_RateShop',
     'field_BC6FBC62': 'BTL_ChSU_RateEvent',
     'field_6D8A087C': 'BTL_ChSU_RateGate',
+    
+    'weatherA': 'RSC_WeatherSet',
+    'weatherB': 'RSC_WeatherSet',
+    'weatherC': 'RSC_WeatherSet',
 }
 
 # List of table-specific fields which are ID references to other tables.
 table_xrefs = {
+    'AMB_CollectionLot': {'RewordID': 'ITM_RewardAssort'},
     'BTL_Arts_Chain_Set': {'UseTalent': refset_talent,
                            'UseChr': refset_pc,
                            'ChainArts': refset_arts_pc},
@@ -12322,6 +13063,11 @@ table_xrefs = {
                          'Talent40': refset_skill,
                          'Talent41': refset_skill,
                          'Talent42': refset_skill},
+    'BTL_ChSU_List': {'Reward': 'BTL_ChSU_Reward'},
+    'BTL_ChSU_Reward': {'FirstReward': (None, None, 'chta_reward')},
+    'BTL_ChSU_ShopItem': {'Item': (None, None, 'chsu_shopitem')},
+    'BTL_ChTA_List': {'Reward': 'BTL_ChTA_Reward'},
+    'BTL_ChTA_Reward': {'FirstReward': (None, None, 'chta_reward')},
     'BTL_Combo': {'PreCombo': 'BTL_Combo'},
     'BTL_Element': {'ImpactEnhance': refset_enhance,
                     'KeepEnhance': refset_enhance},
@@ -12357,6 +13103,12 @@ table_xrefs = {
                   'EnhanceSlot2': refset_enhance,
                   'RageStance': refset_stance},
     'BTL_EnemyDrop_Material': {'EnFamily': 'BTL_EnFamily'},
+    'BTL_HyperCombo': {'Reaction': 'BTL_Combo'},
+    'BTL_Pair': {'Chr1': refset_pc,
+                 'Chr2': refset_pc,
+                 'field_3B047206': refset_item,
+                 'PairSkill': refset_skill,
+                 'HyperCombo': 'BTL_HyperCombo'},
     'BTL_SetUp': {'BulletID': 'BTL_Bullet',
                   'BulletEffID': 'BTL_BulletEffect',
                   'VanishParam1': (None, None, 'field_vanish')},
@@ -12447,6 +13199,10 @@ table_xrefs = {
                     'linkCondition2': 'FLD_ConditionList'},
     'EVT_listTlk': {'linkID': refset_event,
                     'linkCondition': 'FLD_ConditionList'},
+    'D1C136A1': {'linkID': refset_event,
+                 'linkCondition': 'FLD_ConditionList',
+                 'linkID2': refset_event,
+                 'linkCondition2': 'FLD_ConditionList'},
     'FLD_ColonyList': {'map': refset_map,
                        'Reward1': 'FLD_PerkPermanent',
                        'Reward2': 'FLD_PerkPermanent',
@@ -12545,6 +13301,8 @@ table_xrefs = {
     'ITM_Collepedia': {'Reward1': 'ITM_RewardCollepedia',
                        'RelationID': 'FLD_RelationNpc',
                        'ColonyRelationID': 'FLD_RelationColony'},
+    'ITM_Gem': {'Craft': 'BTL_GemCraft',
+                'Craft2': 'BTL_GemCraft'},
     'ITM_RewardAssort': {'Reward1': refset_item,
                          'Reward2': refset_item,
                          'Reward3': refset_item,
@@ -12677,22 +13435,30 @@ table_xrefs = {
                          'TimeZone03': 'SYS_WeatherRate',
                          'TimeZone04': 'SYS_WeatherRate',
                          'TimeZone05': 'SYS_WeatherRate'},
-    'ma01a_GMK_Corpse': {'EventID': refset_event_name},
+    'ma01a_GMK_Corpse': {'EventID': refset_event_name,
+                         'Reward': 'ITM_RewardGrieve'},
+    'ma04a_GMK_Corpse': {'EventID': refset_event_name,
+                         'Reward': 'ITM_RewardGrieve'},
+    'ma07a_GMK_Corpse': {'EventID': refset_event_name,
+                         'Reward': 'ITM_RewardGrieve'},
+    'ma09a_GMK_Corpse': {'EventID': refset_event_name,
+                         'Reward': 'ITM_RewardGrieve'},
+    'ma11a_GMK_Corpse': {'EventID': refset_event_name,
+                         'Reward': 'ITM_RewardGrieve'},
     'ma01a_GMK_Event': {'EventID': refset_event_name},
-    'ma04a_GMK_Corpse': {'EventID': refset_event_name},
     'ma04a_GMK_Event': {'EventID': refset_event_name},
-    'ma07a_GMK_Corpse': {'EventID': refset_event_name},
     'ma07a_GMK_Event': {'EventID': refset_event_name},
-    'ma09a_GMK_Corpse': {'EventID': refset_event_name},
     'ma09a_GMK_Event': {'EventID': refset_event_name},
-    'ma11a_GMK_Corpse': {'EventID': refset_event_name},
     'ma11a_GMK_Event': {'EventID': refset_event_name},
     'ma14a_GMK_Event': {'EventID': refset_event_name},
     'ma15a_GMK_Event': {'EventID': refset_event_name},
     'ma17a_GMK_Event': {'EventID': refset_event_name},
     'ma20a_GMK_Event': {'EventID': refset_event_name},
     'ma22a_GMK_Event': {'EventID': refset_event_name},
+    'ma40a_GMK_Event': {'EventID': refset_event_name},
     'ma90a_GMK_Event': {'EventID': refset_event_name},
+    'ma40a_GMK_KizunaEvent': {'EventName': refset_event_name,
+                              'field_3EB3E425': refset_event_name},
     'ma01a_GMK_TreasureBox': {'RewardID': 'ITM_RewardAssort'},
     'ma04a_GMK_TreasureBox': {'RewardID': 'ITM_RewardAssort'},
     'ma07a_GMK_TreasureBox': {'RewardID': 'ITM_RewardAssort'},
@@ -12702,12 +13468,9 @@ table_xrefs = {
     'ma15a_GMK_TreasureBox': {'RewardID': 'ITM_RewardAssort'},
     'ma17a_GMK_TreasureBox': {'RewardID': 'ITM_RewardAssort'},
     'ma22a_GMK_TreasureBox': {'RewardID': 'ITM_RewardAssort'},
+    'ma40a_GMK_TreasureBox': {'RewardID': 'ITM_RewardAssort'},
+    'C566F8E6': {'RewardID': 'ITM_RewardAssort'},  # another ma40a_GMK table
     'ma90a_GMK_TreasureBox': {'RewardID': 'ITM_RewardAssort'},
-    'ma01a_GMK_Corpse': {'Reward': 'ITM_RewardGrieve'},
-    'ma04a_GMK_Corpse': {'Reward': 'ITM_RewardGrieve'},
-    'ma07a_GMK_Corpse': {'Reward': 'ITM_RewardGrieve'},
-    'ma09a_GMK_Corpse': {'Reward': 'ITM_RewardGrieve'},
-    'ma11a_GMK_Corpse': {'Reward': 'ITM_RewardGrieve'},
     '02E2BD0D': {'affType': '76D0D7D9',
                  'matchPop1': refset_gimmick,
                  'matchPop2': refset_gimmick,
@@ -12777,13 +13540,14 @@ table_xrefs = {
                  'RelationID8': 'FLD_RelationNpc',
                  'RelationID9': 'FLD_RelationNpc',
                  'RelationID10': 'FLD_RelationNpc'},
-    '95351164': {'RewordID': 'ITM_RewardAssort'},
+    '947C9B0C': {'field_7A94A94B': 'ma40a_GMK_Location'},
     '9ED5F02A': {'EventID': refset_event_name},
     'A24771FC': {'Contents1': '9AE9C010',
                  'Contents2': '9AE9C010',
                  'Contents3': '9AE9C010',
                  'Contents4': '9AE9C010'},
     'A6AAF689': {'ArtsID': refset_arts_pc},
+    'B4158056': {'field_7A94A94B': 'ma40a_GMK_Location'},
     'B971C420': {'Talent': refset_talent,
                  'ArtsID': (('BTL_Arts_PC', 'E29EF7E9'), )},
     'BF287371': {'affType': '76D0D7D9'},
@@ -12811,9 +13575,6 @@ table_xrefs = {
                  'RelationID4': 'FLD_RelationColony'},
     'FD4384CB': {'EventID': refset_event_name},
     'FEF315B6': {'EventID': refset_event_name},
-    '9D907E07': {'field_DDB9C6C6': refset_condition, 'Reward': '0DBCD5D6'},
-    '0DBCD5D6': {'FirstReward': refset_item},
-    'BTL_ChSU_ShopItem': {'Item': (None, None, 'chsu_shopitem')},
 }
 
 
@@ -12849,6 +13610,8 @@ def add_xref(table, row, field_idx, value, target_table, target_row):
 
 def resolve_field_xrefs(tables, table, field_idx, target, add_link):
     """Resolve cross-references in the given table column."""
+    if not field_idx:
+        return
     if not islistlike(target):
         target = (target,)
     target_tables = target[0]
@@ -12884,7 +13647,7 @@ def resolve_field_xrefs(tables, table, field_idx, target, add_link):
                         test_row = test_table.id_to_row(id)
                     elif target[2] == 'gimmick_object':
                         hash = murmur32(id)
-                        test_table = tables['SYS_GimmickLocation']
+                        test_table = get_gmk_location_table(tables)
                         idx_GimmickID = test_table.field_index('GimmickID')
                         test_row = test_table.id_to_row(f'<{hash:08X}>',
                                                         idx_GimmickID)
@@ -12902,14 +13665,24 @@ def resolve_field_xrefs(tables, table, field_idx, target, add_link):
                         # This is either an emblem or a hero
                         type_field = table.field_index('field_6CA7326E')
                         type = table.get(row, type_field)
-                        test_table = tables["BTL_ChSU_Emblem"] if type == 0 else tables["CHR_PC"]
+                        test_table = tables['BTL_ChSU_Emblem'] if type == 0 else tables['CHR_PC']
                         test_row = test_table.id_to_row(value)
+                    elif target[2] == 'chta_reward':
+                        # Costume if CostumeChr != 0, item otherwise
+                        chr_field = table.field_index('CostumeChr')
+                        chr = table.get(row, chr_field)
+                        test_table = tables['RSC_PcCostumeOpen'] if chr else tables['ITM_Accessory']
+                        test_row = test_table.id_to_row(value)
+                        pass
                     else:
                         raise Exception(f'Unhandled special case: {target[2]}')
                 elif name.split('.')[0].startswith('SYS_GimmickLocation'):
-                    test_table = tables[name.split('.')[0]]
-                    idx_GimmickID = test_table.field_index('GimmickID')
-                    test_row = test_table.id_to_row(id, idx_GimmickID)
+                    test_table = tables.get(name.split('.')[0])
+                    if test_table:
+                        idx_GimmickID = test_table.field_index('GimmickID')
+                        test_row = test_table.id_to_row(id, idx_GimmickID)
+                    else:
+                        test_row = None
                 elif len(target) > 2 and target[2] == 'event_name':
                     test_table = tables[name]
                     hash = murmur32(id)
@@ -12922,7 +13695,7 @@ def resolve_field_xrefs(tables, table, field_idx, target, add_link):
                         target_table = test_table
                         target_row = test_row
                     else:
-                        raise ValueError(f'Duplicate ID {id} in table {target_table_name} (reference from {table.name}#{table.get(row, 0)})')
+                        raise ValueError(f'Duplicate ID {id} in table {target_table.name} (reference from {table.name}#{table.get(row, 0)})')
             if target_row is None:
                 # Suppress intentionally unmatching cases
                 if target_table == 'None':
@@ -12997,7 +13770,7 @@ def resolve_field_xrefs(tables, table, field_idx, target, add_link):
                 elif target[2] == 'event_name':
                     value = table.get(row, field_idx)
                 elif target[2] in ('condition_quest', 'qst_task',
-                                   'gimmick_object', 'field_vanish', 'chsu_shopitem'):
+                                   'gimmick_object', 'field_vanish', 'chsu_shopitem', 'chta_reward'):
                     pass  # No additional logic
                 else:
                     raise Exception(f'Unhandled special case: {target[2]}')
@@ -13006,7 +13779,16 @@ def resolve_field_xrefs(tables, table, field_idx, target, add_link):
             else:
                 assert value is not None
                 table.set(row, field_idx, value)
-
+                
+def get_gmk_location_table(tables):
+    """Returns the correct SYS_GimmickLocation table."""
+    base = tables.get('SYS_GimmickLocation')
+    if base:
+        return base
+    dlc = tables.get('SYS_GimmickLocation_dlc04')
+    if dlc:
+        return dlc
+    raise Exception(f'No SYS_GimmickLocation table found. Is base game or DLC4 present?') 
 
 def resolve_xrefs(tables):
     """Resolve all cross-references in the given list of tables."""
@@ -13022,13 +13804,20 @@ def resolve_xrefs(tables):
             continue  # postpone until after this loop
         table = tables[table_name]
         for field, target in fields.items():
-            resolve_field_xrefs(tables, table, table.field_index(field),
+            resolve_field_xrefs(tables, table, table.field_index(field, True),
                                 target, False)
+    for gimmick_name, fields in gimmick_text_xrefs.items():
+        for name, table in tables.items():
+            if (name == f'gimmick{gimmick_name}'
+                    or re.match(f'ma..a_GMK_{gimmick_name}$', name)):
+                for field, target in fields.items():
+                    resolve_field_xrefs(tables, table, table.field_index(field, True),
+                                        target, False)
     for table_name in recursive_text_tables:
         for field, target in text_xrefs[table_name].items():
             resolve_field_xrefs(tables, tables[table_name],
-                                tables[table_name].field_index(field), target,
-                                False)
+                                tables[table_name].field_index(field, True),
+                                target, False)
 
     for name, table in tables.items():
         matched_fields = set()
@@ -13056,11 +13845,15 @@ def resolve_xrefs(tables):
                              target_table, target_row)
         if name in table_xrefs:
             for field, target in table_xrefs[name].items():
-                field_idx = table.field_index(field, allow_missing=True)
-                if field_idx is not None:
-                  resolve_field_xrefs(tables, table, field_idx, target, True)
-                matched_fields.add(table.field_index(field, True))
+                if target is not None:
+                    field_idx = table.field_index(field, allow_missing=True)
+                    if field_idx is not None:
+                        resolve_field_xrefs(tables, table, field_idx, target,
+                                            True)
+                        matched_fields.add(table.field_index(field, True))
         for field, target in field_xrefs.items():
+            if name in table_xrefs and field in table_xrefs[name]:
+                continue
             field_idx = table.field_index(field, True)
             if field_idx is not None and field_idx not in matched_fields:
                 if name == 'FLD_ConditionList' and field == 'Condition':
@@ -13126,6 +13919,45 @@ def resolve_xrefs(tables):
                             target = m.group(1)
                     if target in tables:
                         table.set(row, field, value, target, None)
+
+
+########################################################################
+# Initialization logic for dynamically-initialized data
+
+# Sanity check on unhash table
+# (enabled by default since it doesn't take very long to run)
+if True:
+    for hash, word in hashes.items():
+        if word is not None and murmur32(word) != hash:
+            raise Exception(f'murmur32({word}) != 0x{hash:08X} (should be 0x{murmur32(word):08X})')
+
+# Compile gimmick hashes
+for map in map_names:
+    for gmk_type in gimmick_types:
+        table_name = f'{map}_GMK_{gmk_type}'
+        hashes[murmur32(table_name)] = table_name
+        if gmk_type == 'Location':
+            row_name_fields[table_name] = 'LocationName'
+            text_xrefs[table_name] = {'LocationName': ('msg_location_name', 'name')}
+        
+# Check "*_dlc04" hashes
+for name in list(hashes.values()):
+    if not name:
+        continue
+    for suffix in ['_dlc04', '_DLC04']:
+        dlc_name = name + suffix
+        dlc_hash = murmur32(dlc_name)
+        if dlc_hash in hashes:
+            if hashes[dlc_hash] != dlc_name:
+                if dlc_name == 'ArtsID_DLC04':
+                    pass  # Known collision with RSC_MapObjList_dlc04
+                else:
+                    raise Exception(f'DLC04 collision: [{dlc_name}] collides with [{hashes[dlc_hash]}]')
+        else:
+            hashes[dlc_hash] = dlc_name
+
+if __name__ == '__main__':
+    print('Compiled gimmick & DLC4 hashes.')
 
 
 ########################################################################
